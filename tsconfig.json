@@ -35,8 +35,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    ".next-store/types/**/*.ts",
-    ".next-store/dev/types/**/*.ts",
     ".next-admin1/types/**/*.ts",
     ".next-admin1/dev/types/**/*.ts"
   ],

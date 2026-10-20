@@ -86,7 +86,7 @@ export function StatCard({
 /** Table wrapper: horizontal scroll on mobile, consistent cell styles via [&_th]/[&_td]. */
 export function DataTable({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-x-auto rounded-2xl border border-stone/70 bg-cream", className)}>
+    <div className={cn("relative overflow-x-auto rounded-2xl border border-stone/70 bg-cream", className)}>
       <table
         className={cn(
           "w-full min-w-[640px] text-left text-sm",

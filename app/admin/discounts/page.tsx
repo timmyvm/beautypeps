@@ -71,7 +71,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
               <th className="text-right">Used</th>
               <th>Active window</th>
               <th>Status</th>
-              <th className="text-right">
+              <th className="relative text-right">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>

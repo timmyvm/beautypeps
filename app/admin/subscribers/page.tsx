@@ -68,7 +68,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
               <th>Email</th>
               <th>Source</th>
               <th>Subscribed</th>
-              <th className="text-right">
+              <th className="relative text-right">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
