@@ -64,7 +64,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
         <RevenueChart data={data.series} />
       </Panel>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-[1.6fr_1fr]">
         <Panel
           title="Recent orders"
           actions={

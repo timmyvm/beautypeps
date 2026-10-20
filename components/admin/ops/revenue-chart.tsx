@@ -97,15 +97,27 @@ export function RevenueChart({ data }: { data: Point[] }) {
       <div className="mt-2 flex gap-3" aria-hidden>
         <div className="w-12 shrink-0" />
         <div className="flex flex-1 gap-[2px] text-[11px] text-taupe">
-          {data.map((d, i) => (
-            <span key={d.day} className="relative flex-1">
-              {(i % labelEvery === 0 || i === n - 1) && (i === n - 1 || n - 1 - i >= labelEvery / 2) ? (
-                <span className={cn("absolute top-0 whitespace-nowrap", i === n - 1 ? "right-0" : "left-1/2 -translate-x-1/2")}>
-                  {dayLabel.format(asDate(d.day))}
-                </span>
-              ) : null}
-            </span>
-          ))}
+          {data.map((d, i) => {
+            // Fewer ticks on narrow screens; never crowd the right-aligned last label.
+            const last = i === n - 1;
+            const fine = last || (i % labelEvery === 0 && n - 1 - i >= labelEvery * 0.8);
+            const coarse = last || (i % (labelEvery * 2) === 0 && n - 1 - i >= labelEvery * 1.6);
+            return (
+              <span key={d.day} className="relative flex-1">
+                {fine ? (
+                  <span
+                    className={cn(
+                      "absolute top-0 whitespace-nowrap",
+                      last ? "right-0" : "left-1/2 -translate-x-1/2",
+                      !coarse && "hidden sm:block",
+                    )}
+                  >
+                    {dayLabel.format(asDate(d.day))}
+                  </span>
+                ) : null}
+              </span>
+            );
+          })}
         </div>
       </div>
 
