@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ["@libsql/client", "libsql"],
+  experimental: {
+    // Admin image uploads go through Server Actions
+    serverActions: { bodySizeLimit: "10mb" },
+  },
 };
 
 export default nextConfig;
