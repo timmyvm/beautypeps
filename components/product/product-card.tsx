@@ -37,7 +37,7 @@ export function ProductCard({ product, className, priority }: { product: Product
       <div className="mt-4 flex flex-1 flex-col">
         <h3 className="font-display text-lg leading-snug text-espresso group-hover:text-copper-dark">{product.name}</h3>
         {product.subtitle && <p className="mt-1 line-clamp-1 text-sm text-cocoa">{product.subtitle}</p>}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-3">
           <Price cents={product.price} compareAt={product.compareAtPrice} className="text-sm font-medium text-espresso" />
           {product.rating && product.rating.count > 0 ? (
             <span className="flex items-center gap-1 text-xs text-cocoa">

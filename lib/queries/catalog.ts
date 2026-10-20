@@ -125,9 +125,10 @@ export async function listProducts(opts: {
   return result;
 }
 
+/** Featured products first (admin "featured" flag), topped up with the rest of the range. */
 export async function getFeaturedProducts(limit = 8): Promise<ProductCardData[]> {
-  const featured = await listProducts({ sort: "featured", limit });
-  return featured;
+  const all = await listProducts({ sort: "featured", inStock: true });
+  return all.slice(0, limit);
 }
 
 export const getProductBySlug = cache(async (slug: string) => {

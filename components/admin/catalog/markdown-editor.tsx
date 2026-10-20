@@ -1,0 +1,102 @@
+"use client";
+
+import { useId, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Label } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+
+export function countWords(text: string) {
+  return text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+
+/** Markdown textarea with Write / Preview tabs. Posts its value under `name`. */
+export function MarkdownEditor({
+  name,
+  label,
+  defaultValue,
+  error,
+  hint,
+  rows = 10,
+  onValueChange,
+  showWordCount,
+}: {
+  name: string;
+  label: string;
+  defaultValue?: string | null;
+  error?: string;
+  hint?: string;
+  rows?: number;
+  onValueChange?: (value: string) => void;
+  showWordCount?: boolean;
+}) {
+  const id = useId();
+  const [value, setValue] = useState(defaultValue ?? "");
+  const [tab, setTab] = useState<"write" | "preview">("write");
+
+  return (
+    <div>
+      <div className="mb-1.5 flex items-end justify-between gap-3">
+        <Label htmlFor={id} className="mb-0">
+          {label}
+        </Label>
+        <div className="flex rounded-full border border-stone bg-ivory p-0.5 text-[11px] font-medium" role="tablist">
+          {(["write", "preview"] as const).map((t) => (
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={tab === t}
+              onClick={() => setTab(t)}
+              className={cn(
+                "rounded-full px-3 py-1 capitalize transition-colors",
+                tab === t ? "bg-espresso text-cream" : "text-cocoa hover:text-espresso",
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Textarea stays mounted (hidden in preview) so its value is always submitted. */}
+      <textarea
+        id={id}
+        name={name}
+        rows={rows}
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onValueChange?.(e.target.value);
+        }}
+        aria-invalid={!!error}
+        className={cn(
+          "w-full rounded-xl border border-stone bg-cream px-4 py-3 font-mono text-[13px] leading-relaxed text-espresso placeholder:text-taupe focus:border-copper focus:ring-2 focus:ring-copper/20 focus:outline-none aria-[invalid=true]:border-danger",
+          tab === "preview" && "hidden",
+        )}
+        placeholder="Write in Markdown — ## headings, **bold**, - lists, | tables |"
+      />
+      {tab === "preview" && (
+        <div className="min-h-40 rounded-xl border border-stone bg-cream px-5 py-4">
+          {value.trim() ? (
+            <div className="prose-bp prose-sm">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>
+            </div>
+          ) : (
+            <p className="text-sm text-taupe">Nothing to preview yet.</p>
+          )}
+        </div>
+      )}
+      <div className="mt-1.5 flex justify-between gap-3 text-xs">
+        {error ? (
+          <p className="text-danger" role="alert">
+            {error}
+          </p>
+        ) : (
+          <p className="text-taupe">{hint ?? "Markdown supported."}</p>
+        )}
+        {showWordCount && <p className="shrink-0 text-taupe">{countWords(value)} words</p>}
+      </div>
+    </div>
+  );
+}
