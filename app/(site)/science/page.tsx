@@ -91,7 +91,7 @@ export default function SciencePage() {
         </div>
       </section>
 
-      <div className="container-bp grid gap-12 py-16 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-20">
+      <div className="container-bp grid grid-cols-1 gap-12 py-16 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-20">
         <nav aria-label="On this page" className="lg:sticky lg:top-28 lg:self-start">
           <p className="eyebrow mb-4">On this page</p>
           <ol className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-1 lg:border-l lg:border-stone lg:px-0">

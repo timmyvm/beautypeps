@@ -38,7 +38,7 @@ export default async function FaqPage() {
         description="Everything from how peptides work to when your parcel will arrive. Can't find your answer? Our team replies within one business day."
       />
 
-      <div className="container-bp grid gap-12 py-14 lg:grid-cols-[240px_1fr] lg:gap-16">
+      <div className="container-bp grid grid-cols-1 gap-12 py-14 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
         <nav aria-label="FAQ topics" className="lg:sticky lg:top-28 lg:self-start">
           <p className="eyebrow mb-4">Topics</p>
           <ul className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-1 lg:px-0">

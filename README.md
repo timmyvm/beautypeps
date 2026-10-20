@@ -50,7 +50,7 @@ Discount codes in the seed: `WELCOME10`, `PEPS20` (20% off orders over $150), `G
 See [`.env.example`](.env.example).
 
 - `DATABASE_URL` / `DATABASE_AUTH_TOKEN`: `file:local.db` locally. For production use [Turso](https://turso.tech) (`libsql://…`).
-- `AUTH_SECRET`: **required in production**. Generate one with `openssl rand -base64 32`.
+- `AUTH_SECRET`: **required in production**, including `npm start` locally. Without it, sign-in is refused. `npm run dev` falls back to a development secret. Generate one with `openssl rand -base64 32`.
 - `NEXT_PUBLIC_SITE_URL`: used in emails, the sitemap and OG tags.
 - `RESEND_API_KEY` + `EMAIL_FROM`: optional. Without them, emails are not sent; they are only written to **Admin → Email log**, which is useful in development (e.g. to grab password-reset links).
 - `BLOB_READ_WRITE_TOKEN`: optional. Without it, admin image uploads are saved to `public/uploads` (local only). On Vercel, add a Blob store.
