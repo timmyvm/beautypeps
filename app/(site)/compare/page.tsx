@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/info/page-hero";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
-import { CLASS_TONES, classLabel } from "@/components/peptides/peptide-card";
+import { CLASS_TONES, classShortLabel } from "@/components/peptides/peptide-card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
@@ -75,7 +75,7 @@ export default async function ComparePage() {
                         </Link>
                       </th>
                       <td>
-                        <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"}>{classLabel(p.peptideClass)}</Badge>
+                        <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"}>{classShortLabel(p.peptideClass)}</Badge>
                       </td>
                       <td className="min-w-[150px] text-cocoa">{p.bestFor}</td>
                       <td className="min-w-[150px]">
@@ -105,7 +105,7 @@ export default async function ComparePage() {
                       <span className="block font-display text-xl text-espresso">{p.name}</span>
                       <span className="mt-0.5 block text-xs text-taupe">{p.inciName}</span>
                     </Link>
-                    <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"}>{classLabel(p.peptideClass)}</Badge>
+                    <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"} className="shrink-0">{classShortLabel(p.peptideClass)}</Badge>
                   </div>
                   <p className="mt-3 text-sm text-cocoa">{p.bestFor}</p>
                   <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-stone/60 pt-4 text-sm">

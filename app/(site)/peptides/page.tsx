@@ -82,14 +82,14 @@ export default async function PeptideLibraryPage({ searchParams }: { searchParam
             </ButtonLink>
           }
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
           {Object.entries(PEPTIDE_CLASSES).map(([key, c]) => (
             <Link
               key={key}
               href={href({ class: activeClass === key ? undefined : key, concern: activeConcern })}
               aria-current={activeClass === key ? "true" : undefined}
               className={cn(
-                "group flex flex-col rounded-2xl border p-5 transition-colors",
+                "group flex w-[80%] shrink-0 snap-start flex-col rounded-2xl border p-5 transition-colors sm:w-auto",
                 activeClass === key
                   ? "border-copper bg-copper-light/30"
                   : "border-stone/70 bg-cream hover:border-copper/40",

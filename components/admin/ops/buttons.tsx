@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useActionFormPending } from "./action-form";
 
 type Variant = "primary" | "copper" | "outline" | "ghost" | "danger" | "light";
 
@@ -26,7 +27,9 @@ export function ConfirmSubmit({
   className?: string;
 }) {
   const [armed, setArmed] = useState(false);
-  const { pending } = useFormStatus();
+  const status = useFormStatus();
+  const actionPending = useActionFormPending();
+  const pending = status.pending || actionPending;
 
   useEffect(() => {
     if (!armed) return;
@@ -68,7 +71,9 @@ export function OpsSubmit({
   name?: string;
   value?: string;
 }) {
-  const { pending } = useFormStatus();
+  const status = useFormStatus();
+  const actionPending = useActionFormPending();
+  const pending = status.pending || actionPending;
   return (
     <button
       type="submit"

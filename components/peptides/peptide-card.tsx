@@ -13,6 +13,17 @@ export const CLASS_TONES: Record<string, "copper" | "sapphire" | "sage" | "amber
   "enzyme-inhibitor": "amber",
 };
 
+const SHORT_CLASS: Record<string, string> = {
+  signal: "Signal",
+  carrier: "Carrier",
+  "neurotransmitter-inhibitor": "Neuro-inhibiting",
+  "enzyme-inhibitor": "Enzyme-inhibiting",
+};
+
+export function classShortLabel(peptideClass: string) {
+  return SHORT_CLASS[peptideClass] ?? peptideClass;
+}
+
 export function classLabel(peptideClass: string) {
   return PEPTIDE_CLASSES[peptideClass]?.label ?? peptideClass;
 }

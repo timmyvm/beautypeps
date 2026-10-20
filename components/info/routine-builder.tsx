@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, Check, Loader2, Moon, RotateCcw, ShoppingBag, Sun } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { addManyToCart } from "@/lib/actions/cart";
 import { concernLabel } from "@/lib/constants";
 import {
@@ -32,6 +32,17 @@ export function RoutineBuilder({
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ concerns: [], skinType: null, experience: null, preference: null });
   const done = step >= STEPS.length;
+  const topRef = useRef<HTMLDivElement>(null);
+  const hasInteracted = useRef(false);
+
+  // Bring the next question (or the results) into view after each step.
+  useEffect(() => {
+    if (!hasInteracted.current) {
+      hasInteracted.current = true;
+      return;
+    }
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [step]);
 
   const canContinue =
     (step === 0 && answers.concerns.length > 0) ||
@@ -45,11 +56,15 @@ export function RoutineBuilder({
   };
 
   if (done) {
-    return <Results products={products} answers={answers} peptideNames={peptideNames} onRestart={restart} onBack={() => setStep(3)} />;
+    return (
+      <div ref={topRef} className="scroll-mt-28">
+        <Results products={products} answers={answers} peptideNames={peptideNames} onRestart={restart} onBack={() => setStep(3)} />
+      </div>
+    );
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div ref={topRef} className="mx-auto max-w-3xl scroll-mt-28">
       {/* Progress */}
       <ol className="mb-10 grid grid-cols-4 gap-2" aria-label="Progress">
         {STEPS.map((label, i) => (

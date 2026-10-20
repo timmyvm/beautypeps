@@ -41,7 +41,7 @@ export function ArticleForm({ article }: { article: Article | null }) {
       }}
     >
       <input type="hidden" name="id" value={article?.id ?? ""} />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-6">
           <Panel title="Article">
             <div className="space-y-4">

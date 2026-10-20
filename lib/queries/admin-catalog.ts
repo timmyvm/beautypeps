@@ -117,18 +117,12 @@ export async function listCategoryOptions() {
 }
 
 export async function listCategoriesWithCounts() {
-  return db
-    .select({
-      id: categories.id,
-      slug: categories.slug,
-      name: categories.name,
-      tagline: categories.tagline,
-      image: categories.image,
-      sortOrder: categories.sortOrder,
-      productCount: sql<number>`(select count(*) from ${products} where ${products.categoryId} = ${categories.id})`,
-    })
-    .from(categories)
-    .orderBy(asc(categories.sortOrder), asc(categories.name));
+  const [rows, counts] = await Promise.all([
+    db.select().from(categories).orderBy(asc(categories.sortOrder), asc(categories.name)),
+    db.select({ categoryId: products.categoryId, n: count() }).from(products).groupBy(products.categoryId),
+  ]);
+  const byCategory = new Map(counts.map((c) => [c.categoryId, c.n]));
+  return rows.map((c) => ({ ...c, productCount: byCategory.get(c.id) ?? 0 }));
 }
 
 /* ------------------------------------------------------------------ */

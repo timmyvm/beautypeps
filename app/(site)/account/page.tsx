@@ -89,7 +89,7 @@ export default async function AccountOverviewPage({
         </section>
       )}
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="p-0">
           <div className="flex items-center justify-between border-b border-stone/60 px-6 py-4">
             <h2 className="font-display text-xl text-espresso">Recent orders</h2>

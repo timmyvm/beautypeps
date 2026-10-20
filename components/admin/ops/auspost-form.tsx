@@ -42,7 +42,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
   return (
     <form action="/admin/orders/export-auspost" method="get" className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
       {/* Orders */}
-      <section className="rounded-2xl border border-stone/70 bg-cream">
+      <section className="self-start rounded-2xl border border-stone/70 bg-cream">
         <div className="flex items-center justify-between gap-4 border-b border-stone/60 px-5 py-4">
           <h2 className="text-sm font-semibold text-espresso">Orders ready to ship ({orders.length})</h2>
           <label className="flex items-center gap-2 text-xs text-cocoa">
@@ -204,7 +204,6 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
           <button
             type="submit"
             formAction={markOrdersPackingAction}
-            formMethod="post"
             disabled={paidSelected === 0}
             className={buttonClasses({ variant: "outline" })}
           >

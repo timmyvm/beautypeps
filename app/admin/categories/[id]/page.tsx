@@ -57,7 +57,7 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
         }
       />
       <Notice value={saved} />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <Panel title="Details">
           <CategoryForm category={category} />
         </Panel>

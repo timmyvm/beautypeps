@@ -45,7 +45,19 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
   const [shipping, setShipping] = useState<ShippingMethod>("standard");
   const [payment, setPayment] = useState<PaymentMethod>("bank_transfer");
   const t = totals[shipping];
-  const e = state.errors ?? {};
+
+  // Hide a field's error as soon as the customer edits it; reset on each new submission.
+  const [edited, setEdited] = useState<Set<string>>(new Set());
+  const [lastState, setLastState] = useState(state);
+  if (state !== lastState) {
+    setLastState(state);
+    setEdited(new Set());
+  }
+  const e = Object.fromEntries(Object.entries(state.errors ?? {}).filter(([k]) => !edited.has(k)));
+  const onFieldChange = (ev: FormEvent<HTMLFormElement>) => {
+    const name = (ev.target as HTMLInputElement).name;
+    if (name && state.errors?.[name] && !edited.has(name)) setEdited(new Set(edited).add(name));
+  };
 
   // Submit via a transition (not the form `action` prop) so React doesn't reset
   // the fields when validation fails.
@@ -58,7 +70,7 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
   const useNew = addressId === "new";
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-10 lg:grid-cols-[1fr_420px] lg:gap-14">
+    <form onSubmit={onSubmit} onChange={onFieldChange} noValidate className="grid gap-10 lg:grid-cols-[1fr_420px] lg:gap-14">
       <div className="space-y-10">
         <FormMessage state={state} />
 

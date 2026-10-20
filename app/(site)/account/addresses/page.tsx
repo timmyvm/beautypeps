@@ -51,8 +51,10 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
                 <p className="text-sm font-semibold text-espresso">{a.label}</p>
                 {a.isDefault && <Badge tone="copper">Default</Badge>}
               </div>
-              <AddressBlock address={a} />
-              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-stone/60 pt-4 text-sm">
+              <div className="mb-5">
+                <AddressBlock address={a} />
+              </div>
+              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-stone/60 pt-4 text-sm">
                 <Link
                   href={`/account/addresses/${a.id}`}
                   className="flex items-center gap-1.5 text-espresso hover:text-copper-dark"

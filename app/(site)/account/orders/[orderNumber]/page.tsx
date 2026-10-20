@@ -61,7 +61,9 @@ export default async function AccountOrderPage({ params }: Props) {
           <p className="text-xs text-taupe">Updated {formatDate(latestDate)}</p>
         </div>
         <OrderProgress status={order.status} />
-        <p className="mt-5 text-sm text-cocoa">{status.description}</p>
+        {order.status !== "cancelled" && order.status !== "refunded" && (
+          <p className="mt-5 text-sm text-cocoa">{status.description}</p>
+        )}
         {order.status === "shipped" || order.status === "delivered" ? (
           <div className="mt-3 flex items-center gap-2">
             <Truck className="size-4 text-copper" aria-hidden />
@@ -81,7 +83,7 @@ export default async function AccountOrderPage({ params }: Props) {
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
           <Card>
             <h2 className="font-display text-xl text-espresso">Items</h2>
@@ -142,7 +144,9 @@ export default async function AccountOrderPage({ params }: Props) {
                     ? `paid ${formatDate(order.paidAt)}`
                     : order.paymentStatus === "refunded"
                       ? "refunded"
-                      : "awaiting payment"}
+                      : order.status === "cancelled"
+                        ? "not paid"
+                        : "awaiting payment"}
                 </dd>
               </div>
               <div>

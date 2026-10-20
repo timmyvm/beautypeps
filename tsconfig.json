@@ -39,10 +39,6 @@
     ".next-account/dev/types/**/*.ts",
     ".next-store/types/**/*.ts",
     ".next-store/dev/types/**/*.ts",
-    ".next-admin2/types/**/*.ts",
-    ".next-admin2/dev/types/**/*.ts",
-    ".next-info/types/**/*.ts",
-    ".next-info/dev/types/**/*.ts",
     ".next-admin1/types/**/*.ts",
     ".next-admin1/dev/types/**/*.ts"
   ],

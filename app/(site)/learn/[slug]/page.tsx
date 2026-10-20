@@ -127,9 +127,12 @@ export default async function ArticlePage({ params }: { params: Params }) {
             <ButtonLink href="/routine-builder" variant="copper" size="sm" className="mt-5 w-full">
               Build my routine
             </ButtonLink>
-            <ButtonLink href="/shop" variant="ghost" size="sm" className="mt-2 w-full text-cream hover:bg-cream/10">
+            <Link
+              href="/shop"
+              className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-full text-xs font-medium tracking-wide text-cream transition-colors hover:bg-cream/10"
+            >
               Browse the shop
-            </ButtonLink>
+            </Link>
           </div>
         </aside>
       </div>

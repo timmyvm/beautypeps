@@ -39,8 +39,8 @@ export default async function AccountLayout({ children }: { children: React.Reac
         </form>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-12">
+        <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
           <AccountNav isAdmin={user.role === "admin"} signOut={signOut} />
         </aside>
         <div className="min-w-0">{children}</div>

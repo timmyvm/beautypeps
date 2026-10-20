@@ -40,7 +40,8 @@ const FIRST_ORDER_NUMBER = 10001;
 async function nextOrderNumber(tx: Pick<typeof db, "select">) {
   const [row] = await tx
     .select({ max: sql<number | null>`max(cast(substr(${orders.orderNumber}, 3) as integer))` })
-    .from(orders);
+    .from(orders)
+    .where(sql`${orders.orderNumber} glob 'BP[0-9]*'`);
   const next = Math.max(FIRST_ORDER_NUMBER, (row?.max ?? 0) + 1);
   return `BP${next}`;
 }

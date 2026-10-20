@@ -30,7 +30,7 @@ export default async function AdminCategoriesPage({
         </p>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,1fr)_380px]">
         <div>
           {rows.length === 0 ? (
             <EmptyState title="No categories yet" description="Create your first category with the form." />
@@ -81,7 +81,7 @@ export default async function AdminCategoriesPage({
             </DataTable>
           )}
         </div>
-        <Panel title="New category" className="h-fit">
+        <Panel title="New category" className="h-fit max-w-2xl">
           <CategoryForm category={null} />
         </Panel>
       </div>

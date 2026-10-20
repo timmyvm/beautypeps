@@ -1,6 +1,7 @@
 import { ArrowRight, BadgeCheck, Droplets, FlaskConical, Leaf, Rabbit, Recycle, ScrollText } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/misc";
 
@@ -119,9 +120,12 @@ export default function AboutPage() {
               <ButtonLink href="/peptides" variant="copper">
                 Explore the library <ArrowRight className="size-4" />
               </ButtonLink>
-              <ButtonLink href="/science" variant="ghost" className="text-cream hover:bg-cream/10">
+              <Link
+                href="/science"
+                className="inline-flex h-11 items-center rounded-full border border-cream/25 px-6 text-sm font-medium text-cream transition-colors hover:bg-cream/10"
+              >
                 How peptides work
-              </ButtonLink>
+              </Link>
             </div>
           </div>
         </div>

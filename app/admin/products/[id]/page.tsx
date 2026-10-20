@@ -8,7 +8,7 @@ import { ProductForm } from "@/components/admin/catalog/product-form";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
-import { deleteProductAction, duplicateProductAction } from "@/lib/actions/admin/products";
+import { deleteProductAction, duplicateProductAction, setProductStatusAction } from "@/lib/actions/admin/products";
 import { formatDateTime } from "@/lib/format";
 import {
   getAdminProduct,
@@ -60,20 +60,34 @@ export default async function EditProductPage({ params, searchParams }: Props) {
                 <Copy className="size-3.5" /> Duplicate
               </button>
             </form>
-            <ConfirmButton
-              action={deleteProductAction.bind(null, product.id)}
-              confirm={orderCount > 0 ? "This product has orders — deleting is blocked." : "Delete permanently?"}
-              confirmLabel="Delete"
-              variant="ghost"
-              className="text-danger hover:bg-danger-light"
-            >
-              Delete
-            </ConfirmButton>
+            {orderCount > 0 ? (
+              product.status !== "archived" && (
+                <ConfirmButton
+                  action={setProductStatusAction.bind(null, product.id, "archived")}
+                  confirm="Archive? It will be hidden from the store; order history is kept."
+                  confirmLabel="Archive"
+                  variant="ghost"
+                >
+                  Archive
+                </ConfirmButton>
+              )
+            ) : (
+              <ConfirmButton
+                action={deleteProductAction.bind(null, product.id)}
+                confirm="Delete permanently?"
+                confirmLabel="Delete"
+                variant="ghost"
+                className="text-danger hover:bg-danger-light"
+              >
+                Delete
+              </ConfirmButton>
+            )}
           </>
         }
       />
       <Notice value={saved} />
-      <ProductForm product={product} categories={categories} peptides={peptides} />
+      {/* Remount when status changes outside the form (e.g. Archive button) so the select stays in sync. */}
+      <ProductForm key={product.status} product={product} categories={categories} peptides={peptides} />
     </>
   );
 }
