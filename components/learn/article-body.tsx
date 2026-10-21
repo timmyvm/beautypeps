@@ -48,7 +48,7 @@ export function ArticleBody({ children, className }: { children: string; classNa
         remarkPlugins={[remarkGfm]}
         components={{
           h2: ({ children: c }) => (
-            <h2 id={slugify(textOf(c))} className="scroll-mt-8">
+            <h2 id={slugify(textOf(c))} className="scroll-mt-8" data-reveal="">
               {c}
             </h2>
           ),

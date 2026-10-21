@@ -83,7 +83,10 @@ export default function SciencePage() {
           </Figure>
         }
       >
-        <p className="text-body text-muted">A fifteen-minute read, written by our formulation team.</p>
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+          <ButtonLink href="/peptides">Open the peptide library</ButtonLink>
+          <p className="text-body text-muted">A fifteen-minute read by our formulation team</p>
+        </div>
       </PageHeader>
 
       <nav aria-labelledby="contents-title" className="container-bp mt-20 lg:mt-32">
@@ -203,7 +206,7 @@ export default function SciencePage() {
 
         <section id="four-classes" aria-labelledby="four-classes-title" className="mt-24 scroll-mt-24 lg:mt-36">
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-            <h2 id="four-classes-title" className="display-type text-head lg:col-span-4" {...reveal(0)}>
+            <h2 id="four-classes-title" className="display-type text-head lg:col-span-5" {...reveal(0)}>
               The four peptide classes
             </h2>
             <p className="max-w-[60ch] text-body lg:col-span-7 lg:col-start-6">
@@ -211,7 +214,7 @@ export default function SciencePage() {
               signal) but they make a useful map. In every drawing the blue beads are the peptide.
             </p>
           </div>
-          <ul className="mt-14">
+          <ul className="-mx-4 mt-14">
             {Object.entries(PEPTIDE_CLASSES).map(([key, c], i) => {
               const ex = CLASS_EXAMPLES[key];
               return (
@@ -220,14 +223,14 @@ export default function SciencePage() {
                   data-reveal="row"
                   style={{ ["--reveal-i" as string]: i }}
                   className={cn(
-                    "grid gap-6 px-5 py-8 sm:px-8 lg:grid-cols-12 lg:gap-[var(--gutter)] lg:py-10",
+                    "grid gap-6 px-4 py-8 lg:grid-cols-12 lg:gap-[var(--gutter)] lg:py-10",
                     i % 2 === 0 ? "bg-surface" : "bg-bg",
                   )}
                 >
                   <div className={cn("p-4 lg:col-span-3", i % 2 === 0 ? "bg-bg" : "bg-surface")}>
                     <ClassDiagram type={key} />
                   </div>
-                  <div className="lg:col-span-8 lg:col-start-5">
+                  <div className="lg:col-span-7 lg:col-start-6">
                     <h3 className="text-lead font-medium">{classShortLabel(key)} peptides</h3>
                     <p className="mt-3 max-w-[64ch] text-body">{ex?.detail ?? c.description}</p>
                     {ex && (
@@ -329,33 +332,15 @@ export default function SciencePage() {
               put those numbers in context.
             </p>
           </Prose>
-          <div className="my-10 overflow-x-auto">
-            <table className="w-full min-w-[560px] text-left text-body">
-              <thead className="bg-surface">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Study type</th>
-                  <th className="px-4 py-3 font-medium">What it shows</th>
-                  <th className="px-4 py-3 font-medium">Watch out for</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-2 align-top">
-                {[
-                  ["In vitro", "Effects on cells in a dish, such as fibroblasts making more collagen.", "No skin barrier, so it cannot show the peptide reaches its target."],
-                  ["Ex vivo", "Effects on donated human skin kept alive in the lab.", "Closer to life, but short-lived and without blood supply or immune system."],
-                  ["In vivo, open", "Volunteers apply the product and changes are measured over weeks.", "No placebo group, and moisturising alone improves the look of fine lines."],
-                  ["Controlled trial", "Peptide against the same base without it, ideally blinded and randomised.", "The gold standard: check the sample size and who ran it."],
-                ].map(([type, shows, watch]) => (
-                  <tr key={type}>
-                    <th scope="row" className="px-4 py-4 font-medium">
-                      {type}
-                    </th>
-                    <td className="px-4 py-4">{shows}</td>
-                    <td className="px-4 py-4">{watch}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            head={["Study type", "What it shows", "Watch out for"]}
+            rows={[
+              ["In vitro", "Effects on cells in a dish, such as fibroblasts making more collagen.", "No skin barrier, so it cannot show the peptide reaches its target."],
+              ["Ex vivo", "Effects on donated human skin kept alive in the lab.", "Closer to life, but short-lived and without blood supply or immune system."],
+              ["In vivo, open", "Volunteers apply the product and changes are measured over weeks.", "No placebo group, and moisturising alone improves the look of fine lines."],
+              ["Controlled trial", "Peptide against the same base without it, ideally blinded and randomised.", "The gold standard: check the sample size and who ran it."],
+            ]}
+          />
           <Prose>
             <h3>Five questions to ask of any claim</h3>
             <ol>
@@ -401,37 +386,17 @@ export default function SciencePage() {
           <Prose>
             <p>Start with your main concern, then pick the class that targets it.</p>
           </Prose>
-          <div className="my-10 overflow-x-auto">
-            <table className="w-full min-w-[520px] text-left text-body">
-              <thead className="bg-surface">
-                <tr>
-                  <th className="px-4 py-3 font-medium">If your concern is</th>
-                  <th className="px-4 py-3 font-medium">Look for</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-2 align-top">
-                {[
-                  ["Fine lines, loss of firmness", "Signal peptides (the Matrixyl family) and GHK-Cu", "/shop?concern=firmness"],
-                  ["Expression lines on the forehead and around the eyes", "Neurotransmitter inhibitors: Argireline, SNAP-8, Leuphasyl", "/shop?concern=expression-lines"],
-                  ["Dullness, uneven tone, dark spots", "Nonapeptide-1 alongside SPF", "/shop?concern=dark-spots"],
-                  ["Puffiness and dark circles", "Acetyl Tetrapeptide-5 and eye-specific signal peptides", "/shop?concern=under-eye"],
-                  ["Barrier recovery", "GHK-Cu and gentle signal peptides", "/shop?concern=barrier"],
-                  ["Thinning-looking hair", "Biotinoyl Tripeptide-1 and copper peptides for the scalp", "/shop?concern=hair-density"],
-                ].map(([concern, look, href]) => (
-                  <tr key={concern}>
-                    <th scope="row" className="px-4 py-4 font-medium">
-                      {concern}
-                    </th>
-                    <td className="px-4 py-4">
-                      <Link href={href} className="text-accent underline underline-offset-4">
-                        {look}
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            head={["If your concern is", "Look for"]}
+            rows={[
+              ["Fine lines, loss of firmness", <Shop key="f" href="/shop?concern=firmness">Signal peptides (the Matrixyl family) and GHK-Cu</Shop>],
+              ["Expression lines on the forehead and around the eyes", <Shop key="e" href="/shop?concern=expression-lines">Neurotransmitter inhibitors: Argireline, SNAP-8, Leuphasyl</Shop>],
+              ["Dullness, uneven tone, dark spots", <Shop key="d" href="/shop?concern=dark-spots">Nonapeptide-1 alongside SPF</Shop>],
+              ["Puffiness and dark circles", <Shop key="u" href="/shop?concern=under-eye">Acetyl Tetrapeptide-5 and eye-specific signal peptides</Shop>],
+              ["Barrier recovery", <Shop key="b" href="/shop?concern=barrier">GHK-Cu and gentle signal peptides</Shop>],
+              ["Thinning-looking hair", <Shop key="h" href="/shop?concern=hair-density">Biotinoyl Tripeptide-1 and copper peptides for the scalp</Shop>],
+            ]}
+          />
           <Prose>
             <h3>Layering basics</h3>
             <ul>
@@ -538,6 +503,65 @@ export default function SciencePage() {
         </div>
       </section>
     </>
+  );
+}
+
+/* A real table from a small screen up; on a phone each row becomes a short list, so nothing scrolls sideways. */
+function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
+  return (
+    <div className="my-10">
+      <table className="hidden w-full text-left text-body sm:table">
+        <thead className="bg-surface">
+          <tr>
+            {head.map((h) => (
+              <th key={h} className="px-4 py-3 font-medium">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-surface-2 align-top">
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((c, j) =>
+                j === 0 ? (
+                  <th key={j} scope="row" className="px-4 py-4 font-medium">
+                    {c}
+                  </th>
+                ) : (
+                  <td key={j} className="px-4 py-4">
+                    {c}
+                  </td>
+                ),
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ul className="space-y-2 sm:hidden">
+        {rows.map((r, i) => (
+          <li key={i} className="bg-surface p-4">
+            <p className="text-body font-medium">{r[0]}</p>
+            <dl className="mt-2 space-y-2 text-body">
+              {r.slice(1).map((c, j) => (
+                <div key={j}>
+                  <dt className="text-small text-muted">{head[j + 1]}</dt>
+                  <dd>{c}</dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Shop({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="text-accent underline underline-offset-4">
+      {children}
+    </Link>
   );
 }
 

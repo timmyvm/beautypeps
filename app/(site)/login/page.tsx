@@ -24,13 +24,12 @@ export default async function LoginPage({
 
   return (
     <AuthShell
-      eyebrow="Welcome back"
       title="Sign in"
       description="Access your orders, saved addresses and wishlist."
       footer={
         <p>
           New to Beauty Peps?{" "}
-          <Link href={registerHref} className="font-medium text-copper-dark hover:underline">
+          <Link href={registerHref} className="font-medium text-ink underline underline-offset-4">
             Create an account
           </Link>
           <span className="mt-2 block text-[13px] text-muted">

@@ -69,16 +69,8 @@ export function RoutineBuilder({
   return (
     <div ref={topRef} className="grid scroll-mt-8 gap-14 lg:grid-cols-12 lg:gap-[var(--gutter)]">
       <div className="lg:col-span-7">
-        <ol className="grid grid-cols-4 gap-1.5" aria-label="Progress">
-          {STEPS.map((label, i) => (
-            <li key={label} aria-current={i === step ? "step" : undefined}>
-              <div className={cn("h-1.5 transition-colors duration-300", i <= step ? "bg-accent" : "bg-surface-2")} />
-              <p className={cn("mt-2 text-small", i === step ? "font-medium text-ink" : "text-muted")}>{label}</p>
-            </li>
-          ))}
-        </ol>
 
-        <div className="mt-12">
+        <div>
           {step === 0 && (
             <Question title="What would you like to work on?" hint={`Choose up to ${MAX_CONCERNS}.`}>
               <div className="flex flex-wrap gap-2">
@@ -164,6 +156,15 @@ export function RoutineBuilder({
             </button>
           )}
         </div>
+
+        <ol className="mt-14 grid max-w-xl grid-cols-4 gap-1.5" aria-label="Progress">
+          {STEPS.map((label, i) => (
+            <li key={label} aria-current={i === step ? "step" : undefined}>
+              <div className={cn("h-1.5 transition-colors duration-300", i <= step ? "bg-accent" : "bg-surface-2")} />
+              <p className={cn("mt-2 text-small", i === step ? "font-medium text-ink" : "text-muted")}>{label}</p>
+            </li>
+          ))}
+        </ol>
       </div>
 
       <aside aria-labelledby="preview-title" className="lg:col-span-4 lg:col-start-9">
@@ -176,11 +177,11 @@ export function RoutineBuilder({
             : `For ${answers.concerns.map((c) => concernLabel(c).toLowerCase()).join(", ")}.`}
         </p>
         <ul className="mt-6 grid grid-cols-2 gap-2">
-          {preview.map((p) => (
-            <li key={p.id}>
+          {preview.map((p, i) => (
+            <li key={p.id} data-reveal="" style={{ ["--reveal-i" as string]: i }}>
               <Link href={`/products/${p.slug}`} className="group block">
                 <SpecimenTile product={p} tone={toneFor(p.slug)} sizes="(min-width: 1024px) 16vw, 50vw" className="aspect-[4/5]" />
-                <p className="mt-2 text-small font-medium group-hover:underline group-hover:underline-offset-4">{p.name}</p>
+                <p className="mt-2 text-body font-medium group-hover:underline group-hover:underline-offset-4">{p.name}</p>
                 <p className="text-small text-muted">{formatMoney(p.price)}</p>
               </Link>
             </li>

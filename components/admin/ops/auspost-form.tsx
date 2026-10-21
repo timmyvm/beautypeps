@@ -40,11 +40,11 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
   }
 
   return (
-    <form action="/admin/orders/export-auspost" method="get" className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+    <form action="/admin/orders/export-auspost" method="get" className="grid grid-cols-1 border border-surface-2 bg-white xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:divide-x xl:divide-surface-2">
       {/* Orders */}
-      <section className="self-start rounded-2xl border border-surface-2 bg-white">
+      <section className="min-w-0">
         <div className="flex items-center justify-between gap-4 border-b border-surface-2 px-5 py-4">
-          <h2 className="text-sm font-semibold text-ink">Orders ready to ship ({orders.length})</h2>
+          <h2 className="text-[16px] font-semibold text-ink">Orders ready to ship ({orders.length})</h2>
           <label className="flex items-center gap-2 text-[13px] text-muted">
             <Checkbox
               checked={allChecked}
@@ -87,10 +87,10 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
         )}
       </section>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex min-w-0 flex-col divide-y divide-surface-2 border-t border-surface-2 xl:border-t-0">
         {/* Sender */}
-        <section className="rounded-2xl border border-surface-2 bg-white p-5">
-          <h2 className="mb-4 text-sm font-semibold text-ink">Send from</h2>
+        <section className="p-5">
+          <h2 className="mb-4 text-[16px] font-semibold text-ink">Send from</h2>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Name *" htmlFor="s_name" className="col-span-2 sm:col-span-1">
               <Input id="s_name" name="s_name" defaultValue={sender.name} maxLength={35} required />
@@ -139,8 +139,8 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
         </section>
 
         {/* Parcel */}
-        <section className="rounded-2xl border border-surface-2 bg-white p-5">
-          <h2 className="mb-4 text-sm font-semibold text-ink">Parcel</h2>
+        <section className="p-5">
+          <h2 className="mb-4 text-[16px] font-semibold text-ink">Parcel</h2>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Packaging" htmlFor="packaging" className="col-span-2">
               <Select
@@ -197,23 +197,25 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
           </p>
         </section>
 
-        <div className="flex flex-wrap gap-3">
-          <button type="submit" disabled={selected.size === 0} className={buttonClasses({ variant: "dark", size: "sm" })}>
-            <Download className="size-4" /> Download CSV ({selected.size})
-          </button>
-          <button
-            type="submit"
-            formAction={markOrdersPackingAction}
-            disabled={paidSelected === 0}
-            className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}
-          >
-            <PackageCheck className="size-4" /> Mark {paidSelected} paid as packing
-          </button>
+        <div className="space-y-3 p-5">
+          <div className="flex flex-wrap gap-3">
+            <button type="submit" disabled={selected.size === 0} className={buttonClasses({ variant: "dark", size: "sm" })}>
+              <Download className="size-4" /> Download CSV ({selected.size})
+            </button>
+            <button
+              type="submit"
+              formAction={markOrdersPackingAction}
+              disabled={paidSelected === 0}
+              className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}
+            >
+              <PackageCheck className="size-4" /> Mark {paidSelected} paid as packing
+            </button>
+          </div>
+          <p className="text-[13px] leading-relaxed text-muted">
+            Upload the file at MyPost Business → Send a parcel → Import. Don&apos;t open it in Excel first — Excel strips
+            leading zeros from phone numbers and postcodes.
+          </p>
         </div>
-        <p className="text-[13px] leading-relaxed text-muted">
-          Upload the file at MyPost Business → Send a parcel → Import. Don&apos;t open it in Excel first — Excel strips
-          leading zeros from phone numbers and postcodes.
-        </p>
       </div>
     </form>
   );

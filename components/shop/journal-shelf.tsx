@@ -17,7 +17,7 @@ export function JournalShelf({
   if (articles.length === 0) return null;
   return (
     <section className="mt-24 md:mt-32" aria-labelledby={id}>
-      <div className="mb-10 grid gap-4 lg:grid-cols-12">
+      <div className="mb-10 grid grid-cols-1 gap-4 lg:grid-cols-12">
         <h2 id={id} className="display-type text-head lg:col-span-7" data-reveal="">
           {title}
         </h2>

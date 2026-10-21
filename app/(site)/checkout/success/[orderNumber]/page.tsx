@@ -51,12 +51,13 @@ export default async function OrderSuccessPage({ params }: Props) {
 
   return (
     <div className="container-bp pt-10 pb-24 md:pt-16">
-      <header className="grid gap-6 lg:grid-cols-12">
-        <h1 className="display-type text-[clamp(2.25rem,1rem+3.6vw,4.5rem)] lg:col-span-8">
-          Thank you, {firstName}. Your order is reserved.
+      <header className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] lg:col-span-8">
+          Your order is reserved
         </h1>
         <div className="text-lead lg:col-span-4 lg:self-end">
           <p>
+            Thank you, {firstName}.{" "}
             {awaitingPayment
               ? "Your confirmation and payment details are in your inbox. Pay below and we send your peptides on their way."
               : "Your confirmation is in your inbox. We write again when it ships."}
@@ -75,7 +76,7 @@ export default async function OrderSuccessPage({ params }: Props) {
         <OrderProgressBar status={order.status} />
       </div>
 
-      <div className="mt-14 grid gap-14 lg:grid-cols-12 lg:gap-8">
+      <div className="mt-14 grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
         <div className="space-y-14 lg:col-span-7">
           {awaitingPayment && <PaymentPanel order={order} settings={settings} copy />}
 
@@ -146,10 +147,10 @@ export default async function OrderSuccessPage({ params }: Props) {
         </aside>
       </div>
 
-      <section aria-labelledby="learn-heading" className="mt-20 grid gap-6 bg-field-stone p-6 md:p-10 lg:grid-cols-12">
+      <section aria-labelledby="learn-heading" className="mt-20 grid grid-cols-1 gap-6 bg-field-stone p-6 md:p-10 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <h2 id="learn-heading" className="display-type text-head">
-            While you wait, read up on your peptides
+            Read up while you wait
           </h2>
           <p className="mt-3 max-w-[55ch] text-body">
             How to layer them, what to pair them with, and what the research actually says.

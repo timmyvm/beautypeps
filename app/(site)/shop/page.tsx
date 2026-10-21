@@ -72,7 +72,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   return (
     <div className="container-bp pt-10 md:pt-16">
       {/* Heading and its first sentence at opposite ends of one baseline */}
-      <header className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+      <header className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
         <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] lg:col-span-7" data-reveal="">
           {heading}
         </h1>

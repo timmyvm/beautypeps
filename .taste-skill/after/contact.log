@@ -1,11 +1,11 @@
 TASTESKILL · INSPECT   http://localhost:3101/contact
 
 MEASURED (first viewport listed)
-  hero headline   "Contact us"  2 words · 1 line(s) · 67.8px (4.7vw) · chillax 600 · tracking -0.03em · leading 1
-  @768px          1 line(s) · 45.4px
-  @390px          1 line(s) · 36px
+  hero headline   "Contact us"  2 words · 1 line(s) · 88px (6.1vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 54.4px
+  @390px          1 line(s) · 44px
   typefaces       chillax 100%
-  sizes in use    14 / 19 / 26 / 64 / 68 px   body 14px / 1.45
+  sizes in use    14 / 19 / 26 / 64 / 88 px   body 14px / 1.45
   colour          page #ffffff · sections #ffffff #f3f3f1 · button #1f4ab0
   page            3 screens · 255 words · 5 images · hero media none
   headings        3 · longest 2 line(s) · median 4 words

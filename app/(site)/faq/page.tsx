@@ -92,13 +92,13 @@ export default async function FaqPage() {
               aria-labelledby={`${g.id}-title`}
               className="mt-24 grid scroll-mt-8 gap-8 lg:mt-36 lg:grid-cols-12 lg:gap-[var(--gutter)]"
             >
-              <div className="lg:col-span-4">
+              <div className="md:flex md:items-end md:justify-between md:gap-[var(--gutter)] lg:col-span-4 lg:block">
                 <h2 id={`${g.id}-title`} className="display-type text-head" {...reveal(0)}>
                   {g.title.replace(" & ", " and ")}
                 </h2>
                 {pic && (
-                  <Figure ratio="aspect-[4/3]" className="mt-10 hidden max-w-[440px] lg:block">
-                    <Image src={pic.src} alt={pic.alt} fill sizes="30vw" className="object-cover" />
+                  <Figure ratio="aspect-[4/3]" className="hidden w-[38%] shrink-0 md:block lg:mt-10 lg:w-auto lg:max-w-[440px]">
+                    <Image src={pic.src} alt={pic.alt} fill sizes="(min-width: 1024px) 30vw, 38vw" className="object-cover" />
                   </Figure>
                 )}
               </div>
@@ -122,7 +122,9 @@ export default async function FaqPage() {
                         </span>
                       </span>
                     </summary>
-                    <Markdown className="-mt-6 max-w-[56ch] px-6 pb-16 [&_p]:my-0">{item.a}</Markdown>
+                    <Markdown className="-mt-6 px-6 pb-16 lg:max-w-[56ch] [&_p]:my-0 [details:not([open])_&]:hidden">
+                      {item.a}
+                    </Markdown>
                   </details>
                 ))}
               </div>

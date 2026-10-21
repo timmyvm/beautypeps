@@ -24,6 +24,8 @@ export default async function JournalPage({ searchParams }: { searchParams: Sear
   const inView = all.filter((a) => !activeCategory || a.category === activeCategory);
   const lead = activeCategory ? inView[0] : (all.find((a) => a.featured) ?? all[0]);
   const list = inView.filter((a) => a.id !== lead?.id);
+  // A short shelf is followed by three guides from the others, so a filtered page is never thin.
+  const elsewhere = activeCategory && inView.length < 4 ? all.filter((a) => a.category !== activeCategory).slice(0, 3) : [];
   const counts = Object.fromEntries(ARTICLE_CATEGORIES.map((c) => [c, all.filter((a) => a.category === c).length]));
 
   return (
@@ -50,7 +52,11 @@ export default async function JournalPage({ searchParams }: { searchParams: Sear
         <h2 id="list-title" className="display-type text-head" {...reveal(0)}>
           {activeCategory ? `More in ${activeCategory.toLowerCase()}` : "Every guide"}
         </h2>
-        {list.length > 0 ? (
+        {list.length === 1 ? (
+          <div className="mt-12" {...reveal(1)}>
+            <ArticleCard article={list[0]} layout="row" />
+          </div>
+        ) : list.length > 0 ? (
           <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((a, i) => (
               <div key={a.id} className={i === 0 && list.length > 3 ? "sm:col-span-2" : undefined} {...reveal(i % 3)}>
@@ -74,8 +80,28 @@ export default async function JournalPage({ searchParams }: { searchParams: Sear
         )}
       </section>
 
+      {elsewhere.length > 0 && (
+        <section aria-labelledby="elsewhere-title" className="container-bp mt-28 lg:mt-44">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="elsewhere-title" className="display-type text-head" {...reveal(0)}>
+              Elsewhere in the journal
+            </h2>
+            <Link href="/learn" className="text-body underline underline-offset-4">
+              Every guide
+            </Link>
+          </div>
+          <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {elsewhere.map((a, i) => (
+              <div key={a.id} {...reveal(i + 1)}>
+                <ArticleCard article={a} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section aria-labelledby="letter-title" className="mt-28 bg-field-frost py-20 lg:mt-44 lg:py-28">
-        <div className="container-bp grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+        <div className="container-bp grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
           <div className="lg:col-span-6">
             <h2 id="letter-title" className="display-type text-head" {...reveal(0)}>
               The Peptide Letter
@@ -85,7 +111,7 @@ export default async function JournalPage({ searchParams }: { searchParams: Sear
               peptides. Unsubscribe whenever you like.
             </p>
           </div>
-          <div className="lg:col-span-5 lg:col-start-8">
+          <div className="lg:col-span-5 lg:col-start-8" {...reveal(2)}>
             <NewsletterForm source="journal" tone="light" />
           </div>
         </div>

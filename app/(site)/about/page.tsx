@@ -70,11 +70,14 @@ export default async function AboutPage() {
           So we set out to make the opposite: peptide formulas built around the concentrations used in research, with
           those numbers published, and an open library on what each peptide does and how good the evidence is.
         </p>
+        <ButtonLink href="/peptides" className="mt-8">
+          Read the peptide library
+        </ButtonLink>
       </PageHeader>
 
       <section aria-labelledby="values-title" className="container-bp mt-28 lg:mt-44">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-          <div className="grid grid-cols-2 gap-2 lg:col-span-5">
+          <div className="order-2 grid grid-cols-2 gap-2 lg:order-1 lg:col-span-5">
             {specimens.map((p, i) => (
               <Link key={p.id} href={`/products/${p.slug}`} className={cn("group block", i === 1 && "mt-12")} {...reveal(i)}>
                 <SpecimenTile product={p} tone={toneFor(p.slug, i)} sizes="(min-width: 1024px) 20vw, 50vw" className="aspect-[4/5]" />
@@ -83,7 +86,7 @@ export default async function AboutPage() {
               </Link>
             ))}
           </div>
-          <div className="lg:col-span-6 lg:col-start-7">
+          <div className="order-1 lg:order-2 lg:col-span-6 lg:col-start-7">
             <h2 id="values-title" className="display-type text-head" {...reveal(0)}>
               Four things we hold to
             </h2>
@@ -123,9 +126,9 @@ export default async function AboutPage() {
               <p>If a peptide lacks research we can stand behind at a sensible concentration, it stays out.</p>
             </div>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4" {...reveal(2)}>
-              <ButtonLink href="/peptides">Explore the library</ButtonLink>
-              <Link href="/science" className="text-body text-white underline underline-offset-4">
-                How peptides work
+              <ButtonLink href="/science">How peptides work</ButtonLink>
+              <Link href="/compare" className="text-body text-white underline underline-offset-4">
+                Compare every peptide
               </Link>
             </div>
           </div>
@@ -134,7 +137,7 @@ export default async function AboutPage() {
 
       <section aria-labelledby="standards-title" className="container-bp mt-28 lg:mt-44">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-5">
             <h2 id="standards-title" className="display-type text-head" {...reveal(0)}>
               What goes into every batch
             </h2>
@@ -151,14 +154,9 @@ export default async function AboutPage() {
               />
             </Figure>
           </div>
-          <dl className="grid content-start gap-x-[var(--gutter)] sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+          <dl className="grid content-start gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2 lg:col-span-6 lg:col-start-7">
             {STANDARDS.map((s, i) => (
-              <div
-                key={s.title}
-                data-reveal="row"
-                style={{ ["--reveal-i" as string]: i }}
-                className={cn("px-5 py-6", Math.floor(i / 2) % 2 === 0 ? "bg-surface" : "bg-bg")}
-              >
+              <div key={s.title} data-reveal="row" style={{ ["--reveal-i" as string]: i }}>
                 <dt className="text-lead font-medium">{s.title}</dt>
                 <dd className="mt-2 text-body">{s.text}</dd>
               </div>

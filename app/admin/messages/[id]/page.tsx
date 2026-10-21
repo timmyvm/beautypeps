@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { ActionField, ActionForm } from "@/components/admin/ops/action-form";
 import { ConfirmSubmit, OpsSubmit } from "@/components/admin/ops/buttons";
 import { Toaster } from "@/components/admin/ops/toast";
-import { AdminPageHeader, Panel } from "@/components/admin/ui";
+import { AdminPageHeader, Panel, SheetGrid } from "@/components/admin/ui";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox, Input, Textarea } from "@/components/ui/form";
 import { deleteMessageAction, replyMessageAction, setMessageStatusAction } from "@/lib/actions/admin/messages";
@@ -81,73 +81,77 @@ export default async function AdminMessagePage({ params }: Props) {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel>
-            <p className="text-sm leading-relaxed whitespace-pre-line text-ink">{message.message}</p>
-          </Panel>
+      <SheetGrid
+        railWidth="360px"
+        main={
+          <>
+            <Panel title="Message">
+              <p className="text-sm leading-relaxed whitespace-pre-line text-ink">{message.message}</p>
+            </Panel>
 
-          <Panel title="Reply">
-            <ActionForm action={replyMessageAction} resetOnSuccess className="grid gap-4">
-              <input type="hidden" name="id" value={message.id} />
-              <ActionField name="subject" label="Subject">
-                <Input id="subject" name="subject" defaultValue={`Re: ${message.subject}`} required />
-              </ActionField>
-              <ActionField name="body" label="Message" hint="Your reply quotes their original message below it.">
-                <Textarea
-                  id="body"
-                  name="body"
-                  rows={8}
-                  required
-                  defaultValue={`Hi ${message.name.split(" ")[0]},\n\n\n\nWarmly,\nThe Beauty Peps team`}
-                />
-              </ActionField>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-[13px] text-muted">
-                  <Checkbox name="archive" defaultChecked /> Archive after sending
-                </label>
-                <OpsSubmit size="md">Send reply</OpsSubmit>
-              </div>
-            </ActionForm>
-          </Panel>
-        </div>
-
-        <Panel title="Sender">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-muted">Name</dt>
-            <dd className="text-ink">{message.name}</dd>
-            <dt className="text-muted">Email</dt>
-            <dd className="truncate">
-              <a href={`mailto:${message.email}`} className="text-ink hover:underline">
-                {message.email}
-              </a>
-            </dd>
-            <dt className="text-muted">Status</dt>
-            <dd>
-              <Badge tone="neutral">{archived ? "Archived" : "Read"}</Badge>
-            </dd>
-            {message.orderNumber && (
-              <>
-                <dt className="text-muted">Order</dt>
-                <dd>
-                  {order ? (
-                    <Link href={`/admin/orders/${order.id}`} className="text-ink hover:underline">
-                      {order.orderNumber}
-                    </Link>
-                  ) : (
-                    <span className="text-muted">{message.orderNumber} (not found)</span>
-                  )}
-                </dd>
-              </>
+            <Panel title="Reply">
+              <ActionForm action={replyMessageAction} resetOnSuccess className="grid gap-4">
+                <input type="hidden" name="id" value={message.id} />
+                <ActionField name="subject" label="Subject">
+                  <Input id="subject" name="subject" defaultValue={`Re: ${message.subject}`} required />
+                </ActionField>
+                <ActionField name="body" label="Message" hint="Your reply quotes their original message below it.">
+                  <Textarea
+                    id="body"
+                    name="body"
+                    rows={8}
+                    required
+                    defaultValue={`Hi ${message.name.split(" ")[0]},\n\n\n\nWarmly,\nThe Beauty Peps team`}
+                  />
+                </ActionField>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <label className="flex items-center gap-2 text-[13px] text-muted">
+                    <Checkbox name="archive" defaultChecked /> Archive after sending
+                  </label>
+                  <OpsSubmit size="md">Send reply</OpsSubmit>
+                </div>
+              </ActionForm>
+            </Panel>
+          </>
+        }
+        rail={
+          <Panel title="Sender">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+              <dt className="text-muted">Name</dt>
+              <dd className="text-ink">{message.name}</dd>
+              <dt className="text-muted">Email</dt>
+              <dd className="truncate">
+                <a href={`mailto:${message.email}`} className="text-ink hover:underline">
+                  {message.email}
+                </a>
+              </dd>
+              <dt className="text-muted">Status</dt>
+              <dd>
+                <Badge tone="neutral">{archived ? "Archived" : "Read"}</Badge>
+              </dd>
+              {message.orderNumber && (
+                <>
+                  <dt className="text-muted">Order</dt>
+                  <dd>
+                    {order ? (
+                      <Link href={`/admin/orders/${order.id}`} className="text-ink hover:underline">
+                        {order.orderNumber}
+                      </Link>
+                    ) : (
+                      <span className="text-muted">{message.orderNumber} (not found)</span>
+                    )}
+                  </dd>
+                </>
+              )}
+            </dl>
+            {customer && (
+              <Link href={`/admin/customers/${customer.id}`} className="mt-4 inline-block text-sm text-ink hover:underline">
+                View customer profile →
+              </Link>
             )}
-          </dl>
-          {customer && (
-            <Link href={`/admin/customers/${customer.id}`} className="mt-4 inline-block text-sm text-ink hover:underline">
-              View customer profile →
-            </Link>
-          )}
-        </Panel>
-      </div>
+          </Panel>
+        }
+      />
     </>
   );
 }

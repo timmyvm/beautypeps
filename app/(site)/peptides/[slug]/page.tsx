@@ -11,6 +11,7 @@ import { ClassDiagram, classDiagramTitle } from "@/components/peptides/class-dia
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
 import { classLabel, classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
 import { ProductCard, SpecimenTile, toneFor } from "@/components/product/product-card";
+import { LoopVideo } from "@/components/site/loop-video";
 import { ButtonLink } from "@/components/ui/button";
 import { concernLabel } from "@/lib/constants";
 import { evidenceLevel } from "@/lib/content/evidence";
@@ -51,6 +52,13 @@ export default async function PeptideMonographPage({ params }: { params: Params 
   ]);
   const evidence = evidenceLevel(peptide.evidenceLevel);
   const lead = products[0];
+  const descriptor = [
+    `${peptide.inciName === peptide.name ? "A" : `${peptide.inciName}, a`} ${classShortLabel(peptide.peptideClass).toLowerCase()} peptide`,
+    peptide.typicalConcentration && `used at ${peptide.typicalConcentration}`,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const isCopper = peptide.peptideClass === "carrier";
 
   const facts: [string, string | null | undefined][] = [
     ["INCI name", peptide.inciName],
@@ -84,10 +92,7 @@ export default async function PeptideMonographPage({ params }: { params: Params 
         <div className="mt-8 grid gap-10 lg:mt-12 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
           <div className="lg:col-span-7 lg:pb-2">
             <h1 className="display-type text-[10.5vw] text-ink sm:text-[clamp(2.75rem,5.9vw,5.75rem)]">{peptide.name}</h1>
-            <p className="mt-5 text-lead text-ink">
-              {peptide.inciName === peptide.name ? "A" : `${peptide.inciName}, a`} {classShortLabel(peptide.peptideClass).toLowerCase()}{" "}
-              peptide
-            </p>
+            <p className="mt-5 max-w-[40ch] text-lead text-ink">{descriptor}</p>
             <p className="mt-8 max-w-[56ch] text-body text-ink">{peptide.summary}</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5">
               <EvidenceMeter level={evidence.level} size="lg" />
@@ -129,7 +134,7 @@ export default async function PeptideMonographPage({ params }: { params: Params 
               .map(([k, v]) => (
                 <div key={k} className="min-w-0">
                   <dt className="text-small text-muted">{k}</dt>
-                  <dd className={k === "Sequence" ? "mt-1 font-mono text-body break-words" : "mt-1 text-body"}>{v}</dd>
+                  <dd className={k === "Sequence" ? "mt-1 text-body break-words" : "mt-1 text-body"}>{v}</dd>
                 </div>
               ))}
           </dl>
@@ -206,15 +211,29 @@ export default async function PeptideMonographPage({ params }: { params: Params 
             id="how-to-use"
             title="How to use it"
             aside={
-              <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
-                <Image
-                  src="/images/editorial/ritual.webp"
-                  alt="A woman pressing serum from a glass dropper onto her cheekbone"
-                  fill
-                  sizes="30vw"
-                  className="drift object-cover object-[50%_30%]"
-                />
-              </Figure>
+              isCopper ? (
+                <Figure
+                  ratio="aspect-[4/5]"
+                  className="mt-10 hidden max-w-[420px] lg:block"
+                  caption="Copper peptide serum is blue from its copper. Green or brown means it has broken down."
+                >
+                  <LoopVideo
+                    src="/video/copper-drop.mp4"
+                    poster="/video/copper-drop-poster.webp"
+                    label="Drops of blue copper peptide serum falling onto a brushed copper plate"
+                  />
+                </Figure>
+              ) : (
+                <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
+                  <Image
+                    src="/images/editorial/ritual.webp"
+                    alt="A woman pressing serum from a glass dropper onto her cheekbone"
+                    fill
+                    sizes="30vw"
+                    className="drift object-cover object-[50%_30%]"
+                  />
+                </Figure>
+              )
             }
           >
             <Markdown>{peptide.usage}</Markdown>
@@ -329,7 +348,7 @@ export default async function PeptideMonographPage({ params }: { params: Params 
               Compare all of them
             </Link>
           </div>
-          <ol className="mt-10">
+          <ol className="-mx-3 mt-10 sm:-mx-4">
             {related.map((p, i) => (
               <PeptideEntry key={p.id} peptide={p} specimen={specimens[p.slug]} index={i} />
             ))}

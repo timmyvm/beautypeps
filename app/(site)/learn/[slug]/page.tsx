@@ -95,7 +95,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       <div className="container-bp mt-16 grid gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-[var(--gutter)]">
         <div className="lg:col-span-3">
           {toc.length > 1 && (
-            <nav aria-labelledby="toc-title" className="bg-surface p-6 lg:bg-transparent lg:p-0">
+            <nav aria-labelledby="toc-title" className="bg-surface p-6 lg:sticky lg:top-8" {...reveal(0)}>
               <h2 id="toc-title" className="text-lead font-medium">
                 In this guide
               </h2>
@@ -146,7 +146,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
       )}
 
       <section aria-labelledby="letter-title" className="mt-28 bg-field-frost py-20 lg:mt-44 lg:py-28">
-        <div className="container-bp grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+        <div className="container-bp grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
           <div className="lg:col-span-6">
             <h2 id="letter-title" className="display-type text-head" {...reveal(0)}>
               Get the next one first
@@ -155,7 +155,7 @@ export default async function ArticlePage({ params }: { params: Params }) {
               The Peptide Letter: new guides and research breakdowns, twice a month.
             </p>
           </div>
-          <div className="lg:col-span-5 lg:col-start-8">
+          <div className="lg:col-span-5 lg:col-start-8" {...reveal(2)}>
             <NewsletterForm source="journal" tone="light" />
           </div>
         </div>

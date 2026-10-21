@@ -21,7 +21,7 @@ export default async function CartPage() {
     const bestsellers = await getFeaturedProducts(4);
     return (
       <div className="container-bp pt-10 md:pt-16">
-        <section className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]" aria-labelledby="bag-heading">
+        <section className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]" aria-labelledby="bag-heading">
           <h1 id="bag-heading" className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] lg:col-span-7" data-reveal="">
             Your bag is empty
           </h1>
@@ -66,7 +66,7 @@ export default async function CartPage() {
         </p>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
         <div className="lg:col-span-7">
           <FreeShippingBar subtotal={cart.subtotal} threshold={settings.freeShippingThreshold} />
           <ul className="mt-2 space-y-2">

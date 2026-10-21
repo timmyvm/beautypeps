@@ -26,9 +26,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
 
   return (
     <div className="container-bp pt-10 md:pt-16">
-      <header className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+      <header className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
         <div className="lg:col-span-7" data-reveal="">
-          <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] break-words">{q ? `Results for “${q}”` : "Search the shop"}</h1>
+          <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] [overflow-wrap:anywhere]">{q ? `Results for “${q}”` : "Search the shop"}</h1>
           <p className="mt-4 max-w-[40ch] text-lead" aria-live="polite">
             {results
               ? total === 0

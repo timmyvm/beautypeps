@@ -38,11 +38,11 @@ export default async function MyReviewsPage() {
           {reviews.map((r) => {
             const status = REVIEW_STATUSES[r.status];
             return (
-              <li key={r.id} className="rounded-2xl border border-surface-2 bg-white p-5 sm:p-6">
+              <li key={r.id} className="bg-surface p-5 sm:p-6">
                 <div className="flex gap-4">
                   <Link
                     href={`/products/${r.productSlug}`}
-                    className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-surface"
+                    className="relative size-16 shrink-0 overflow-hidden bg-white"
                   >
                     <Image src={r.productImage} alt={r.productName} fill sizes="64px" className="object-cover" />
                   </Link>
@@ -50,7 +50,7 @@ export default async function MyReviewsPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <Link
                         href={`/products/${r.productSlug}`}
-                        className="text-sm font-medium text-ink hover:text-copper-dark"
+                        className="text-[15px] font-medium text-ink hover:underline"
                       >
                         {r.productName}
                       </Link>
@@ -64,10 +64,10 @@ export default async function MyReviewsPage() {
                   </div>
                 </div>
                 <p className="mt-4 text-base font-semibold text-ink">{r.title}</p>
-                <p className="mt-1 text-sm leading-relaxed whitespace-pre-line text-muted">{r.body}</p>
+                <p className="mt-1 text-[15px] leading-relaxed whitespace-pre-line text-ink">{r.body}</p>
                 {r.adminReply && (
-                  <div className="mt-4 flex gap-3 rounded-xl bg-surface p-4">
-                    <MessageSquareQuote className="size-4 shrink-0 text-copper" aria-hidden />
+                  <div className="mt-4 flex gap-3 border-l-2 border-ink bg-white p-4">
+                    <MessageSquareQuote className="size-4 shrink-0 text-muted" aria-hidden />
                     <div>
                       <p className="text-[13px] font-semibold text-ink">Reply from Beauty Peps</p>
                       <p className="mt-1 text-sm text-muted">{r.adminReply}</p>

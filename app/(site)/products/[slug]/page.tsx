@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: Props) {
 
       <div className="container-bp pt-6 pb-28 md:pt-10 lg:pb-0">
         {/* The specimen, and everything needed to buy it */}
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
           <div className="lg:col-span-6 lg:row-start-1">
             <div className="shutter">
               <SpecimenTile
@@ -233,7 +233,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         {/* The formula: heading in the left third, the text in the right two thirds */}
-        <section className="mt-32 grid gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="formula-heading">
+        <section className="mt-32 grid grid-cols-1 gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="formula-heading">
           <h2 id="formula-heading" className={`${HEAD} lg:col-span-4`} data-reveal="">
             The formula
           </h2>
@@ -248,7 +248,7 @@ export default async function ProductPage({ params }: Props) {
             <h2 id="inside-heading" className={HEAD} data-reveal="">
               What&apos;s in it
             </h2>
-            <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+            <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
               <div className="lg:col-span-7" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
                 {product.keyActives.length > 0 && (
                   <table className="tabular w-full text-left text-body">
@@ -306,7 +306,7 @@ export default async function ProductPage({ params }: Props) {
 
         {/* How to use: the steps on the left, a photograph closing the right */}
         {product.howToUse && (
-          <section className="mt-32 grid gap-10 lg:mt-48 lg:grid-cols-12 lg:items-start lg:gap-[var(--gutter)]" aria-labelledby="use-heading">
+          <section className="mt-32 grid grid-cols-1 gap-10 lg:mt-48 lg:grid-cols-12 lg:items-start lg:gap-[var(--gutter)]" aria-labelledby="use-heading">
             <div className="lg:col-span-6" data-reveal="">
               <h2 id="use-heading" className={HEAD}>
                 How to use it
@@ -344,7 +344,7 @@ export default async function ProductPage({ params }: Props) {
         )}
 
         {product.faqs.length > 0 && (
-          <section className="mt-32 grid gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="faq-heading">
+          <section className="mt-32 grid grid-cols-1 gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="faq-heading">
             <h2 id="faq-heading" className={`${HEAD} lg:col-span-4`} data-reveal="">
               Questions people ask
             </h2>

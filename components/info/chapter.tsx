@@ -22,7 +22,7 @@ export function Chapter({
       aria-labelledby={`${id}-title`}
       className="mt-24 grid scroll-mt-24 gap-8 lg:mt-36 lg:grid-cols-12 lg:gap-[var(--gutter)]"
     >
-      <div className="lg:col-span-4">
+      <div className="lg:col-span-5">
         <h2 id={`${id}-title`} className="display-type text-head" {...reveal(0)}>
           {title}
         </h2>

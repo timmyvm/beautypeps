@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { CategoryForm } from "@/components/admin/catalog/category-form";
 import { ConfirmButton } from "@/components/admin/catalog/confirm-button";
 import { Notice } from "@/components/admin/catalog/notice";
-import { AdminPageHeader, Panel } from "@/components/admin/ui";
+import { AdminPageHeader, Panel, SheetGrid } from "@/components/admin/ui";
 import { buttonClasses } from "@/components/ui/button";
 import { deleteCategoryAction } from "@/lib/actions/admin/categories";
 import { db } from "@/lib/db";
@@ -57,27 +57,32 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
         }
       />
       <Notice value={saved} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <Panel title="Details">
-          <CategoryForm category={category} />
-        </Panel>
-        <Panel title="Products" className="h-fit">
-          {inCategory.length === 0 ? (
-            <p className="text-sm text-muted">No products yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {inCategory.map((p) => (
-                <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
-                  <Link href={`/admin/products/${p.id}`} className="truncate text-ink hover:underline">
-                    {p.name}
-                  </Link>
-                  {p.status !== "active" && <span className="text-[13px] text-muted capitalize">{p.status}</span>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
-      </div>
+      <SheetGrid
+        railWidth="320px"
+        main={
+          <Panel title="Details">
+            <CategoryForm category={category} />
+          </Panel>
+        }
+        rail={
+          <Panel title="Products">
+            {inCategory.length === 0 ? (
+              <p className="text-sm text-muted">No products yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {inCategory.map((p) => (
+                  <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
+                    <Link href={`/admin/products/${p.id}`} className="truncate text-ink hover:underline">
+                      {p.name}
+                    </Link>
+                    {p.status !== "active" && <span className="text-[13px] text-muted capitalize">{p.status}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        }
+      />
     </>
   );
 }

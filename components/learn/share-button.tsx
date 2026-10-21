@@ -27,7 +27,11 @@ export function ShareButton({ title, className }: { title: string; className?: s
   }
 
   return (
-    <button type="button" onClick={share} className={cn("press text-body underline underline-offset-4", className)}>
+    <button
+      type="button"
+      onClick={share}
+      className={cn("press inline-flex h-11 items-center bg-surface px-4 text-body text-ink hover:bg-surface-2", className)}
+    >
       <span aria-live="polite">{copied ? "Link copied" : "Share this guide"}</span>
     </button>
   );

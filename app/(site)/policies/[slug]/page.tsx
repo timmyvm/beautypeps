@@ -30,6 +30,16 @@ export default async function PolicyPage({ params }: { params: Params }) {
   const policy = getPolicy(slug, settings);
   if (!policy) notFound();
   const pic = PICTURES[slug];
+  // Each "## " part of the policy becomes a row: its heading on the left, its text on the right.
+  const parts = policy.body
+    .trim()
+    .split(/^## /m)
+    .filter((chunk) => chunk.trim())
+    .map((chunk, i) => {
+      if (i === 0 && !policy.body.trim().startsWith("## ")) return { title: null, body: chunk.trim() };
+      const [title, ...rest] = chunk.split("\n");
+      return { title: title.trim(), body: rest.join("\n").trim() };
+    });
   const others = POLICY_LINKS.filter((p) => p.slug !== slug).map((p) => getPolicy(p.slug, settings)!);
 
   return (
@@ -64,18 +74,33 @@ export default async function PolicyPage({ params }: { params: Params }) {
         </nav>
       </PageHeader>
 
-      <div className="container-bp mt-20 grid gap-12 lg:mt-32 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-        <aside className="lg:col-span-3">
-          <h2 className="text-lead font-medium">Questions?</h2>
-          <p className="mt-2 text-body">
+      <div className="container-bp mt-16 lg:mt-24">
+        {parts.map((part, i) => (
+          <section
+            key={part.title ?? i}
+            aria-label={part.title ?? policy.title}
+            className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]"
+          >
+            {part.title && (
+              <h2 className="text-lead font-medium lg:col-span-4" {...reveal(0)}>
+                {part.title}
+              </h2>
+            )}
+            <Markdown className="min-w-0 lg:col-span-7 lg:col-start-6 [&>:first-child]:mt-0">{part.body}</Markdown>
+          </section>
+        ))}
+        <section aria-label="Questions" className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <h2 className="text-lead font-medium lg:col-span-4" {...reveal(0)}>
+            Questions
+          </h2>
+          <p className="text-body lg:col-span-7 lg:col-start-6">
             Email{" "}
             <a href={`mailto:${settings.supportEmail}`} className="underline underline-offset-4">
               {settings.supportEmail}
             </a>{" "}
             and we will reply within one business day.
           </p>
-        </aside>
-        <Markdown className="min-w-0 lg:col-span-7 lg:col-start-5">{policy.body}</Markdown>
+        </section>
       </div>
 
       <section aria-labelledby="others-title" className="container-bp mt-28 lg:mt-44">

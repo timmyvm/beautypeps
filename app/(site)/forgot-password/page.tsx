@@ -18,13 +18,12 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
 
   return (
     <AuthShell
-      eyebrow="Account help"
       title="Reset your password"
       description="Enter the email you use for Beauty Peps and we'll send you a secure link to choose a new password."
       footer={
         <p>
           Remembered it?{" "}
-          <Link href="/login" className="font-medium text-copper-dark hover:underline">
+          <Link href="/login" className="font-medium text-ink underline underline-offset-4">
             Back to sign in
           </Link>
         </p>

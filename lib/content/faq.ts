@@ -86,7 +86,7 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
     },
     {
       id: "pure-actives",
-      title: "Pure actives & formulation",
+      title: "Pure actives",
       items: [
         {
           q: "Who are the pure actives for?",

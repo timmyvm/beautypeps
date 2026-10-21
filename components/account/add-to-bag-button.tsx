@@ -21,8 +21,8 @@ export function AddToBagButton({ productId, soldOut, className }: { productId: s
           })
         }
         className={cn(
-          "flex h-10 w-full items-center justify-center gap-2 rounded-full text-[13px] font-medium transition-colors",
-          "bg-ink text-white hover:bg-ink disabled:pointer-events-none disabled:opacity-50",
+          "flex h-11 w-full items-center justify-center gap-2 text-[14px] font-medium transition-colors",
+          "bg-surface-2 text-ink hover:bg-stone disabled:pointer-events-none disabled:opacity-50",
         )}
       >
         {pending ? (

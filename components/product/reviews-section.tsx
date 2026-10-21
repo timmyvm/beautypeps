@@ -27,7 +27,7 @@ export function ReviewsSection({
 
   return (
     <section id="reviews" className="scroll-mt-10" aria-labelledby="reviews-heading">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
         <div className="lg:col-span-4" data-reveal="">
           <h2 id="reviews-heading" className={headingClass ?? "display-type text-head"}>
             Reviews

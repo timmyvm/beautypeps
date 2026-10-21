@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Figure, PageHeader, reveal } from "@/components/info/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { GLOSSARY } from "@/lib/content/glossary";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Peptide and skincare glossary",
@@ -104,19 +105,19 @@ export default function GlossaryPage() {
                   </Figure>
                 )}
               </div>
-              <dl className="lg:col-span-8 lg:col-start-5">
+              <dl className="-mx-4 grid content-start lg:col-span-9 lg:col-start-4 lg:grid-cols-2">
                 {terms.map((t) => (
                   <div
                     key={t.id}
                     id={t.id}
-                    className="scroll-mt-8 px-4 py-6 target:bg-accent-soft sm:grid sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-8 sm:px-5"
+                    className={cn("scroll-mt-8 px-4 py-5 target:bg-accent-soft", terms.length === 1 && "lg:col-span-2")}
                   >
                     <dt>
                       <span className="block text-lead font-medium">{t.term}</span>
                       {t.aka && <span className="mt-1 block text-small text-muted">{t.aka}</span>}
                     </dt>
-                    <dd className="mt-2 sm:mt-0">
-                      <p className="max-w-[60ch] text-body">{t.definition}</p>
+                    <dd className="mt-2">
+                      <p className="text-body">{t.definition}</p>
                       {t.links && t.links.length > 0 && (
                         <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-body">
                           {t.links.map((l) => (

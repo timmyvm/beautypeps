@@ -16,10 +16,10 @@ export default async function ContactPage() {
 
   return (
     <div className="container-bp pt-10 pb-24 md:pt-16">
-      <div className="grid gap-14 lg:grid-cols-12 lg:gap-8">
+      <div className="grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
         <div className="space-y-12 lg:col-span-5">
           <header>
-            <h1 className="display-type text-[clamp(2.25rem,1rem+3.6vw,4.5rem)]" data-reveal="">
+            <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)]" data-reveal="">
               Contact us
             </h1>
             <p className="mt-5 max-w-[40ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
@@ -94,7 +94,7 @@ export default async function ContactPage() {
       </div>
 
       <section className="mt-24 md:mt-32" aria-labelledby="studio-heading">
-        <div className="mb-10 grid gap-4 lg:grid-cols-12">
+        <div className="mb-10 grid grid-cols-1 gap-4 lg:grid-cols-12">
           <h2 id="studio-heading" className="display-type text-head lg:col-span-7" data-reveal="">
             Where your message lands
           </h2>

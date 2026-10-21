@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ActionForm } from "@/components/admin/ops/action-form";
 import { OpsSubmit } from "@/components/admin/ops/buttons";
 import { SalesCard } from "@/components/admin/ops/revenue-chart";
+import { Toaster } from "@/components/admin/ops/toast";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { ButtonLink } from "@/components/ui/button";
 import { PAYMENT_METHODS } from "@/lib/constants";
@@ -78,6 +79,7 @@ export default async function AdminOverview({ searchParams }: { searchParams: Pr
 
   return (
     <>
+      <Toaster />
       <AdminPageHeader
         title="Overview"
         description={`${finding}.`}

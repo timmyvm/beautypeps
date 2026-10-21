@@ -1,14 +1,14 @@
 TASTESKILL · INSPECT   http://localhost:3101/track
 
 MEASURED (first viewport listed)
-  hero headline   "Track your order"  3 words · 1 line(s) · 67.8px (4.7vw) · chillax 600 · tracking -0.03em · leading 1
-  @768px          1 line(s) · 43.6px
-  @390px          1 line(s) · 36px
+  hero headline   "Track your order"  3 words · 1 line(s) · 88px (6.1vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 54.4px
+  @390px          1 line(s) · 44px
   typefaces       chillax 100%
-  sizes in use    14 / 19 / 26 / 64 / 68 px   body 14px / 1.45
+  sizes in use    14 / 19 / 26 / 64 / 88 px   body 14px / 1.45
   colour          page #ffffff · sections #ffffff · button #111111
-  page            2.9 screens · 238 words · 6 images · hero media 30% img
-  headings        2 · longest 1 line(s) · median 4 words
+  page            3 screens · 240 words · 6 images · hero media 30% img
+  headings        2 · longest 2 line(s) · median 6 words
 
 FAIL — fix every one of these
   [body-size] @1440px (+768, 390)  Body text is 14px (the size most of the running text is set in).

@@ -71,7 +71,7 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
   const useNew = addressId === "new";
 
   return (
-    <form onSubmit={onSubmit} onChange={onFieldChange} noValidate className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+    <form onSubmit={onSubmit} onChange={onFieldChange} noValidate className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
       <div className="space-y-14 lg:col-span-7">
         <FormMessage state={state} />
 

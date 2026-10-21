@@ -48,13 +48,17 @@ export function PageHeader({
             {title}
           </h1>
           {(lead || children) && (
-            <div>
+            <div {...reveal(1)}>
               {lead && <p className="mt-8 max-w-[44ch] text-lead text-ink lg:mt-0">{lead}</p>}
               {children && <div className="mt-8">{children}</div>}
             </div>
           )}
         </div>
-        {figure && <div className={cn("lg:col-span-5", figureClassName)}>{figure}</div>}
+        {figure && (
+          <div className={cn("lg:col-span-5", figureClassName)} {...reveal(2)}>
+            {figure}
+          </div>
+        )}
       </div>
     </header>
   );

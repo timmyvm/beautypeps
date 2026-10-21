@@ -42,9 +42,9 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
 
   return (
     <div className="container-bp pt-10 pb-24 md:pt-16">
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-7">
-          <h1 className="display-type text-[clamp(2.25rem,1rem+3.6vw,4.5rem)]" data-reveal="">
+          <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)]" data-reveal="">
             Track your order
           </h1>
           <p className="mt-5 max-w-[44ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
@@ -109,7 +109,7 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
 
       {order && (
         <section aria-labelledby="order-heading" className="mt-20">
-          <div className="grid gap-4 lg:grid-cols-12" data-reveal="">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12" data-reveal="">
             <h2 id="order-heading" className="display-type text-head lg:col-span-7">
               Order {order.orderNumber} is {ORDER_STATUSES[order.status].label.toLowerCase()}
             </h2>
@@ -123,7 +123,7 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
             <ParcelLink order={order} />
           </div>
 
-          <div className="mt-14 grid gap-14 lg:grid-cols-12 lg:gap-8">
+          <div className="mt-14 grid grid-cols-1 gap-14 lg:grid-cols-12 lg:gap-8">
             <div className="space-y-14 lg:col-span-7" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
               {order.status === "pending_payment" && <PaymentPanel order={order} settings={settings} copy />}
               <section aria-labelledby="items-heading">
@@ -164,7 +164,7 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
 
       <JournalShelf
         id="wait-heading"
-        title="Read while it travels"
+        title="Before you open the first bottle"
         intro="How to start, layer and store your peptides, so they are ready to use the day the parcel arrives."
         articles={articles.slice(0, 3)}
       />

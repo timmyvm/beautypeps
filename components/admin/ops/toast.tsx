@@ -56,7 +56,7 @@ function ToastItem({ toast: t }: { toast: Toast }) {
     <div
       role={t.ok ? "status" : "alert"}
       className={cn(
-        "pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-lg shadow-espresso/10 animate-fade-up",
+        "pointer-events-auto flex items-start gap-3 border px-4 py-3 text-sm shadow-lg shadow-ink/10 animate-fade-up", // taste-skill-ignore: a toast floats over the screen
         t.ok ? "border-sage/30 bg-white text-ink" : "border-danger/30 bg-danger-light text-danger",
       )}
     >

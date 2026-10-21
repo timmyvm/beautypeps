@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-header";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
+import { ButtonLink } from "@/components/ui/button";
 import { classShortLabel, SpecimenThumb } from "@/components/peptides/peptide-entry";
 import { concernLabel } from "@/lib/constants";
 import { PAIRINGS, PEPTIDE_USAGE } from "@/lib/content/compare";
@@ -51,7 +52,9 @@ export default async function ComparePage() {
             />
           </Figure>
         }
-      />
+      >
+        <ButtonLink href="/routine-builder">Find yours in four questions</ButtonLink>
+      </PageHeader>
 
       <section aria-labelledby="chart-title" className="container-bp mt-20 lg:mt-32">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -65,7 +68,7 @@ export default async function ComparePage() {
           <p className="mt-10 bg-surface px-6 py-14 text-lead">The chart fills in as monographs are published.</p>
         ) : (
           <>
-            <div className="mt-10 hidden xl:block">
+            <div className="-mx-4 mt-10 hidden xl:block">
               <table className="w-full border-separate border-spacing-0 text-left text-body">
                 <thead>
                   <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-surface [&>th]:px-4 [&>th]:py-4 [&>th]:font-medium">
@@ -117,13 +120,13 @@ export default async function ComparePage() {
               </table>
             </div>
 
-            <ol className="mt-10 xl:hidden">
+            <ol className="-mx-4 mt-10 xl:hidden">
               {rows.map((p, i) => (
                 <li
                   key={p.id}
                   data-reveal="row"
                   style={{ ["--reveal-i" as string]: Math.min(i, 8) }}
-                  className={cn("px-4 py-6 sm:px-6", i % 2 === 0 ? "bg-surface" : "bg-bg")}
+                  className={cn("px-4 py-6", i % 2 === 0 ? "bg-surface" : "bg-bg")}
                 >
                   <Link href={`/peptides/${p.slug}`} className="group flex items-start gap-4">
                     <SpecimenThumb specimen={specimens[p.slug]} className="size-16 shrink-0" sizes="64px" />
@@ -174,7 +177,7 @@ export default async function ComparePage() {
             a few rules of chemistry.
           </p>
         </div>
-        <ul className="mt-12">
+        <ul className="-mx-4 mt-12">
           {PAIRINGS.map((pair, i) => {
             const v = VERDICT[pair.verdict];
             return (
@@ -183,7 +186,7 @@ export default async function ComparePage() {
                 data-reveal="row"
                 style={{ ["--reveal-i" as string]: i }}
                 className={cn(
-                  "grid gap-3 px-4 py-7 sm:px-6 lg:grid-cols-12 lg:gap-[var(--gutter)]",
+                  "grid gap-3 px-4 py-7 lg:grid-cols-12 lg:gap-[var(--gutter)]",
                   pair.verdict === "separate" ? "bg-danger-light" : i % 2 === 0 ? "bg-surface" : "bg-bg",
                 )}
               >

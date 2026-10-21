@@ -44,7 +44,7 @@ export function AdminPageHeader({
       )}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-[24px] leading-tight font-semibold tracking-[-0.01em] text-ink">{title}</h1>
+          <h1 className="text-[20px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[24px]">{title}</h1>
           {description && <p className="mt-1 text-[15px] text-muted">{description}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}

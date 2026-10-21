@@ -45,19 +45,19 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
           {addresses.map((a) => (
             <li
               key={a.id}
-              className={`flex flex-col rounded-2xl border bg-white p-5 ${a.isDefault ? "border-copper/50" : "border-surface-2"}`}
+              className="flex flex-col bg-surface p-5 sm:p-6"
             >
               <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-ink">{a.label}</p>
-                {a.isDefault && <Badge tone="copper">Default</Badge>}
+                <p className="text-[16px] font-semibold text-ink">{a.label}</p>
+                {a.isDefault && <Badge tone="neutral">Default</Badge>}
               </div>
               <div className="mb-5">
                 <AddressBlock address={a} />
               </div>
-              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-surface-2 pt-4 text-sm">
+              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white pt-4 text-[14px]">
                 <Link
                   href={`/account/addresses/${a.id}`}
-                  className="flex items-center gap-1.5 text-ink hover:text-copper-dark"
+                  className="flex items-center gap-1.5 text-ink underline-offset-4 hover:underline"
                 >
                   <Pencil className="size-3.5" aria-hidden /> Edit
                 </Link>

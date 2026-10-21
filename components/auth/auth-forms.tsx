@@ -38,7 +38,7 @@ export function LoginForm({ next, defaultEmail }: { next?: string; defaultEmail?
         label={
           <span className="flex items-center justify-between">
             Password
-            <Link href="/forgot-password" className="font-normal text-copper-dark hover:underline">
+            <Link href="/forgot-password" className="font-normal text-ink underline underline-offset-4">
               Forgot password?
             </Link>
           </span>
@@ -103,11 +103,11 @@ export function RegisterForm({ next, defaultEmail }: { next?: string; defaultEma
       </Field>
       {e.email?.includes("already exists") && (
         <p className="-mt-3 text-[13px] text-muted">
-          <Link href={`/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-copper-dark underline">
+          <Link href={`/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-ink underline underline-offset-4">
             Sign in to your account
           </Link>{" "}
           or{" "}
-          <Link href="/forgot-password" className="text-copper-dark underline">
+          <Link href="/forgot-password" className="text-ink underline underline-offset-4">
             reset your password
           </Link>
           .
@@ -193,7 +193,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <FormMessage state={state} />
       {state.ok === false && state.message?.includes("expired") && (
         <p className="-mt-2 text-sm">
-          <Link href="/forgot-password" className="text-copper-dark underline">
+          <Link href="/forgot-password" className="text-ink underline underline-offset-4">
             Request a new link
           </Link>
         </p>

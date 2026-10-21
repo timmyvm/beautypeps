@@ -18,7 +18,6 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   if (!token || !reset) {
     return (
       <AuthShell
-        eyebrow="Account help"
         title="This link has expired"
         description="Password reset links work once and last for an hour. Request a fresh one and we'll email it straight over."
       >
@@ -41,7 +40,6 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
 
   return (
     <AuthShell
-      eyebrow="Account help"
       title="Choose a new password"
       description="For your security, this will sign you out on any other devices."
     >

@@ -22,7 +22,6 @@ export default async function RegisterPage({
 
   return (
     <AuthShell
-      eyebrow="Join Beauty Peps"
       title="Create your account"
       description="Faster checkout, order tracking and a wishlist for the peptides you're curious about."
       footer={
@@ -30,7 +29,7 @@ export default async function RegisterPage({
           Already have an account?{" "}
           <Link
             href={`/login${next ? `?next=${encodeURIComponent(next)}` : ""}`}
-            className="font-medium text-copper-dark hover:underline"
+            className="font-medium text-ink underline underline-offset-4"
           >
             Sign in
           </Link>

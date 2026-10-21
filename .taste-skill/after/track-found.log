@@ -1,14 +1,14 @@
 TASTESKILL · INSPECT   http://localhost:3101/track?order=BP10001&email=priya.sharma%40example.com
 
 MEASURED (first viewport listed)
-  hero headline   "Track your order"  3 words · 1 line(s) · 67.8px (4.7vw) · chillax 600 · tracking -0.03em · leading 1
-  @768px          1 line(s) · 43.6px
-  @390px          1 line(s) · 36px
+  hero headline   "Track your order"  3 words · 1 line(s) · 88px (6.1vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 54.4px
+  @390px          1 line(s) · 44px
   typefaces       chillax 100%
-  sizes in use    14 / 19 / 26 / 64 / 68 px   body 19px / 1.5
+  sizes in use    14 / 19 / 26 / 64 / 88 px   body 19px / 1.5
   colour          page #ffffff · sections #ffffff · button #111111
-  page            4.1 screens · 389 words · 8 images · hero media 30% img
-  headings        3 · longest 2 line(s) · median 4 words
+  page            4.2 screens · 391 words · 8 images · hero media 30% img
+  headings        3 · longest 2 line(s) · median 6 words
 
 WARN — fix, or be able to defend
   [no-footage] @1440px  No video anywhere on the page.

@@ -15,7 +15,7 @@ import { countWords, MarkdownEditor } from "./markdown-editor";
 function toLocalInput(d: Date | null | undefined) {
   if (!d) return "";
   const date = new Date(d);
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const pad = (n: number) => String(n).padStart(2, "0"); // taste-skill-ignore: date and time fields
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
@@ -44,122 +44,122 @@ export function ArticleForm({ article }: { article: Article | null }) {
       <SheetGrid
         main={
           <>
-          <Panel title="Article">
-            <div className="space-y-4">
-              <Field label="Title" htmlFor="title" error={e.title}>
-                <Input
-                  id="title"
-                  name="title"
-                  value={title}
-                  onChange={(ev) => {
-                    setTitle(ev.target.value);
-                    if (!slugTouched) setSlug(slugify(ev.target.value));
-                  }}
-                  aria-invalid={!!e.title}
-                  className="h-12 text-base font-semibold"
-                />
-              </Field>
-              <Field label="URL slug" htmlFor="slug" error={e.slug} hint={`/learn/${slug || "…"}`}>
-                <Input
-                  id="slug"
-                  name="slug"
-                  value={slug}
-                  onChange={(ev) => {
-                    setSlugTouched(true);
-                    setSlug(ev.target.value.toLowerCase());
-                  }}
-                  aria-invalid={!!e.slug}
-                />
-              </Field>
-              <CountedField name="excerpt" label="Excerpt" defaultValue={article?.excerpt} max={320} multiline error={e.excerpt} hint="Shown on journal cards and under the title." />
-            </div>
-          </Panel>
+            <Panel title="Article">
+              <div className="space-y-4">
+                <Field label="Title" htmlFor="title" error={e.title}>
+                  <Input
+                    id="title"
+                    name="title"
+                    value={title}
+                    onChange={(ev) => {
+                      setTitle(ev.target.value);
+                      if (!slugTouched) setSlug(slugify(ev.target.value));
+                    }}
+                    aria-invalid={!!e.title}
+                    className="h-12 text-base font-semibold"
+                  />
+                </Field>
+                <Field label="URL slug" htmlFor="slug" error={e.slug} hint={`/learn/${slug || "…"}`}>
+                  <Input
+                    id="slug"
+                    name="slug"
+                    value={slug}
+                    onChange={(ev) => {
+                      setSlugTouched(true);
+                      setSlug(ev.target.value.toLowerCase());
+                    }}
+                    aria-invalid={!!e.slug}
+                  />
+                </Field>
+                <CountedField name="excerpt" label="Excerpt" defaultValue={article?.excerpt} max={320} multiline error={e.excerpt} hint="Shown on journal cards and under the title." />
+              </div>
+            </Panel>
 
-          <Panel title="Body">
-            <MarkdownEditor
-              name="body"
-              label="Content"
-              defaultValue={article?.body}
-              error={e.body}
-              rows={24}
-              showWordCount
-              hint="Use ## for section headings — they build the article's table of contents."
-              onValueChange={(v) => {
-                const w = countWords(v);
-                setWords(w);
-                if (!readTouched) setReadMinutes(String(Math.max(1, Math.round(w / 220))));
-              }}
-            />
-          </Panel>
+            <Panel title="Body">
+              <MarkdownEditor
+                name="body"
+                label="Content"
+                defaultValue={article?.body}
+                error={e.body}
+                rows={24}
+                showWordCount
+                hint="Use ## for section headings — they build the article's table of contents."
+                onValueChange={(v) => {
+                  const w = countWords(v);
+                  setWords(w);
+                  if (!readTouched) setReadMinutes(String(Math.max(1, Math.round(w / 220))));
+                }}
+              />
+            </Panel>
 
-          <Panel title="Search engine listing">
-            <CountedField
-              name="seoDescription"
-              label="SEO description"
-              defaultValue={article?.seoDescription}
-              max={170}
-              multiline
-              error={e.seoDescription}
-              hint="Leave blank to use the excerpt."
-            />
-          </Panel>
+            <Panel title="Search engine listing">
+              <CountedField
+                name="seoDescription"
+                label="SEO description"
+                defaultValue={article?.seoDescription}
+                max={170}
+                multiline
+                error={e.seoDescription}
+                hint="Leave blank to use the excerpt."
+              />
+            </Panel>
           </>
         }
         rail={
           <>
-          <Panel title="Publishing">
-            <div className="space-y-4">
-              <Toggle
-                name="published"
-                label="Published"
-                description="Visible in the Journal."
-                checked={published}
-                onChange={(v) => {
-                  setPublished(v);
-                  if (v && !publishedAt) setPublishedAt(toLocalInput(new Date()));
-                }}
-              />
-              <Field label="Publish date" htmlFor="publishedAt" error={e.publishedAt} hint={published ? "Set when it first went live." : "Filled automatically when you publish."}>
-                <Input id="publishedAt" name="publishedAt" type="datetime-local" value={publishedAt} onChange={(ev) => setPublishedAt(ev.target.value)} />
-              </Field>
-              <Toggle name="featured" label="Featured" description="Pin to the top of the Journal." defaultChecked={article?.featured} />
-            </div>
-          </Panel>
-
-          <Panel title="Details">
-            <div className="space-y-4">
-              <Field label="Category" htmlFor="category" error={e.category}>
-                <Select id="category" name="category" defaultValue={article?.category ?? "Guides"}>
-                  {ARTICLE_CATEGORIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </Select>
-              </Field>
-              <Field label="Author" htmlFor="author" error={e.author}>
-                <Input id="author" name="author" defaultValue={article?.author ?? "Beauty Peps Lab"} />
-              </Field>
-              <Field label="Read time (minutes)" htmlFor="readMinutes" error={e.readMinutes} hint={`${words} words · ~${Math.max(1, Math.round(words / 220))} min at 220 wpm`}>
-                <Input
-                  id="readMinutes"
-                  name="readMinutes"
-                  type="number"
-                  min={1}
-                  value={readMinutes}
-                  onChange={(ev) => {
-                    setReadTouched(true);
-                    setReadMinutes(ev.target.value);
+            <Panel title="Publishing">
+              <div className="space-y-4">
+                <Toggle
+                  name="published"
+                  label="Published"
+                  description="Visible in the Journal."
+                  checked={published}
+                  onChange={(v) => {
+                    setPublished(v);
+                    if (v && !publishedAt) setPublishedAt(toLocalInput(new Date()));
                   }}
-                  className="max-w-32"
                 />
-              </Field>
-            </div>
-          </Panel>
+                <Field label="Publish date" htmlFor="publishedAt" error={e.publishedAt} hint={published ? "Set when it first went live." : "Filled automatically when you publish."}>
+                  <Input id="publishedAt" name="publishedAt" type="datetime-local" value={publishedAt} onChange={(ev) => setPublishedAt(ev.target.value)} />
+                </Field>
+                <Toggle name="featured" label="Featured" description="Pin to the top of the Journal." defaultChecked={article?.featured} />
+              </div>
+            </Panel>
 
-          <Panel title="Cover image">
-            <ImageField name="coverImage" folder="articles" label="Cover" defaultValue={article?.coverImage} error={e.coverImage} aspect="aspect-[3/2]" hint="3:2 landscape works best." />
-          </Panel>
+            <Panel title="Details">
+              <div className="space-y-4">
+                <Field label="Category" htmlFor="category" error={e.category}>
+                  <Select id="category" name="category" defaultValue={article?.category ?? "Guides"}>
+                    {ARTICLE_CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field label="Author" htmlFor="author" error={e.author}>
+                  <Input id="author" name="author" defaultValue={article?.author ?? "Beauty Peps Lab"} />
+                </Field>
+                <Field label="Read time (minutes)" htmlFor="readMinutes" error={e.readMinutes} hint={`${words} words · ~${Math.max(1, Math.round(words / 220))} min at 220 wpm`}>
+                  <Input
+                    id="readMinutes"
+                    name="readMinutes"
+                    type="number"
+                    min={1}
+                    value={readMinutes}
+                    onChange={(ev) => {
+                      setReadTouched(true);
+                      setReadMinutes(ev.target.value);
+                    }}
+                    className="max-w-32"
+                  />
+                </Field>
+              </div>
+            </Panel>
+
+            <Panel title="Cover image">
+              <ImageField name="coverImage" folder="articles" label="Cover" defaultValue={article?.coverImage} error={e.coverImage} aspect="aspect-[3/2]" hint="3:2 landscape works best." />
+            </Panel>
           </>
         }
       />

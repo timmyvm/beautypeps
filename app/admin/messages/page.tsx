@@ -56,8 +56,8 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-baseline justify-between gap-x-4">
-                    <span className={cn("truncate text-sm", m.status === "new" ? "font-semibold text-ink" : "text-ink")}>
-                      {m.name} <span className="font-normal text-muted">· {m.email}</span>
+                    <span className={cn("max-w-full min-w-0 truncate text-sm", m.status === "new" ? "font-semibold text-ink" : "text-ink")}>
+                      {m.name} <span className="hidden font-normal text-muted sm:inline">· {m.email}</span>
                     </span>
                     <span className="shrink-0 text-[13px] text-muted">{formatDateTime(m.createdAt)}</span>
                   </span>

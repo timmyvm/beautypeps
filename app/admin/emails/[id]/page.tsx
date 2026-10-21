@@ -41,7 +41,7 @@ export default async function AdminEmailPage({ params }: Props) {
           {email.error && (
             <>
               <dt className="text-muted">Error</dt>
-              <dd className="font-mono text-[13px] break-all text-danger">{email.error}</dd>
+              <dd className="text-[13px] break-all text-danger">{email.error}</dd>
             </>
           )}
         </dl>

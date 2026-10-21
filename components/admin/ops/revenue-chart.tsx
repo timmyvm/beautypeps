@@ -148,7 +148,7 @@ export function SalesCard({
                     <span
                       role="tooltip"
                       className={cn(
-                        "pointer-events-none absolute bottom-full z-10 mb-1 hidden w-max border border-surface-2 bg-white px-3 py-2 text-left shadow-[0_4px_16px_rgb(0_0_0/0.08)] group-hover:block group-focus-visible:block",
+                        "pointer-events-none absolute bottom-full z-10 mb-1 hidden w-max border border-surface-2 bg-white px-3 py-2 text-left shadow-[0_4px_16px_rgb(0_0_0/0.08)] group-hover:block group-focus-visible:block", // taste-skill-ignore: a tooltip is an overlay
                         align,
                       )}
                     >

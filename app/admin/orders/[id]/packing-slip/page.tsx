@@ -22,7 +22,7 @@ const printCss = `
   @page { margin: 14mm; }
   body * { visibility: hidden !important; }
   .packing-slip, .packing-slip * { visibility: visible !important; }
-  .packing-slip { position: absolute; inset: 0 auto auto 0; width: 100%; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+  .packing-slip { position: absolute; inset: 0 auto auto 0; width: 100%; border: 0 !important; box-shadow: none !important; padding: 0 !important; } /* taste-skill-ignore: print reset removes the shadow */
   body { background: #fff !important; }
 }`;
 
@@ -42,8 +42,8 @@ export default async function PackingSlipPage({ params }: Props) {
         <PrintButton />
       </div>
 
-      <article className="packing-slip mx-auto max-w-3xl rounded-2xl border border-surface-2 bg-white p-10 text-ink">
-        <header className="flex items-start justify-between gap-6 border-b border-stone pb-6">
+      <article className="packing-slip mx-auto max-w-3xl border border-surface-2 bg-white p-6 text-ink sm:p-10">
+        <header className="flex items-start justify-between gap-6 border-b border-stone pb-5">
           <div>
             <Image src="/images/brand/logo-wordmark.png" alt={settings.storeName} width={1229} height={301} className="h-8 w-auto" />
             <p className="mt-3 text-[13px] leading-relaxed text-muted">
@@ -55,12 +55,12 @@ export default async function PackingSlipPage({ params }: Props) {
           </div>
           <div className="text-right">
             <p className="text-[13px] font-semibold text-ink">Packing slip</p>
-            <p className="mt-1 text-2xl">{order.orderNumber}</p>
+            <h1 className="mt-1 text-[24px] leading-tight font-semibold">{order.orderNumber}</h1>
             <p className="mt-1 text-[13px] text-muted">Ordered {formatDate(order.createdAt)}</p>
           </div>
         </header>
 
-        <section className="grid gap-8 py-6 sm:grid-cols-2">
+        <section className="grid gap-8 py-5 sm:grid-cols-2">
           <div>
             <p className="mb-2 text-[13px] font-semibold text-muted">Ship to</p>
             <AddressBlock address={order.shippingAddress} />

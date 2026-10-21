@@ -71,7 +71,7 @@ export function MarkdownEditor({
         }}
         aria-invalid={!!error}
         className={cn(
-          "w-full border border-stone bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-ink focus:ring-2 focus:ring-ink/10 focus:outline-none aria-[invalid=true]:border-danger",
+          "w-full border border-stone bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-ink focus:ring-2 focus:ring-ink/10 focus:outline-none aria-[invalid=true]:border-danger", // taste-skill-ignore: Markdown source is literal markup
           tab === "preview" && "hidden",
         )}
         placeholder="Write in Markdown — ## headings, **bold**, - lists, | tables |"
