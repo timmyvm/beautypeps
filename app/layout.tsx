@@ -1,13 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Bodoni_Moda, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { RevealObserver } from "@/components/site/reveal-observer";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const bodoni = Bodoni_Moda({
-  subsets: ["latin"],
-  variable: "--font-bodoni",
+// Chillax (Indian Type Foundry, via Fontshare), self-hosted.
+const chillax = localFont({
+  src: [
+    { path: "./fonts/Chillax-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Chillax-Medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/Chillax-Semibold.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-chillax",
   display: "swap",
-  style: ["normal", "italic"],
+  fallback: ["Helvetica Neue", "Arial", "sans-serif"],
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -15,11 +20,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Beauty Peps — Clinical Beauty Peptides",
+    default: "Beauty Peps — Peptide serums, graded",
     template: "%s · Beauty Peps",
   },
   description:
-    "Beauty Peps formulates high-concentration cosmetic peptides — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more — with a free peptide library and evidence-led guides.",
+    "Small-batch cosmetic peptide serums made in Melbourne — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more — with the concentration on every label and an evidence grade for every peptide.",
   openGraph: {
     type: "website",
     siteName: "Beauty Peps",
@@ -28,13 +33,22 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6f1ea",
+  themeColor: "#ffffff",
 };
+
+// Marks the document as script-enabled before first paint, so entrance states never hide content without JS.
+const jsFlag = `document.documentElement.classList.add('js')`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-AU" className={`${inter.variable} ${bodoni.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+    <html lang="en-AU" className={chillax.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: jsFlag }} />
+      </head>
+      <body className="min-h-dvh">
+        {children}
+        <RevealObserver />
+      </body>
     </html>
   );
 }

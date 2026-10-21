@@ -1,17 +1,18 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+// Form fields keep a real field edge (allowed for form controls); everything else is told apart by tone.
 const control =
-  "w-full rounded-xl border border-stone bg-cream px-4 text-sm text-espresso placeholder:text-taupe " +
-  "transition-colors focus:border-copper focus:outline-none focus:ring-2 focus:ring-copper/20 " +
+  "w-full rounded-none border border-stone bg-white px-4 text-[16px] text-ink placeholder:text-taupe " +
+  "transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 " +
   "disabled:opacity-60 aria-[invalid=true]:border-danger";
 
 export function Label({ className, ...props }: ComponentProps<"label">) {
-  return <label className={cn("mb-1.5 block text-xs font-medium tracking-wide text-cocoa", className)} {...props} />;
+  return <label className={cn("mb-1.5 block text-[14px] font-medium text-ink", className)} {...props} />;
 }
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
-  return <input className={cn(control, "h-11", className)} {...props} />;
+  return <input className={cn(control, "h-12", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
@@ -19,14 +20,14 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
 }
 
 export function Select({ className, ...props }: ComponentProps<"select">) {
-  return <select className={cn(control, "select-chevron h-11 appearance-none pr-10", className)} {...props} />;
+  return <select className={cn(control, "select-chevron h-12 appearance-none pr-10", className)} {...props} />;
 }
 
 export function Checkbox({ className, ...props }: ComponentProps<"input">) {
   return (
     <input
       type="checkbox"
-      className={cn("size-4 rounded border-stone text-copper accent-copper focus:ring-copper/30", className)}
+      className={cn("size-4 rounded-none border-stone text-accent accent-accent focus:ring-accent/30", className)}
       {...props}
     />
   );
@@ -53,11 +54,11 @@ export function Field({
       {label && <Label htmlFor={htmlFor}>{label}</Label>}
       {children}
       {error ? (
-        <p className="mt-1.5 text-xs text-danger" role="alert">
+        <p className="mt-1.5 text-[13px] text-danger" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="mt-1.5 text-xs text-taupe">{hint}</p>
+        <p className="mt-1.5 text-[13px] text-muted">{hint}</p>
       ) : null}
     </div>
   );
@@ -69,10 +70,7 @@ export function FormMessage({ state }: { state?: { ok?: boolean; message?: strin
   return (
     <div
       role={state.ok ? "status" : "alert"}
-      className={cn(
-        "rounded-xl px-4 py-3 text-sm",
-        state.ok ? "bg-sage-light text-sage" : "bg-danger-light text-danger",
-      )}
+      className={cn("px-4 py-3 text-[15px]", state.ok ? "bg-sage-light text-sage" : "bg-danger-light text-danger")}
     >
       {state.message}
     </div>

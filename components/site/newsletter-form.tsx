@@ -1,50 +1,44 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import { useActionState } from "react";
 import { subscribeAction } from "@/lib/actions/newsletter";
 import { cn } from "@/lib/utils";
 
-export function NewsletterForm({ source = "footer", tone = "dark" }: { source?: string; tone?: "dark" | "light" }) {
+export function NewsletterForm({ source = "footer", tone = "light" }: { source?: string; tone?: "dark" | "light" }) {
   const [state, action, pending] = useActionState(subscribeAction, {});
 
   if (state.ok) {
-    return <p className={cn("text-sm", tone === "dark" ? "text-copper-light" : "text-sage")}>{state.message}</p>;
+    return <p className={cn("text-body", tone === "dark" ? "text-white" : "text-ink")}>{state.message}</p>;
   }
 
   return (
     <form action={action} className="w-full">
       <input type="hidden" name="source" value={source} />
-      <div
-        className={cn(
-          "flex items-center rounded-full border p-1 pl-5",
-          tone === "dark" ? "border-cream/25 bg-cream/5" : "border-stone bg-cream",
-        )}
-      >
-        <label htmlFor={`nl-${source}`} className="sr-only">
-          Email address
-        </label>
+      <label htmlFor={`nl-${source}`} className="sr-only">
+        Email address
+      </label>
+      <div className="flex">
         <input
           id={`nl-${source}`}
           name="email"
           type="email"
           required
+          autoComplete="email"
           placeholder="Your email address"
           className={cn(
-            "h-10 min-w-0 flex-1 bg-transparent text-sm focus:outline-none",
-            tone === "dark" ? "text-cream placeholder:text-cream/50" : "text-espresso placeholder:text-taupe",
+            "h-12 min-w-0 flex-1 rounded-none px-4 text-body focus:outline-none focus-visible:outline-2 focus-visible:outline-accent",
+            tone === "dark" ? "bg-white/10 text-white placeholder:text-white/60" : "bg-white text-ink placeholder:text-taupe",
           )}
         />
         <button
           type="submit"
           disabled={pending}
-          aria-label="Subscribe"
-          className="grid size-10 shrink-0 place-items-center rounded-full bg-copper text-cream transition-colors hover:bg-copper-dark disabled:opacity-60"
+          className="press h-12 shrink-0 bg-accent px-5 text-body font-medium text-accent-ink hover:bg-accent-strong disabled:opacity-60"
         >
-          <ArrowRight className="size-4" aria-hidden />
+          Subscribe
         </button>
       </div>
-      {state.message && !state.ok && <p className="mt-2 text-xs text-danger">{state.message}</p>}
+      {state.message && !state.ok && <p className="mt-2 text-small text-danger">{state.message}</p>}
     </form>
   );
 }

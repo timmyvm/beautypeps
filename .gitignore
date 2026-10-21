@@ -54,3 +54,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# tasteskill working files (screenshots); notes + direction sheet are committed
+/.taste-skill/**/*.jpg
+/.taste-skill/**/*.png
+/.taste-skill/**/report.json

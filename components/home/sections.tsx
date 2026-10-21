@@ -1,522 +1,171 @@
-import { ArrowRight, BadgeCheck, FlaskConical, Leaf, MapPin, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { QuickAdd } from "@/components/product/add-to-cart";
-import { PeptideCard, type PeptideTeaser } from "@/components/product/peptide-chip-card";
-import { ProductCard, type ProductCardData } from "@/components/product/product-card";
-import { NewsletterForm } from "@/components/site/newsletter-form";
-import { buttonClasses } from "@/components/ui/button";
-import { Price, SectionHeading, Stars } from "@/components/ui/misc";
-import { CONCERNS, PEPTIDE_CLASSES } from "@/lib/constants";
-import type { KeyActive } from "@/lib/db/schema";
-import { formatDate, formatMoney } from "@/lib/format";
+import { specimenSrc, specimenTrimSrc, type ProductCardData } from "@/components/product/product-card";
+import { LoopVideo } from "@/components/site/loop-video";
+import { formatMoney } from "@/lib/format";
+import type { Peptide } from "@/lib/db/schema";
+import type { StoreSettings } from "@/lib/settings";
+import { cn } from "@/lib/utils";
+
+const reveal = (i: number) => ({ "data-reveal": "", style: { ["--reveal-i" as string]: i } });
 
 /* ------------------------------------------------------------------ */
-
-export function Hero() {
-  return (
-    <section className="relative overflow-hidden bg-ivory" aria-labelledby="hero-heading">
-      {/* Mobile: image first, cropped to the products. Desktop: full-bleed with copy on the empty wall. */}
-      <div className="relative aspect-[4/3] md:absolute md:inset-0 md:aspect-auto">
-        <Image
-          src="/images/editorial/hero.webp"
-          alt="Beauty Peps GHK-Cu copper peptide serum and peptide serums on travertine in warm sunlight"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[78%_center] md:object-[70%_center]"
-        />
-        <div className="absolute inset-0 hidden bg-gradient-to-r from-ivory/85 via-ivory/40 to-transparent md:block" />
-      </div>
-
-      <div className="container-bp relative py-12 md:flex md:min-h-[min(84vh,760px)] md:items-center md:py-24">
-        <div className="max-w-xl animate-fade-up">
-          <p className="eyebrow mb-5">Clinical beauty peptides · Made in Australia</p>
-          <h1 id="hero-heading" className="font-display text-[2.6rem] leading-[1.05] text-espresso md:text-6xl lg:text-7xl">
-            Skin science,
-            <br />
-            <span className="italic text-copper-dark">beautifully</span> distilled.
-          </h1>
-          <p className="mt-6 max-w-md text-base leading-relaxed text-cocoa md:text-lg">
-            High-concentration peptide serums built around GHK-Cu, Matrixyl, Argireline and SNAP-8 — with a free,
-            evidence-led library that explains exactly what each one does.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/shop" className={buttonClasses({ size: "lg" })}>
-              Shop the collection
-            </Link>
-            <Link href="/peptides" className={buttonClasses({ variant: "outline", size: "lg", className: "bg-cream/60 backdrop-blur" })}>
-              Explore the Peptide Library
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
+/* Showcase — "Frame run, one lifted": everything copper makes blue    */
 /* ------------------------------------------------------------------ */
 
-export function TrustStrip({ freeShippingThreshold }: { freeShippingThreshold: number }) {
-  const items = [
-    { icon: MapPin, label: "Formulated in Australia" },
-    { icon: FlaskConical, label: "Clinically studied peptides" },
-    { icon: Leaf, label: "Cruelty-free & vegan" },
+type Frame = { src: string; alt: string; name: string; fact: string; ratio: number; href: string; lifted?: boolean; video?: string };
+
+export function BlueByCopper({ products }: { products: ProductCardData[] }) {
+  const price = (slug: string) => {
+    const p = products.find((x) => x.slug === slug);
+    return p ? formatMoney(p.price) : "";
+  };
+  const frames: Frame[] = [
     {
-      icon: Truck,
-      label: freeShippingThreshold > 0 ? `Free shipping over ${formatMoney(freeShippingThreshold).replace(/\.00$/, "")}` : "Fast Australia Post delivery",
+      src: "/images/products/ghk-cu-copper-peptide-serum.webp",
+      alt: "GHK-Cu copper peptide serum, sapphire blue, in a clear dropper bottle",
+      name: "GHK-Cu serum",
+      fact: `1% · ${price("ghk-cu-copper-peptide-serum")}`,
+      ratio: 4 / 5,
+      href: "/products/ghk-cu-copper-peptide-serum",
+      lifted: true,
+    },
+    {
+      src: "/video/copper-drop-poster.webp",
+      video: "/video/copper-drop.mp4",
+      alt: "Drops of blue copper peptide serum on a brushed copper plate",
+      name: "A drop of it",
+      fact: "Blue from the copper ion",
+      ratio: 3 / 2,
+      href: "/learn/copper-peptides-ghk-cu-guide",
+    },
+    {
+      src: "/images/products/ghk-cu-pure-powder.webp",
+      alt: "Amber vial of freeze-dried blue GHK-Cu powder",
+      name: "GHK-Cu powder",
+      fact: `1 g · ${price("ghk-cu-pure-powder")}`,
+      ratio: 4 / 5,
+      href: "/products/ghk-cu-pure-powder",
+    },
+    {
+      src: "/images/products/scalp-peptide-serum.webp",
+      alt: "Pale blue scalp serum with copper and biotinoyl tripeptide-1",
+      name: "Scalp serum",
+      fact: `60 mL · ${price("scalp-peptide-serum")}`,
+      ratio: 4 / 5,
+      href: "/products/scalp-peptide-serum",
+    },
+    {
+      src: "/images/products/copper-ritual-kit.webp",
+      alt: "The Copper Ritual Kit: GHK-Cu serum, night cream and eye gel in a gift box",
+      name: "Copper Ritual Kit",
+      fact: price("copper-ritual-kit"),
+      ratio: 4 / 5,
+      href: "/products/copper-ritual-kit",
+    },
+    {
+      src: "/images/editorial/science.webp",
+      alt: "A serum droplet beside a model of a peptide chain in copper and blue",
+      name: "The tripeptide",
+      fact: "Gly-His-Lys, 340 Da",
+      ratio: 16 / 9,
+      href: "/peptides/ghk-cu",
     },
   ];
+  const lifted = frames.find((f) => f.lifted)!;
+  const rest = frames.filter((f) => !f.lifted);
+
   return (
-    <section className="border-y border-stone/60 bg-cream" aria-label="Why Beauty Peps">
-      <ul className="container-bp grid grid-cols-2 gap-y-5 py-6 md:grid-cols-4">
-        {items.map((i) => (
-          <li key={i.label} className="flex items-center justify-center gap-3 text-center text-xs font-medium tracking-wide text-espresso md:text-sm">
-            <i.icon className="size-5 shrink-0 text-copper" aria-hidden />
-            <span>{i.label}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function Bestsellers({ products }: { products: ProductCardData[] }) {
-  if (products.length === 0) return null;
-  return (
-    <section className="container-bp py-20 md:py-28" aria-labelledby="bestsellers-heading">
-      <SectionHeading
-        eyebrow="Most loved"
-        title={<span id="bestsellers-heading">Bestselling peptide formulas</span>}
-        description="Our most-reordered formulas — each built around peptides with published human data, at concentrations that match the research."
-        action={
-          <Link href="/shop" className="inline-flex items-center gap-1.5 text-sm font-medium text-copper-dark hover:gap-2.5">
-            Shop all <ArrowRight className="size-4 transition-all" aria-hidden />
-          </Link>
-        }
-      />
-      <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-4">
-        {products.map((p, i) => (
-          <ProductCard key={p.id} product={p} priority={i < 2} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-const CONCERN_IMAGES: Record<string, string> = {
-  "fine-lines": "/images/products/matrixyl-3000-serum.webp",
-  "expression-lines": "/images/products/argireline-10-serum.webp",
-  firmness: "/images/products/multi-peptide-complex.webp",
-  dullness: "/images/products/ghk-cu-copper-peptide-serum.webp",
-  "dark-spots": "/images/products/nonapeptide-brightening-serum.webp",
-  "under-eye": "/images/products/eye-peptide-gel.webp",
-  lips: "/images/products/lip-peptide-plumping-balm.webp",
-  barrier: "/images/products/peptide-night-cream.webp",
-  "hair-density": "/images/products/scalp-peptide-serum.webp",
-};
-
-export function ConcernTiles() {
-  return (
-    <section className="bg-ivory py-20 md:py-28" aria-labelledby="concerns-heading">
-      <div className="container-bp">
-        <SectionHeading
-          eyebrow="Shop by concern"
-          title={<span id="concerns-heading">Start with what you want to change</span>}
-          description="Different peptides send different signals. Pick a concern and we'll show you the formulas with the strongest evidence behind them."
-        />
-        <ul className="scrollbar-none -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 lg:grid-cols-3">
-          {CONCERNS.map((c) => (
-            <li key={c.slug} className="w-[78%] shrink-0 snap-start sm:w-[45%] md:w-auto">
-              <Link
-                href={`/shop?concern=${c.slug}`}
-                className="group flex items-center gap-4 rounded-2xl border border-stone/70 bg-cream p-3 pr-5 transition-colors hover:border-copper/50"
-              >
-                <span className="relative aspect-square w-16 shrink-0 overflow-hidden rounded-xl bg-sand md:w-20">
-                  {CONCERN_IMAGES[c.slug] && (
-                    <Image
-                      src={CONCERN_IMAGES[c.slug]}
-                      alt=""
-                      fill
-                      sizes="80px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  )}
-                </span>
-                <span className="flex-1 font-display text-lg leading-snug text-espresso">{c.label}</span>
-                <ArrowRight className="size-4 shrink-0 text-copper transition-transform group-hover:translate-x-1" aria-hidden />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function MeetThePeptides({ peptides }: { peptides: PeptideTeaser[] }) {
-  if (peptides.length === 0) return null;
-  return (
-    <section className="container-bp py-20 md:py-28" aria-labelledby="peptides-heading">
-      <SectionHeading
-        eyebrow="The Peptide Library"
-        title={<span id="peptides-heading">Meet the peptides</span>}
-        description="Free, referenced monographs on every peptide we formulate with — mechanism, evidence, ideal concentration and what to pair it with."
-        action={
-          <Link href="/peptides" className="inline-flex items-center gap-1.5 text-sm font-medium text-copper-dark hover:gap-2.5">
-            Browse all peptides <ArrowRight className="size-4 transition-all" aria-hidden />
-          </Link>
-        }
-      />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {peptides.map((p) => (
-          <PeptideCard key={p.slug} peptide={p} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function ScienceBand() {
-  const classes = Object.entries(PEPTIDE_CLASSES);
-  return (
-    <section className="bg-espresso text-cream" aria-labelledby="science-heading">
-      <div className="grid lg:grid-cols-2">
-        <div className="relative aspect-[16/10] lg:aspect-auto">
-          <Image
-            src="/images/editorial/science.webp"
-            alt="A serum droplet beside an illustrated peptide chain"
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-        <div className="px-4 py-16 sm:px-8 md:py-24 lg:px-16">
-          <p className="mb-4 text-[0.7rem] font-semibold tracking-[0.22em] text-copper-light uppercase">The science</p>
-          <h2 id="science-heading" className="max-w-lg font-display text-3xl leading-tight md:text-5xl">
-            Peptides are messages. We choose what they say.
-          </h2>
-          <p className="mt-5 max-w-lg text-cream/70">
-            Short chains of amino acids that skin already recognises. Each class of cosmetic peptide works through a
-            different pathway — which is why we combine them deliberately rather than at random.
-          </p>
-          <ol className="mt-10 grid gap-6 sm:grid-cols-2">
-            {classes.map(([key, c], i) => (
-              <li key={key} className="border-t border-cream/15 pt-5">
-                <span className="font-display text-sm text-copper-light">0{i + 1}</span>
-                <h3 className="mt-1 font-display text-xl">{c.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-cream/65">{c.description}</p>
-              </li>
-            ))}
-          </ol>
-          <Link href="/science" className={buttonClasses({ variant: "light", className: "mt-10" })}>
-            How peptides work <ArrowRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function Spotlight({
-  product,
-}: {
-  product: {
-    id: string;
-    slug: string;
-    name: string;
-    subtitle: string | null;
-    image: string;
-    price: number;
-    compareAtPrice: number | null;
-    shortDescription: string;
-    keyActives: KeyActive[];
-    size: string | null;
-    stock: number;
-  } | null;
-}) {
-  if (!product) return null;
-  const facts = product.keyActives.slice(0, 3);
-  return (
-    <section className="container-bp py-20 md:py-28" aria-labelledby="spotlight-heading">
-      <div className="grid items-center gap-10 overflow-hidden rounded-[2rem] bg-sapphire-light/40 lg:grid-cols-2 lg:gap-0">
-        <Link href={`/products/${product.slug}`} className="relative block aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[640px]">
-          <Image src={product.image} alt={product.name} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-        </Link>
-        <div className="px-6 pb-12 lg:px-16 lg:py-16">
-          <p className="eyebrow mb-4">Spotlight · The copper peptide</p>
-          <h2 id="spotlight-heading" className="font-display text-4xl leading-tight text-espresso md:text-5xl">
-            {product.name}
-          </h2>
-          {product.subtitle && <p className="mt-2 text-lg text-cocoa">{product.subtitle}</p>}
-          <p className="mt-6 leading-relaxed text-cocoa">{product.shortDescription}</p>
-          {facts.length > 0 && (
-            <dl className="mt-8 grid grid-cols-3 gap-4 border-y border-sapphire/15 py-6">
-              {facts.map((f) => (
-                <div key={f.name}>
-                  <dt className="text-[11px] tracking-wider text-cocoa uppercase">{f.name}</dt>
-                  <dd className="mt-1 font-display text-2xl text-sapphire">{f.amount}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-          <div className="mt-8 flex flex-wrap items-center gap-5">
-            <Price cents={product.price} compareAt={product.compareAtPrice} className="text-xl text-espresso" />
-            {product.size && <span className="text-sm text-taupe">{product.size}</span>}
-          </div>
-          <div className="mt-6 flex flex-wrap items-start gap-3">
-            {product.stock > 0 ? <QuickAdd productId={product.id} /> : null}
-            <Link href={`/products/${product.slug}`} className={buttonClasses({ variant: "outline" })}>
-              Learn more
+    <section className="mt-40 overflow-hidden lg:mt-60" aria-labelledby="blue-title">
+      <div className="container-bp grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        {/* Nearly empty column: heading on top, notes further down beside the frames they describe */}
+        <div className="flex flex-col justify-between gap-8 lg:col-span-3">
+          <div {...reveal(0)}>
+            <h2 id="blue-title" className="display-type text-head">
+              Blue by copper
+            </h2>
+            <Link href="/peptides/ghk-cu" className="mt-4 inline-block text-body text-accent underline underline-offset-4">
+              Read the GHK-Cu monograph
             </Link>
           </div>
-          <Link href="/peptides/ghk-cu" className="mt-6 inline-flex items-center gap-1.5 text-sm text-copper-dark underline-offset-4 hover:underline">
-            Read the GHK-Cu monograph <ArrowRight className="size-3.5" aria-hidden />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function RitualSection() {
-  const steps = [
-    { title: "Cleanse", body: "Start on clean, slightly damp skin so water-soluble peptides spread evenly." },
-    { title: "Signal & smooth", body: "Thin, water-based serums first — Argireline, SNAP-8 or Matrixyl." },
-    { title: "Repair", body: "GHK-Cu in the evening, kept apart from strong acids and vitamin C." },
-    { title: "Seal", body: "A peptide night cream or moisturiser locks everything in. SPF every morning." },
-  ];
-  return (
-    <section className="bg-ivory" aria-labelledby="ritual-heading">
-      <div className="container-bp grid items-center gap-12 py-20 md:py-28 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
-          <Image
-            src="/images/editorial/ritual.webp"
-            alt="Applying a peptide serum with a glass dropper"
-            fill
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-        <div>
-          <p className="eyebrow mb-4">The ritual</p>
-          <h2 id="ritual-heading" className="font-display text-4xl leading-tight text-espresso md:text-5xl">
-            How to layer peptides
-          </h2>
-          <p className="mt-5 max-w-lg text-cocoa">
-            Peptides are gentle team players, but order still matters. Thinnest to thickest, water before oil — and a
-            little patience: most studies measure results at 4 to 12 weeks.
-          </p>
-          <ol className="mt-10 space-y-6">
-            {steps.map((s, i) => (
-              <li key={s.title} className="flex gap-5">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full border border-copper/40 font-display text-copper-dark">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-display text-xl text-espresso">{s.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-cocoa">{s.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/learn/how-to-layer-peptides" className={buttonClasses()}>
-              Read the layering guide
-            </Link>
-            <Link href="/routine-builder" className={buttonClasses({ variant: "outline" })}>
-              Build my routine
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function RoutineBuilderCta() {
-  return (
-    <section className="container-bp py-20 md:py-28" aria-labelledby="rb-heading">
-      <div className="relative overflow-hidden rounded-[2rem] bg-espresso">
-        <Image src="/images/editorial/texture.webp" alt="" fill sizes="100vw" className="object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-r from-espresso via-espresso/80 to-espresso/30" />
-        <div className="relative max-w-2xl px-6 py-16 text-cream md:px-14 md:py-20">
-          <p className="mb-4 text-[0.7rem] font-semibold tracking-[0.22em] text-copper-light uppercase">Routine builder</p>
-          <h2 id="rb-heading" className="font-display text-3xl leading-tight md:text-5xl">
-            Your peptide routine, mapped in 60 seconds.
-          </h2>
-          <p className="mt-5 text-cream/75">
-            Answer three questions about your skin and goals. We&apos;ll build a morning and evening routine using the
-            peptides with the strongest evidence for you — and explain why.
-          </p>
-          <Link href="/routine-builder" className={buttonClasses({ variant: "copper", size: "lg", className: "mt-8" })}>
-            Start now <ArrowRight className="size-4" aria-hidden />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function JournalTeaser({
-  articles,
-}: {
-  articles: {
-    slug: string;
-    title: string;
-    excerpt: string;
-    coverImage: string | null;
-    category: string;
-    readMinutes: number;
-    publishedAt: Date | null;
-  }[];
-}) {
-  if (articles.length === 0) return null;
-  return (
-    <section className="container-bp pb-20 md:pb-28" aria-labelledby="journal-heading">
-      <SectionHeading
-        eyebrow="The journal"
-        title={<span id="journal-heading">Read before you apply</span>}
-        description="Guides, routines and research summaries from our formulation team."
-        action={
-          <Link href="/learn" className="inline-flex items-center gap-1.5 text-sm font-medium text-copper-dark hover:gap-2.5">
-            All articles <ArrowRight className="size-4 transition-all" aria-hidden />
-          </Link>
-        }
-      />
-      <div className="grid gap-8 md:grid-cols-3">
-        {articles.map((a) => (
-          <Link key={a.slug} href={`/learn/${a.slug}`} className="group">
-            <div className="relative aspect-[3/2] overflow-hidden rounded-2xl bg-ivory">
-              {a.coverImage && (
-                <Image
-                  src={a.coverImage}
-                  alt=""
-                  fill
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                />
-              )}
-            </div>
-            <p className="mt-4 text-[11px] font-semibold tracking-wider text-copper-dark uppercase">
-              {a.category} · {a.readMinutes} min read
+          <div className="hidden space-y-6 text-body lg:block" {...reveal(1)}>
+            <p className="max-w-[30ch]">
+              The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out this
+              colour.
             </p>
-            <h3 className="mt-2 font-display text-xl leading-snug text-espresso group-hover:text-copper-dark">{a.title}</h3>
-            <p className="mt-2 line-clamp-2 text-sm text-cocoa">{a.excerpt}</p>
-            {a.publishedAt && <p className="mt-2 text-xs text-taupe">{formatDate(a.publishedAt)}</p>}
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function ReviewsGrid({
-  reviews,
-}: {
-  reviews: {
-    id: string;
-    authorName: string;
-    rating: number;
-    title: string;
-    body: string;
-    verifiedPurchase: boolean;
-    productName: string;
-    productSlug: string;
-  }[];
-}) {
-  if (reviews.length === 0) return null;
-  return (
-    <section className="bg-ivory py-20 md:py-28" aria-labelledby="reviews-home-heading">
-      <div className="container-bp">
-        <SectionHeading
-          align="center"
-          eyebrow="Real results"
-          title={<span id="reviews-home-heading">In their words</span>}
-          description="Unedited reviews from verified Beauty Peps customers."
-        />
-        <ul className="scrollbar-none -mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
-          {reviews.slice(0, 6).map((r) => (
-            <li key={r.id} className="w-[85%] shrink-0 snap-start sm:w-[60%] md:w-auto">
-              <figure className="flex h-full flex-col rounded-2xl border border-stone/70 bg-cream p-6">
-                <Stars rating={r.rating} />
-                <blockquote className="mt-4 flex-1">
-                  <p className="font-display text-lg leading-snug text-espresso">“{r.title}”</p>
-                  <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-cocoa">{r.body}</p>
-                </blockquote>
-                <figcaption className="mt-6 flex items-center justify-between gap-3 border-t border-stone/60 pt-4 text-xs">
-                  <span className="flex items-center gap-1.5 font-medium text-espresso">
-                    {r.authorName}
-                    {r.verifiedPurchase && <BadgeCheck className="size-3.5 text-sage" aria-label="Verified purchase" />}
-                  </span>
-                  <Link href={`/products/${r.productSlug}`} className="truncate text-copper-dark hover:underline">
-                    {r.productName}
-                  </Link>
-                </figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function ActivesBand() {
-  return (
-    <section className="container-bp py-20 md:py-28" aria-labelledby="actives-heading">
-      <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="lg:order-last">
-          <div className="relative aspect-[3/2] overflow-hidden rounded-[2rem]">
-            <Image
-              src="/images/editorial/actives.webp"
-              alt="Amber vials of lyophilised cosmetic peptide powders beside a precision scale"
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-cover"
-            />
+            <p className="max-w-[30ch]">Use it at night, apart from vitamin C and strong acids, which loosen the copper.</p>
           </div>
         </div>
-        <div>
-          <p className="eyebrow mb-4">For formulators</p>
-          <h2 id="actives-heading" className="font-display text-4xl leading-tight text-espresso md:text-5xl">
-            Pure actives, lab-grade.
-          </h2>
-          <p className="mt-5 max-w-lg leading-relaxed text-cocoa">
-            Making your own serums? Our cosmetic-grade lyophilised peptides — GHK-Cu, Argireline, Matrixyl and SNAP-8 —
-            ship with a certificate of analysis and a formulation sheet covering dissolution, use level and pH.
-          </p>
-          <ul className="mt-6 space-y-2 text-sm text-cocoa">
-            {["Batch-tested for identity and purity", "Recommended use levels & pH windows", "Cold-chain packed, stored dry"].map((t) => (
-              <li key={t} className="flex items-center gap-2.5">
-                <span className="size-1.5 rounded-full bg-copper" aria-hidden />
-                {t}
+
+        {/* The run: one frame lifted out of the row, bottoms aligned, leaving the right edge */}
+        <div className="lg:col-span-9">
+          <ul className="hidden items-end gap-1.5 lg:flex">
+            {[lifted, ...rest].map((f, i) => (
+              <li key={f.src} className="shrink-0" {...reveal(i)}>
+                <Link href={f.href} className="group block">
+                  <div
+                    className="relative overflow-hidden bg-surface"
+                    style={{ height: f.lifted ? "66vh" : "30vh", aspectRatio: f.ratio }}
+                  >
+                    {f.video ? (
+                      <LoopVideo src={f.video} poster={f.src} label={f.alt} />
+                    ) : (
+                      <Image
+                        src={f.src}
+                        alt={f.alt}
+                        fill
+                        sizes={f.lifted ? "40vw" : "25vw"}
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    )}
+                  </div>
+                  <div className="mt-2 flex justify-between gap-4 text-small">
+                    <span className="font-medium">{f.name}</span>
+                    <span className="text-muted">{f.fact}</span>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
-          <Link href="/shop?category=pure-actives" className={buttonClasses({ className: "mt-8" })}>
-            Shop pure actives
-          </Link>
+
+          {/* Phone: the lifted frame first at full width, the rest two by two */}
+          <div className="lg:hidden">
+            <Link href={lifted.href} className="block md:w-2/3">
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface">
+                <Image src={lifted.src} alt={lifted.alt} fill sizes="100vw" className="object-cover" />
+              </div>
+              <div className="mt-2 flex justify-between text-small">
+                <span className="font-medium">{lifted.name}</span>
+                <span className="text-muted">{lifted.fact}</span>
+              </div>
+            </Link>
+            <ul className="mt-6 grid grid-cols-2 gap-x-1.5 gap-y-5 md:grid-cols-3">
+              {rest.map((f, i) => (
+                <li key={f.src} className={i === rest.length - 1 ? "col-span-2 md:col-span-1" : undefined}>
+                  <Link href={f.href} className="block">
+                    <div
+                      className={cn(
+                        "relative overflow-hidden bg-surface",
+                        i === rest.length - 1 ? "aspect-[16/9] md:aspect-[4/5]" : "aspect-[4/5]",
+                      )}
+                    >
+                      {f.video ? (
+                        <LoopVideo src={f.video} poster={f.src} label={f.alt} />
+                      ) : (
+                        <Image src={f.src} alt={f.alt} fill sizes="50vw" className="object-cover" />
+                      )}
+                    </div>
+                    <p className="mt-2 text-small font-medium">{f.name}</p>
+                    <p className="text-small text-muted">{f.fact}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 space-y-4 text-body">
+              <p>The blue is the copper ion held by the peptide, not a dye.</p>
+              <p>Use it at night, apart from vitamin C and strong acids.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -524,77 +173,331 @@ export function ActivesBand() {
 }
 
 /* ------------------------------------------------------------------ */
+/* List — "Object riding down the schedule": the graded library        */
+/* ------------------------------------------------------------------ */
 
-const HOME_FAQS = [
-  {
-    q: "Do topical peptides actually work?",
-    a: "Several cosmetic peptides have published, placebo-controlled human studies showing measurable improvements in wrinkle depth, firmness or expression lines over 4–12 weeks. Results depend on the peptide, its concentration and the formula — which is why we publish the evidence for each one in our Peptide Library.",
-  },
-  {
-    q: "Can I use peptides with retinol or vitamin C?",
-    a: "Yes, with a little planning. Most signal and neuropeptides layer happily with retinoids. Copper peptides (GHK-Cu) are best kept apart from strong acids and L-ascorbic acid — use vitamin C in the morning and GHK-Cu at night.",
-  },
-  {
-    q: "How do I pay?",
-    a: "We accept bank transfer and PayID. After you place your order you'll get our details on screen and by email — use your order number as the reference and we'll dispatch as soon as payment clears.",
-  },
-  {
-    q: "How long does shipping take?",
-    a: "Orders dispatch from Melbourne within one business day of payment clearing. Australia Post standard takes 2–6 business days; Express is 1–3.",
-  },
-];
+const CLASS_SHORT: Record<string, string> = {
+  signal: "Signal",
+  carrier: "Carrier",
+  "neurotransmitter-inhibitor": "Neurotransmitter-inhibiting",
+  "enzyme-inhibitor": "Enzyme-inhibiting",
+};
 
-export function FaqTeaser() {
+export function LibraryList({ peptides, vial }: { peptides: Peptide[]; vial?: ProductCardData }) {
+  const flagship = "ghk-cu";
+  const vialSrc = vial ? specimenTrimSrc(vial.image) : null;
+
   return (
-    <section className="container-bp pb-20 md:pb-28" aria-labelledby="faq-home-heading">
-      <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
-        <div>
-          <p className="eyebrow mb-4">Questions</p>
-          <h2 id="faq-home-heading" className="font-display text-4xl leading-tight text-espresso">
-            Good questions, honest answers
+    <section className="mt-40 bg-field-ink pt-24 pb-30 text-field-ink-ink lg:mt-60 lg:pt-32" aria-labelledby="library-title">
+      <div className="container-bp relative">
+        {/* The vial travels down the centre line, over the empty middle of each row (desktop only) */}
+        {vialSrc && (
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-10 hidden w-[16%] -translate-x-1/2 lg:block" aria-hidden>
+            <div className="sticky top-[12vh] h-[46vh] w-full">
+              <Image src={vialSrc} alt="" fill sizes="16vw" className="object-contain" />
+            </div>
+          </div>
+        )}
+
+        <h2 id="library-title" className="display-type relative mb-16 flex items-center justify-center gap-[22%] pt-[4vh] text-head lg:mb-24">
+          <span>Peptide</span>
+          <span>library</span>
+        </h2>
+        {vialSrc && (
+          <div className="relative mx-auto -mt-6 mb-10 h-[52vw] w-[30%] lg:hidden" aria-hidden>
+            <Image src={vialSrc} alt="" fill sizes="30vw" className="object-contain" />
+          </div>
+        )}
+
+        <ol className="relative">
+          {peptides.map((p, i) => {
+            const accent = p.slug === flagship;
+            return (
+              <li key={p.id} data-reveal="row" style={{ ["--reveal-i" as string]: Math.min(i, 8) }}>
+                <Link
+                  href={`/peptides/${p.slug}`}
+                  className={cn(
+                    "grid min-h-[84px] grid-cols-1 items-center gap-1 px-4 py-4 transition-colors sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-8 lg:px-6",
+                    accent ? "bg-accent text-accent-ink" : i % 2 === 0 ? "bg-field-ink hover:bg-white/10" : "bg-white/[0.06] hover:bg-white/10",
+                  )}
+                >
+                  <span className="lg:max-w-[36%]">
+                    <span className="block text-lead font-medium">{p.name}</span>
+                    <span className={cn("block text-small", accent ? "text-white/85" : "text-white/70")}>
+                      {p.inciName} · {CLASS_SHORT[p.peptideClass] ?? p.peptideClass} peptide
+                    </span>
+                  </span>
+                  <span className="tabular text-body sm:text-right">
+                    Evidence grade {p.evidenceLevel} of 5
+                    {p.typicalConcentration ? <span className="block text-small opacity-80">Used at {p.typicalConcentration}</span> : null}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="mt-12 max-w-[60ch] text-body">
+          Grade 1 means laboratory data only; grade 5 means repeated, independent human trials.{" "}
+          <Link href="/peptides" className="underline underline-offset-4">
+            Read every monograph
+          </Link>
+          .
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* How it works — "Tiles that grow": powder to serum to skin           */
+/* ------------------------------------------------------------------ */
+
+export function PowderToSkin({ powder, serum }: { powder?: ProductCardData; serum?: ProductCardData }) {
+  const stages = [
+    {
+      name: "Weighed",
+      text: "Each peptide arrives freeze-dried and is weighed to the percentage printed on the label.",
+      span: "lg:col-span-3",
+      height: "lg:h-[30vh]",
+      phoneHeight: "h-[34vw]",
+    },
+    {
+      name: "Dissolved",
+      text: "It goes into a water and glycerin base below 40 °C and is bottled in small batches.",
+      span: "lg:col-span-4",
+      height: "lg:h-[44vh]",
+      phoneHeight: "h-[46vw]",
+    },
+    {
+      name: "Applied",
+      text: "Morning and night, for the 8 to 12 weeks in which studies measure change.",
+      span: "lg:col-span-5",
+      height: "lg:h-[60vh]",
+      phoneHeight: "h-[62vw]",
+    },
+  ];
+
+  return (
+    <section className="container-bp mt-40 lg:mt-60" aria-labelledby="powder-title">
+      <div className="relative grid grid-cols-1 gap-7 lg:grid-cols-12 lg:items-end lg:gap-2.5">
+        {/* The heading sits in the empty ground above the two smaller tiles */}
+        <h2
+          id="powder-title"
+          className="display-type text-head lg:absolute lg:top-0 lg:left-0 lg:w-[58%]"
+          {...reveal(0)}
+        >
+          From powder to skin
+        </h2>
+        {stages.map((s, i) => (
+          <div key={s.name} className={s.span} {...reveal(i + 1)}>
+            <div
+              className={cn(
+                "relative w-full overflow-hidden",
+                s.phoneHeight,
+                s.height,
+                i === 0 ? "bg-field-frost" : i === 1 ? "bg-field-stone" : "bg-surface",
+              )}
+            >
+              {i === 0 && powder && (
+                <Image
+                  src={specimenTrimSrc(powder.image) ?? powder.image}
+                  alt="Amber vial of freeze-dried Matrixyl powder with a steel spatula"
+                  fill
+                  sizes="25vw"
+                  className="object-contain p-[12%]"
+                />
+              )}
+              {i === 1 && serum && (
+                <Image
+                  src={specimenTrimSrc(serum.image) ?? serum.image}
+                  alt="Multi-Peptide 12 serum in a frosted glass bottle"
+                  fill
+                  sizes="33vw"
+                  className="object-contain p-[9%]"
+                />
+              )}
+              {i === 2 && (
+                <Image
+                  src="/images/editorial/ritual.webp"
+                  alt="A woman pressing serum from a glass dropper onto her cheekbone"
+                  fill
+                  sizes="42vw"
+                  className="drift object-cover object-[50%_30%]"
+                />
+              )}
+            </div>
+            <h3 className="mt-4 text-lead font-medium">{s.name}</h3>
+            <p className="mt-1 max-w-[38ch] text-body">{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Testimonial — "Quotes on paper slips"                               */
+/* ------------------------------------------------------------------ */
+
+type ReviewSlip = {
+  id: string;
+  authorName: string;
+  title: string;
+  body: string;
+  verifiedPurchase: boolean;
+  productName: string;
+  productSlug: string;
+  productImage: string;
+};
+
+const SLIP_TEAR =
+  "polygon(0 8px, 4% 0, 8% 8px, 12% 0, 16% 8px, 20% 0, 24% 8px, 28% 0, 32% 8px, 36% 0, 40% 8px, 44% 0, 48% 8px, 52% 0, 56% 8px, 60% 0, 64% 8px, 68% 0, 72% 8px, 76% 0, 80% 8px, 84% 0, 88% 8px, 92% 0, 96% 8px, 100% 0, 100% calc(100% - 8px), 96% 100%, 92% calc(100% - 8px), 88% 100%, 84% calc(100% - 8px), 80% 100%, 76% calc(100% - 8px), 72% 100%, 68% calc(100% - 8px), 64% 100%, 60% calc(100% - 8px), 56% 100%, 52% calc(100% - 8px), 48% 100%, 44% calc(100% - 8px), 40% 100%, 36% calc(100% - 8px), 32% 100%, 28% calc(100% - 8px), 24% 100%, 20% calc(100% - 8px), 16% 100%, 12% calc(100% - 8px), 8% 100%, 4% calc(100% - 8px), 0 100%)";
+
+export function ReviewSlips({ reviews }: { reviews: ReviewSlip[] }) {
+  if (reviews.length === 0) return null;
+  const slips = reviews.slice(0, 3);
+  const shapes = [
+    { rotate: -4, height: 440, offset: "lg:mt-10" },
+    { rotate: 2, height: 520, offset: "lg:-ml-10 lg:mt-24" },
+    { rotate: 5, height: 600, offset: "lg:-ml-10 lg:mt-4" },
+  ];
+
+  return (
+    <section className="mt-40 overflow-hidden bg-field-sapphire pt-24 text-field-sapphire-ink lg:mt-60 lg:pt-32" aria-labelledby="slips-title">
+      <div className="container-bp">
+        <h2 id="slips-title" className="display-type text-head" {...reveal(0)}>
+          In their words
+        </h2>
+        <p className="mt-4 max-w-[52ch] text-body" {...reveal(1)}>
+          Reviews from customers who bought the formula, shown as they were written.
+        </p>
+        <ul className="mt-14 -mb-24 flex flex-col items-start gap-0 lg:mx-[8.33%] lg:flex-row lg:items-start lg:justify-center">
+          {slips.map((r, i) => {
+            const s = shapes[i];
+            const cutout = specimenSrc(r.productImage);
+            return (
+              <li
+                key={r.id}
+                className={cn(
+                  "relative w-[78%] max-w-[320px] shrink-0 lg:w-[320px]",
+                  i % 2 === 1 ? "self-end lg:self-auto" : "",
+                  i > 0 && "-mt-8 lg:mt-0",
+                  s.offset,
+                )}
+                style={{ transform: `rotate(${s.rotate}deg)`, zIndex: i }}
+              >
+                <div {...reveal(i + 2)}>
+                <figure
+                  className="flex flex-col bg-white px-6 pt-8 pb-10 text-ink lg:min-h-[var(--h)]"
+                  style={{ clipPath: SLIP_TEAR, ["--h" as string]: `${s.height}px` }}
+                >
+                  <figcaption className="text-center">
+                    <span className="block text-body font-semibold">{r.authorName}</span>
+                    <span className="block text-small">
+                      {r.verifiedPurchase ? "Verified buyer" : "Customer"} ·{" "}
+                      <Link href={`/products/${r.productSlug}`} className="underline underline-offset-2">
+                        {r.productName}
+                      </Link>
+                    </span>
+                  </figcaption>
+                  <div className="relative mx-auto my-6 size-[120px] bg-surface">
+                    <Image
+                      src={cutout ?? r.productImage}
+                      alt={r.productName}
+                      fill
+                      sizes="120px"
+                      className={cn("grayscale", cutout ? "object-contain" : "object-cover")}
+                    />
+                  </div>
+                  <blockquote className="text-body">
+                    <p className="font-medium">{r.title}</p>
+                    <p className="mt-2">{r.body}</p>
+                  </blockquote>
+                </figure>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ — "Tabbed index cards"                                          */
+/* ------------------------------------------------------------------ */
+
+const CARD_FIELDS = ["bg-field-stone", "bg-field-frost", "bg-surface-2"];
+
+export function FaqCards({ settings }: { settings: StoreSettings }) {
+  const freeOver = settings.freeShippingThreshold > 0 ? `, and standard is free over ${formatMoney(settings.freeShippingThreshold)}` : "";
+  const cards = [
+    {
+      topic: "Results",
+      q: "How long until I see a difference?",
+      a: "Peptides work slowly. Most studies measure change after 8 to 12 weeks of twice-daily use; skin usually feels smoother within the first few weeks.",
+    },
+    {
+      topic: "Layering",
+      q: "Can I use peptides with retinol or vitamin C?",
+      a: "Yes. Apply peptides after cleansing and before moisturiser. Keep GHK-Cu apart from L-ascorbic acid and strong acids: copper at night, vitamin C in the morning.",
+    },
+    {
+      topic: "Payment",
+      q: "How do I pay?",
+      a: `By bank transfer or PayID. After you order we email the details; use your order number as the reference and we ship once it clears. Unpaid orders are released after ${settings.paymentWindowDays} days.`,
+    },
+    {
+      topic: "Shipping",
+      q: "How quickly will it arrive?",
+      a: `Australia Post from Melbourne. ${settings.dispatchTime} Standard is ${formatMoney(settings.standardShipping)} and express ${formatMoney(settings.expressShipping)}${freeOver}.`,
+    },
+    {
+      topic: "Returns",
+      q: "What if it isn't right for me?",
+      a: "Unopened items can be returned within 30 days. Faulty or damaged items are always replaced or refunded.",
+    },
+    {
+      topic: "Formulators",
+      q: "Can I make my own serum with the pure actives?",
+      a: "Yes. They are cosmetic-grade, freeze-dried powders and come with a formulation sheet: use level, pH window, and add them below 40 °C.",
+    },
+  ];
+
+  return (
+    <section className="container-bp mt-40 lg:mt-60" aria-labelledby="faq-title">
+      <div className="lg:mx-[16.66%]">
+        <div className="mb-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" {...reveal(0)}>
+          <h2 id="faq-title" className="display-type text-head">
+            Before you order
           </h2>
-          <p className="mt-4 text-cocoa">Everything about peptides, ordering and shipping is covered in our FAQ.</p>
-          <Link href="/faq" className={buttonClasses({ variant: "outline", className: "mt-8" })}>
-            Read all FAQs
+          <Link href="/faq" className="text-body underline underline-offset-4">
+            All questions
           </Link>
         </div>
-        <div className="divide-y divide-stone/70 border-y border-stone/70">
-          {HOME_FAQS.map((f) => (
-            <details key={f.q} className="group py-1">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 font-display text-lg text-espresso [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <span
-                  className="grid size-7 shrink-0 place-items-center rounded-full border border-stone font-sans text-sm text-cocoa transition-transform group-open:rotate-45"
-                  aria-hidden
-                >
-                  +
+        <div className="index-cards">
+          {cards.map((c, i) => (
+            <details
+              key={c.topic}
+              name="home-faq"
+              open={i === 0}
+              className={cn("index-card group relative", CARD_FIELDS[i % CARD_FIELDS.length])}
+              style={{ ["--tab-x" as string]: `${i}`, zIndex: i + 1 }}
+            >
+              <summary className="flex min-h-[96px] cursor-pointer list-none flex-col justify-center px-6 pt-[56px] pb-[46px] [&::-webkit-details-marker]:hidden">
+                <span className="index-tab absolute top-0 flex h-10 items-center px-5 text-small font-medium">{c.topic}</span>
+                <span className="flex items-center justify-between gap-6 text-lead font-medium">
+                  {c.q}
+                  <span aria-hidden className="text-lead leading-none transition-transform duration-300 group-open:rotate-45">
+                    +
+                  </span>
                 </span>
               </summary>
-              <p className="pb-6 text-sm leading-relaxed text-cocoa">{f.a}</p>
+              <p className="-mt-6 max-w-[50ch] px-6 pb-16 text-body">{c.a}</p>
             </details>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-
-export function NewsletterBand() {
-  return (
-    <section className="container-bp" aria-labelledby="newsletter-heading">
-      <div className="grid items-center gap-8 rounded-[2rem] border border-stone/70 bg-blush/40 px-6 py-12 md:grid-cols-2 md:px-14 md:py-16">
-        <div>
-          <p className="eyebrow mb-3">The Peptide Letter</p>
-          <h2 id="newsletter-heading" className="font-display text-3xl leading-tight text-espresso md:text-4xl">
-            Research, not hype — twice a month.
-          </h2>
-          <p className="mt-3 text-sm text-cocoa">
-            New studies decoded, formulation notes and early access to launches. Unsubscribe anytime.
-          </p>
-        </div>
-        <NewsletterForm tone="light" source="home" />
       </div>
     </section>
   );

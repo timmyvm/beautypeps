@@ -1,45 +1,29 @@
 import type { Metadata } from "next";
-import {
-  ActivesBand,
-  Bestsellers,
-  ConcernTiles,
-  FaqTeaser,
-  Hero,
-  JournalTeaser,
-  MeetThePeptides,
-  NewsletterBand,
-  ReviewsGrid,
-  RitualSection,
-  RoutineBuilderCta,
-  ScienceBand,
-  Spotlight,
-  TrustStrip,
-} from "@/components/home/sections";
-import {
-  getFeaturedProducts,
-  getLatestArticles,
-  getPeptideTeasers,
-  getProductBySlug,
-  getTopReviews,
-} from "@/lib/queries/catalog";
+import { CatalogueGuide } from "@/components/home/catalogue-guide";
+import { BlueByCopper, FaqCards, LibraryList, PowderToSkin, ReviewSlips } from "@/components/home/sections";
+import { SpecimenHero } from "@/components/home/specimen-hero";
+import { CONCERNS } from "@/lib/constants";
+import { getTopReviews, listProducts } from "@/lib/queries/catalog";
+import { getPublishedPeptides } from "@/lib/queries/content";
 import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
-  title: { absolute: "Beauty Peps — Clinical Beauty Peptides, Made in Australia" },
+  title: { absolute: "Beauty Peps — Peptide serums, graded" },
   description:
-    "High-concentration peptide serums and pure cosmetic-grade actives — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more — plus a free, evidence-led Peptide Library.",
+    "Small-batch Melbourne serums from 13 cosmetic peptides, with the concentration on every label and an evidence grade for every peptide. GHK-Cu, Matrixyl, Argireline, SNAP-8 and more.",
   alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {
-  const [settings, bestsellers, peptides, spotlight, articles, reviews] = await Promise.all([
+  const [settings, products, peptides, reviews] = await Promise.all([
     getSettings(),
-    getFeaturedProducts(8),
-    getPeptideTeasers(6),
-    getProductBySlug("ghk-cu-copper-peptide-serum"),
-    getLatestArticles(3),
-    getTopReviews(6),
+    listProducts({ sort: "featured" }),
+    getPublishedPeptides(),
+    getTopReviews(3),
   ]);
+
+  const bySlug = (slug: string) => products.find((p) => p.slug === slug);
+  const grades = Object.fromEntries(peptides.map((p) => [p.slug, { name: p.name, grade: p.evidenceLevel }]));
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const orgJsonLd = {
@@ -58,20 +42,25 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd).replace(/</g, "\\u003c") }}
       />
-      <Hero />
-      <TrustStrip freeShippingThreshold={settings.freeShippingThreshold} />
-      <Bestsellers products={bestsellers.slice(0, 8)} />
-      <ConcernTiles />
-      <MeetThePeptides peptides={peptides} />
-      <ScienceBand />
-      <Spotlight product={spotlight} />
-      <RitualSection />
-      <RoutineBuilderCta />
-      <JournalTeaser articles={articles} />
-      <ReviewsGrid reviews={reviews} />
-      <ActivesBand />
-      <FaqTeaser />
-      <NewsletterBand />
+
+      <SpecimenHero products={products} />
+
+      <section className="container-bp mt-24 lg:mt-40" aria-labelledby="catalogue-title">
+        <h2 id="catalogue-title" className="display-type mb-4 text-head" data-reveal="">
+          All {products.length} formulas
+        </h2>
+        <CatalogueGuide
+          products={products}
+          concerns={CONCERNS.map((c) => ({ slug: c.slug, label: c.label }))}
+          grades={grades}
+        />
+      </section>
+
+      <BlueByCopper products={products} />
+      <LibraryList peptides={peptides} vial={bySlug("ghk-cu-pure-powder")} />
+      <PowderToSkin powder={bySlug("matrixyl-pure-powder")} serum={bySlug("multi-peptide-complex")} />
+      <ReviewSlips reviews={reviews} />
+      <FaqCards settings={settings} />
     </>
   );
 }

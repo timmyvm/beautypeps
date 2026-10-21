@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Lets several dev servers run side by side (NEXT_DIST_DIR=.next-a next dev -p 3001)
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  devIndicators: false,
   turbopack: {
     rules: {
       "*.css": {

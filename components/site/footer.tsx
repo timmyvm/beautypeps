@@ -1,76 +1,96 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
-import { Logo } from "./logo";
-import { FOOTER_COLUMNS } from "./nav-links";
+import { MelbourneTime } from "./melbourne-time";
+import { FOOTER_LINKS } from "./nav-links";
 import { NewsletterForm } from "./newsletter-form";
 
+const timeFmt = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Melbourne", weekday: "long", hour: "numeric", minute: "2-digit" });
+
+/** The footer is the last two rows of the board: filled tiles, every cell used. */
 export async function Footer() {
   const settings = await getSettings();
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 bg-espresso text-cream/80">
-      <div className="container-bp grid gap-12 py-16 lg:grid-cols-[1.2fr_2fr]">
-        <div className="max-w-sm">
-          <Logo variant="light" />
-          <p className="mt-6 text-sm leading-relaxed text-cream/70">
-            High-concentration cosmetic peptides, formulated in small batches and explained with honest, evidence-led
-            education.
-          </p>
-          <p className="mt-8 mb-3 text-xs font-semibold tracking-[0.2em] text-cream uppercase">The Peptide Letter</p>
-          <p className="mb-4 text-sm text-cream/60">New research, formulation notes and early access. Twice a month.</p>
-          <NewsletterForm />
-        </div>
-
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.title}>
-              <p className="mb-4 text-xs font-semibold tracking-[0.2em] text-cream uppercase">{col.title}</p>
-              <ul className="space-y-2.5">
-                {col.links.map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-cream/65 transition-colors hover:text-cream">
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-t border-cream/10">
-        <div className="container-bp py-8 text-xs leading-relaxed text-cream/45">
-          <p className="max-w-4xl">
-            Beauty Peps products are cosmetics for external, topical use only. They are not intended to diagnose,
-            treat, cure or prevent any disease, and statements on this site have not been evaluated by the TGA.
-            Information in our Peptide Library is educational and summarises published research — it is not medical
-            advice. Patch test before use and consult a health professional if you are pregnant, breastfeeding or under
-            medical care.
-          </p>
-          <div className="mt-6 flex flex-col justify-between gap-3 sm:flex-row">
-            <p>
-              © {year} {settings.storeName}
-              {settings.abn ? ` · ABN ${settings.abn}` : ""} · {settings.businessAddress}
+    <footer className="container-bp mt-32 pb-[var(--margin)] md:mt-40">
+      <h2 className="sr-only">About Beauty Peps</h2>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-12">
+        {/* Statement + newsletter + legal */}
+        <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-4 md:min-h-[300px]">
+          <div>
+            <p className="max-w-[26ch] text-lead font-medium">
+              Cosmetic peptides, dosed in full and graded honestly. Made in Melbourne.
             </p>
-            <div className="flex gap-5">
-              {settings.instagram && (
-                <a href={settings.instagram} target="_blank" rel="noreferrer" className="hover:text-cream">
-                  Instagram
-                </a>
-              )}
-              {settings.tiktok && (
-                <a href={settings.tiktok} target="_blank" rel="noreferrer" className="hover:text-cream">
-                  TikTok
-                </a>
-              )}
-              <a href={`mailto:${settings.supportEmail}`} className="hover:text-cream">
-                {settings.supportEmail}
-              </a>
-            </div>
+            <p className="mt-6 mb-3 text-body">The Peptide Letter: new research, twice a month.</p>
+            <NewsletterForm />
           </div>
+          <p className="text-small">
+            Cosmetics for external use only. Not intended to diagnose, treat, cure or prevent any disease; statements
+            have not been evaluated by the TGA. The Peptide Library summarises published research and is not medical
+            advice. © {year} {settings.storeName}
+            {settings.abn ? `, ABN ${settings.abn}` : ""}.
+          </p>
         </div>
+
+        {/* Navigation */}
+        <nav aria-label="Footer" className="col-span-2 bg-field-frost p-6 md:col-span-4 lg:col-span-3">
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-body">
+            {FOOTER_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="link-quiet">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Local time */}
+        <div className="flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-2">
+          <p className="text-body">Melbourne</p>
+          <p className="text-lead font-medium">
+            <MelbourneTime initial={timeFmt.format(new Date())} />
+          </p>
+          <p className="text-small">{settings.dispatchTime}</p>
+        </div>
+
+        {/* Email */}
+        <div className="flex flex-col justify-between gap-6 bg-field-stone p-6 md:col-span-2 lg:col-span-3">
+          <p className="text-body">Questions about a formula or an order</p>
+          <a href={`mailto:${settings.supportEmail}`} className="link-quiet text-lead font-medium break-all">
+            {settings.supportEmail}
+          </a>
+        </div>
+
+        {/* The name returns */}
+        <div className="col-span-2 flex min-h-[180px] items-center justify-center bg-field-ink p-8 md:col-span-8 md:min-h-[320px]">
+          <Image
+            src="/images/brand/logo-wordmark-light.png"
+            alt="Beauty Peps"
+            width={1229}
+            height={301}
+            className="h-auto w-full max-w-[52rem]"
+          />
+        </div>
+
+        {/* Invitation */}
+        <Link
+          href="/routine-builder"
+          className="press group col-span-2 flex min-h-[200px] flex-col justify-between bg-accent p-6 text-accent-ink hover:bg-accent-strong md:col-span-4 md:min-h-[320px]"
+        >
+          <span className="max-w-[12ch] text-lead font-medium">Build your routine</span>
+          <svg
+            aria-hidden
+            viewBox="0 0 64 64"
+            className="ml-auto size-16 transition-transform duration-300 group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+          >
+            <path d="M8 32h46M36 14l18 18-18 18" />
+          </svg>
+        </Link>
       </div>
     </footer>
   );

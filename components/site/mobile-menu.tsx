@@ -1,11 +1,11 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { CONCERN_LINKS, LEARN_LINKS, SHOP_LINKS } from "./nav-links";
+import { LEARN_LINKS, SHOP_LINKS } from "./nav-links";
 
+/** Phone navigation: a "Menu" text button that opens a full-screen sheet. */
 export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -19,8 +19,11 @@ export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: 
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
@@ -29,85 +32,66 @@ export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Open menu"
         aria-expanded={open}
-        className="-ml-2 grid size-10 place-items-center rounded-full text-espresso hover:bg-espresso/5"
+        className="press h-10 text-small font-medium text-ink"
       >
-        <Menu className="size-5" aria-hidden />
+        Menu
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Menu">
-          <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-cream p-6 shadow-2xl animate-fade-up">
-            <div className="mb-8 flex items-center justify-between">
-              <span className="font-display text-xl">Menu</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="grid size-10 place-items-center rounded-full hover:bg-espresso/5"
-              >
-                <X className="size-5" aria-hidden />
-              </button>
-            </div>
-
-            <MenuGroup title="Shop" links={SHOP_LINKS} />
-            <MenuGroup title="Shop by concern" links={CONCERN_LINKS} />
-            <MenuGroup title="Learn" links={LEARN_LINKS} />
-            <MenuGroup
-              title="Help"
-              links={[
-                { href: "/about", label: "About us" },
-                { href: "/faq", label: "FAQ" },
-                { href: "/track", label: "Track an order" },
-                { href: "/contact", label: "Contact" },
-              ]}
-            />
-
-            <div className="mt-auto border-t border-stone pt-6">
-              {signedIn ? (
-                <div className="flex flex-col gap-3">
-                  <Link href="/account" className="text-sm font-medium">
-                    My account
-                  </Link>
-                  {isAdmin && (
-                    <Link href="/admin" className="text-sm font-medium text-copper-dark">
-                      Admin panel
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <div className="flex gap-4">
-                  <Link href="/login" className="text-sm font-medium">
-                    Sign in
-                  </Link>
-                  <Link href="/register" className="text-sm font-medium text-copper-dark">
-                    Create account
-                  </Link>
-                </div>
-              )}
-            </div>
+        <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg" role="dialog" aria-modal="true" aria-label="Menu">
+          <div className="flex h-16 shrink-0 items-center justify-between px-[var(--margin)]">
+            <span className="text-[16px] font-medium">Menu</span>
+            <button type="button" onClick={() => setOpen(false)} className="press h-10 text-[16px] font-medium">
+              Close
+            </button>
           </div>
+          <nav aria-label="Mobile" className="flex flex-col gap-10 px-[var(--margin)] pt-4 pb-12">
+            <ul className="space-y-1">
+              {SHOP_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="display-type block py-1.5 text-[34px]">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-3">
+              {LEARN_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="block text-[20px] font-medium">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-3 text-[17px]">
+              <li>
+                <Link href={signedIn ? "/account" : "/login"}>{signedIn ? "My account" : "Sign in"}</Link>
+              </li>
+              {isAdmin && (
+                <li>
+                  <Link href="/admin" className="text-accent">
+                    Admin panel
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link href="/search">Search</Link>
+              </li>
+              <li>
+                <Link href="/track">Track an order</Link>
+              </li>
+              <li>
+                <Link href="/faq">FAQ</Link>
+              </li>
+              <li>
+                <Link href="/contact">Contact</Link>
+              </li>
+            </ul>
+          </nav>
         </div>
       )}
-    </div>
-  );
-}
-
-function MenuGroup({ title, links }: { title: string; links: { href: string; label: string }[] }) {
-  return (
-    <div className="mb-7">
-      <p className="eyebrow mb-3">{title}</p>
-      <ul className="space-y-2.5">
-        {links.map((l) => (
-          <li key={l.href}>
-            <Link href={l.href} className="text-[15px] text-espresso">
-              {l.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

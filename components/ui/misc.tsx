@@ -13,10 +13,10 @@ export function Price({
   className?: string;
 }) {
   return (
-    <span className={cn("inline-flex items-baseline gap-2", className)}>
+    <span className={cn("tabular inline-flex items-baseline gap-2", className)}>
       <span>{formatMoney(cents)}</span>
       {compareAt && compareAt > cents ? (
-        <span className="text-[0.85em] text-taupe line-through">{formatMoney(compareAt)}</span>
+        <span className="text-[0.85em] text-muted line-through">{formatMoney(compareAt)}</span>
       ) : null}
     </span>
   );
@@ -24,13 +24,13 @@ export function Price({
 
 export function Stars({ rating, size = 14, className }: { rating: number; size?: number; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-0.5 text-copper", className)} aria-label={`${rating.toFixed(1)} out of 5`}>
+    <span className={cn("inline-flex items-center gap-0.5 text-ink", className)} aria-label={`${rating.toFixed(1)} out of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
           width={size}
           height={size}
-          className={i <= Math.round(rating) ? "fill-current" : "fill-transparent opacity-40"}
+          className={i <= Math.round(rating) ? "fill-current" : "fill-transparent opacity-35"}
           aria-hidden
         />
       ))}
@@ -38,8 +38,11 @@ export function Stars({ rating, size = 14, className }: { rating: number; size?:
   );
 }
 
+/**
+ * Section heading: the heading names the section; the first sentence carries the rest.
+ * (`eyebrow` is accepted for older call sites but no longer rendered — no labels above headings.)
+ */
 export function SectionHeading({
-  eyebrow,
   title,
   description,
   align = "left",
@@ -61,10 +64,9 @@ export function SectionHeading({
         className,
       )}
     >
-      <div className={cn("max-w-2xl", align === "center" && "mx-auto")}>
-        {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-        <h2 className="font-display text-3xl leading-tight text-espresso md:text-4xl">{title}</h2>
-        {description && <p className="mt-4 text-base leading-relaxed text-cocoa">{description}</p>}
+      <div className={cn("max-w-3xl", align === "center" && "mx-auto")}>
+        <h2 className="display-type text-head text-ink">{title}</h2>
+        {description && <p className="mt-4 max-w-[60ch] text-body text-ink">{description}</p>}
       </div>
       {action}
     </div>
@@ -85,15 +87,15 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col items-center rounded-2xl border border-dashed border-stone px-6 py-16 text-center", className)}>
-      {icon && <div className="mb-4 text-taupe">{icon}</div>}
-      <h3 className="font-display text-xl text-espresso">{title}</h3>
-      {description && <p className="mt-2 max-w-sm text-sm text-cocoa">{description}</p>}
+    <div className={cn("flex flex-col items-center bg-surface px-6 py-16 text-center", className)}>
+      {icon && <div className="mb-4 text-muted">{icon}</div>}
+      <h3 className="text-[22px] font-medium text-ink">{title}</h3>
+      {description && <p className="mt-2 max-w-sm text-[16px] text-ink">{description}</p>}
       {action && <div className="mt-6">{action}</div>}
     </div>
   );
 }
 
 export function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-2xl border border-stone/70 bg-cream p-6", className)}>{children}</div>;
+  return <div className={cn("bg-surface p-6", className)}>{children}</div>;
 }

@@ -1,5 +1,10 @@
 import clsx, { type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+// Teach tailwind-merge the site's five type steps so `text-body` is read as a size, not a colour.
+const twMerge = extendTailwindMerge({
+  extend: { classGroups: { "font-size": [{ text: ["small", "body", "lead", "head", "display"] }] } },
+});
 
 /** Join class names; later Tailwind classes override conflicting earlier ones (e.g. text-cream beats text-espresso). */
 export function cn(...inputs: ClassValue[]) {
