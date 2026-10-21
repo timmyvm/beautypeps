@@ -5,22 +5,20 @@ MEASURED (first viewport listed)
   @768px          1 line(s) · 43.6px
   @390px          1 line(s) · 36px
   typefaces       chillax 100%
-  sizes in use    14 / 19 / 26 / 68 px   body 14px / 1.45
+  sizes in use    14 / 19 / 26 / 64 / 68 px   body 14px / 1.45
   colour          page #ffffff · sections #ffffff · button #111111
-  page            1.6 screens · 151 words · 2 images · hero media none
-  headings        1 · longest 1 line(s) · median - words
+  page            2.9 screens · 238 words · 6 images · hero media 30% img
+  headings        2 · longest 1 line(s) · median 4 words
 
 FAIL — fix every one of these
   [body-size] @1440px (+768, 390)  Body text is 14px (the size most of the running text is set in).
       → Body copy 16–20px. Map small sizes from blueprints onto your body step.
-  [few-pictures] @1440px  Only 1 picture(s) on the page (1 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.
-      → Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve.
-  [still-page] @1440px  Only 1 element(s) moved while the page loaded and scrolled.
-      → Build the motion layer (SKILL.md step 9, references/motion.md): the signature move, an entrance for the parts of every section, feedback on every control, and one moving picture. Transform and opacity only, with a reduced-motion fallback.
 
 WARN — fix, or be able to defend
   [no-footage] @1440px  No video anywhere on the page.
       → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
+  [still-page] @1440px  Little motion: 11 element(s) moved while the page loaded and scrolled.
+      → Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph.
 
 LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
   desktop 1440px  .taste-skill/after/track/desktop-fold.jpg
@@ -31,4 +29,4 @@ LOOK AT THE RENDER — open these with your image viewer / Read tool before sayi
                   .taste-skill/after/track/mobile-page-01.jpg
 
 report: .taste-skill/after/track/report.json
-RESULT: 3 FAIL, 1 WARN — not done.
+RESULT: 1 FAIL, 2 WARN — not done.

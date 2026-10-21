@@ -1,0 +1,30 @@
+TASTESKILL · INSPECT   http://localhost:3101/search?q=copper
+
+MEASURED (first viewport listed)
+  hero headline   "Results for “copper”"  3 words · 2 line(s) · 88px (6.1vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 54.4px
+  @390px          2 line(s) · 44px
+  typefaces       chillax 100%
+  sizes in use    14 / 16 / 19 / 26 / 64 / 88 px   body 19px / 1.5
+  colour          page #ffffff · sections #ffffff · button #f3f3f1
+  page            3.5 screens · 296 words · 7 images · hero media none
+  headings        4 · longest 2 line(s) · median 1 words
+
+WARN — fix, or be able to defend
+  [no-footage] @1440px  No video anywhere on the page.
+      → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
+  [still-page] @1440px  Little motion: 12 element(s) moved while the page loaded and scrolled.
+      → Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph.
+  [edge-text] @390px  1 text block(s) sit 12–15px from the phone's edge: "6 results across formulas, the" (12px)
+      → The page margin is 16–20px on a phone; the header and the corner labels sit on it too.
+
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/after/search/desktop-fold.jpg
+                  .taste-skill/after/search/desktop-page-01.jpg
+  tablet 768px    .taste-skill/after/search/tablet-fold.jpg
+                  .taste-skill/after/search/tablet-page-01.jpg
+  mobile 390px    .taste-skill/after/search/mobile-fold.jpg
+                  .taste-skill/after/search/mobile-page-01.jpg
+
+report: .taste-skill/after/search/report.json
+RESULT: 0 FAIL, 3 WARN — measurements pass. Passing the meter is the floor, not the grade: score the screenshots with references/critique.md.
