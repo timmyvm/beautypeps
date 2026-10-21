@@ -168,9 +168,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
           <Link
             href={href({ instock: inStock ? undefined : "1" })}
             aria-pressed={inStock}
-            className="text-body underline-offset-4 hover:underline"
+            className="text-body underline underline-offset-4"
           >
-            {inStock ? "Showing in-stock only (show all)" : "In stock only"}
+            {inStock ? "Show sold-out formulas too" : "In stock only"}
           </Link>
           <Suspense>
             <ParamSelect name="concern" label="Concern" options={concernOptions} value={concern ?? ""} />
