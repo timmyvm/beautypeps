@@ -42,7 +42,7 @@ export default async function EditProductPage({ params, searchParams }: Props) {
         title={
           <span className="flex flex-wrap items-center gap-3">
             {product.name}
-            <Badge tone={product.status === "active" ? "sage" : product.status === "draft" ? "amber" : "neutral"} className="capitalize">
+            <Badge tone={product.status === "draft" ? "amber" : "neutral"} className="capitalize">
               {product.status}
             </Badge>
           </span>

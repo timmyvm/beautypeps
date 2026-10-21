@@ -54,7 +54,7 @@ export function ProfileForm({
           defaultChecked={v ? v.marketing === "on" : user.marketingOptIn}
         />
         <span>
-          <span className="block font-medium text-espresso">The Peptide Letter</span>
+          <span className="block font-medium text-ink">The Peptide Letter</span>
           New research, formulation notes and early access to launches. Twice a month, unsubscribe anytime.
         </span>
       </label>

@@ -32,7 +32,7 @@ export function PasswordInput({
           onClick={() => setVisible((v) => !v)}
           aria-label={visible ? "Hide password" : "Show password"}
           aria-pressed={visible}
-          className="absolute inset-y-0 right-0 grid w-11 place-items-center text-taupe hover:text-espresso"
+          className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted hover:text-ink"
         >
           {visible ? <EyeOff className="size-4" aria-hidden /> : <Eye className="size-4" aria-hidden />}
         </button>
@@ -72,7 +72,7 @@ function StrengthMeter({ value }: { value: string }) {
           />
         ))}
       </div>
-      <p className="mt-1.5 text-[13px] text-taupe">
+      <p className="mt-1.5 text-[13px] text-muted">
         {value ? `${level.label} · ` : ""}At least 8 characters. Longer, with a mix of cases, numbers and symbols, is
         stronger.
       </p>

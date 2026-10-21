@@ -36,13 +36,13 @@ export default async function PackingSlipPage({ params }: Props) {
     <>
       <style>{printCss}</style>
       <div className="mb-6 flex items-center justify-between print:hidden">
-        <Link href={`/admin/orders/${order.id}`} className="text-[13px] text-muted hover:text-espresso">
+        <Link href={`/admin/orders/${order.id}`} className="text-[13px] text-muted hover:text-ink">
           ← Back to {order.orderNumber}
         </Link>
         <PrintButton />
       </div>
 
-      <article className="packing-slip mx-auto max-w-3xl rounded-2xl border border-stone/70 bg-white p-10 text-espresso">
+      <article className="packing-slip mx-auto max-w-3xl rounded-2xl border border-surface-2 bg-white p-10 text-ink">
         <header className="flex items-start justify-between gap-6 border-b border-stone pb-6">
           <div>
             <Image src="/images/brand/logo-wordmark.png" alt={settings.storeName} width={1229} height={301} className="h-8 w-auto" />
@@ -54,8 +54,8 @@ export default async function PackingSlipPage({ params }: Props) {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[13px] font-semibold text-copper-dark">Packing slip</p>
-            <p className="mt-1 font-mono text-2xl">{order.orderNumber}</p>
+            <p className="text-[13px] font-semibold text-ink">Packing slip</p>
+            <p className="mt-1 text-2xl">{order.orderNumber}</p>
             <p className="mt-1 text-[13px] text-muted">Ordered {formatDate(order.createdAt)}</p>
           </div>
         </header>
@@ -68,7 +68,7 @@ export default async function PackingSlipPage({ params }: Props) {
           <div>
             <p className="mb-2 text-[13px] font-semibold text-muted">Shipping</p>
             <p className="text-sm">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
-            {order.trackingNumber && <p className="mt-1 font-mono text-sm">{order.trackingNumber}</p>}
+            {order.trackingNumber && <p className="mt-1 text-sm">{order.trackingNumber}</p>}
             <p className="mt-3 text-sm text-muted">
               {units} {units === 1 ? "unit" : "units"} · {order.items.length} {order.items.length === 1 ? "line" : "lines"}
             </p>
@@ -88,15 +88,15 @@ export default async function PackingSlipPage({ params }: Props) {
           </thead>
           <tbody>
             {order.items.map((item) => (
-              <tr key={item.id} className="border-b border-stone/60">
+              <tr key={item.id} className="border-b border-surface-2">
                 <td className="py-3">
-                  <span className="block size-4 rounded border border-espresso/60" aria-hidden />
+                  <span className="block size-4 rounded border border-ink/60" aria-hidden />
                 </td>
                 <td className="py-3">
                   {item.name}
                   {item.size && <span className="ml-2 text-[13px] text-muted">{item.size}</span>}
                 </td>
-                <td className="py-3 font-mono text-[13px]">{item.sku}</td>
+                <td className="py-3 text-[13px]">{item.sku}</td>
                 <td className="py-3 text-right text-base font-semibold">{item.quantity}</td>
               </tr>
             ))}

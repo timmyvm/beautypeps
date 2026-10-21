@@ -51,10 +51,10 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
       <form className="mb-5 flex gap-3" role="search">
         <label className="relative max-w-md flex-1">
           <span className="sr-only">Search subscribers</span>
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input name="q" defaultValue={q} placeholder="Search by email…" className="pl-10" />
         </label>
-        <button type="submit" className={buttonClasses()}>
+        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10 bg-surface-2 hover:bg-stone" })}>
           Search
         </button>
       </form>
@@ -76,7 +76,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
           <tbody>
             {rows.map((s) => (
               <tr key={s.id}>
-                <td className="font-medium text-espresso">{s.email}</td>
+                <td className="font-medium text-ink">{s.email}</td>
                 <td className="text-muted capitalize">{s.source}</td>
                 <td className="whitespace-nowrap text-muted">{formatDateTime(s.createdAt)}</td>
                 <td>

@@ -1,5 +1,5 @@
 export type GlossaryTerm = {
-  id: string; // anchor id — other pages link to /glossary#<id>
+  id: string; // anchor id: other pages link to /glossary#<id>
   term: string;
   aka?: string;
   definition: string;
@@ -58,7 +58,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "cool-down-phase",
     term: "Cool-down phase",
     definition:
-      "The final stage of making an emulsion, once it has cooled below about 40°C. Heat-sensitive ingredients — peptides, many vitamins and fragrances — are added here to avoid degradation.",
+      "The final stage of making an emulsion, once it has cooled below about 40°C. Heat-sensitive ingredients (peptides, many vitamins and fragrances) are added here to avoid degradation.",
     links: [{ label: "Storing peptide powders", href: "/learn/storing-peptide-powders" }],
   },
   {
@@ -73,7 +73,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "dermis",
     term: "Dermis",
     definition:
-      "The thick layer of skin beneath the epidermis. It contains fibroblasts, blood vessels, collagen and elastin — the structure behind firmness and bounce.",
+      "The thick layer of skin beneath the epidermis. It contains fibroblasts, blood vessels, collagen and elastin: the structure behind firmness and bounce.",
   },
   {
     id: "double-blind",
@@ -110,13 +110,13 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "extracellular-matrix",
     term: "Extracellular matrix (ECM)",
     definition:
-      "The network of proteins and sugars between cells — collagen, elastin, fibronectin and glycosaminoglycans — that gives skin its structure and hydration. Signal peptides aim to encourage fibroblasts to rebuild it.",
+      "The network of proteins and sugars between cells (collagen, elastin, fibronectin and glycosaminoglycans) that gives skin its structure and hydration. Signal peptides aim to encourage fibroblasts to rebuild it.",
   },
   {
     id: "fibroblast",
     term: "Fibroblast",
     definition:
-      "The main cell type of the dermis. Fibroblasts produce collagen, elastin and other ECM components, and respond to chemical signals — including signal peptides.",
+      "The main cell type of the dermis. Fibroblasts produce collagen, elastin and other ECM components, and respond to chemical signals, including signal peptides.",
   },
   {
     id: "fibronectin",
@@ -128,7 +128,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "glycosaminoglycans",
     term: "Glycosaminoglycans (GAGs)",
     definition:
-      "Long sugar chains in the dermis — hyaluronic acid is the best known — that bind large amounts of water, cushioning the skin and keeping it plump.",
+      "Long sugar chains in the dermis (hyaluronic acid is the best known) that bind large amounts of water, cushioning the skin and keeping it plump.",
   },
   {
     id: "humectant",
@@ -140,7 +140,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "in-vitro",
     term: "In-vitro",
     definition:
-      "Latin for 'in glass' — experiments on cells or proteins in a lab dish. Useful for understanding mechanisms, but it can't show whether an ingredient reaches its target through real skin.",
+      "Latin for 'in glass': experiments on cells or proteins in a lab dish. Useful for understanding mechanisms, but it can't show whether an ingredient reaches its target through real skin.",
   },
   {
     id: "in-vivo",
@@ -187,7 +187,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     term: "MMPs",
     aka: "Matrix metalloproteinases",
     definition:
-      "Enzymes that break down collagen and other ECM proteins. They're needed for normal remodelling, but UV exposure switches them on strongly — a major cause of photoageing.",
+      "Enzymes that break down collagen and other ECM proteins. They're needed for normal remodelling, but UV exposure switches them on strongly, a major cause of photoageing.",
   },
   {
     id: "neurotransmitter-inhibitor",
@@ -219,20 +219,20 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "penetration-enhancer",
     term: "Penetration enhancer",
     definition:
-      "An ingredient that temporarily loosens the skin barrier's lipids to help other molecules pass through — for example certain glycols or fatty acids. Used carefully, they can improve delivery of actives.",
+      "An ingredient that temporarily loosens the skin barrier's lipids to help other molecules pass through, for example certain glycols or fatty acids. Used carefully, they can improve delivery of actives.",
   },
   {
     id: "peptide",
     term: "Peptide",
     definition:
-      "A short chain of amino acids joined by peptide bonds — typically 2 to 50 units. Shorter than proteins, they can act as messengers in the skin.",
+      "A short chain of amino acids joined by peptide bonds, typically 2 to 50 units. Shorter than proteins, they can act as messengers in the skin.",
     links: [{ label: "What are peptides?", href: "/learn/what-are-peptides" }],
   },
   {
     id: "peptide-bond",
     term: "Peptide bond",
     definition:
-      "The chemical link between two amino acids. Breaking these bonds (hydrolysis) destroys a peptide — something heat, extreme pH and protease enzymes can all cause.",
+      "The chemical link between two amino acids. Breaking these bonds (hydrolysis) destroys a peptide, something heat, extreme pH and protease enzymes can all cause.",
   },
   {
     id: "ph",
@@ -244,7 +244,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "photoageing",
     term: "Photoageing",
     definition:
-      "Skin ageing caused by UV exposure rather than time alone — lines, laxity, uneven pigment and rough texture. In sunny Australia, daily broad-spectrum SPF is the most effective way to reduce it.",
+      "Skin ageing caused by UV exposure rather than time alone: lines, laxity, uneven pigment and rough texture. In sunny Australia, daily broad-spectrum SPF is the most effective way to reduce it.",
   },
   {
     id: "placebo-controlled",
@@ -256,7 +256,7 @@ export const GLOSSARY: GlossaryTerm[] = [
     id: "preservative",
     term: "Preservative",
     definition:
-      "An ingredient that prevents bacteria, yeast and mould growing in water-containing products. Essential for safety in any serum or cream — and it protects peptides from microbial enzymes too.",
+      "An ingredient that prevents bacteria, yeast and mould growing in water-containing products. Essential for safety in any serum or cream, and it protects peptides from microbial enzymes too.",
   },
   {
     id: "protease",

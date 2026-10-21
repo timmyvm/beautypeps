@@ -1,20 +1,27 @@
-import { AlertTriangle, ArrowRight, Check, ExternalLink, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/info/breadcrumbs";
+import { Chapter } from "@/components/info/chapter";
 import { JsonLd, siteUrl } from "@/components/info/json-ld";
+import { Figure, PictureLink, reveal } from "@/components/info/page-header";
 import { Markdown } from "@/components/markdown";
-import { ClassDiagram } from "@/components/peptides/class-diagram";
+import { ClassDiagram, classDiagramTitle } from "@/components/peptides/class-diagram";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
-import { CLASS_TONES, classLabel, PeptideCard } from "@/components/peptides/peptide-card";
-import { ProductCard } from "@/components/product/product-card";
-import { Badge } from "@/components/ui/badge";
+import { classLabel, classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
+import { ProductCard, SpecimenTile, toneFor } from "@/components/product/product-card";
 import { ButtonLink } from "@/components/ui/button";
-import { concernLabel, PEPTIDE_CLASSES } from "@/lib/constants";
+import { concernLabel } from "@/lib/constants";
 import { evidenceLevel } from "@/lib/content/evidence";
-import { getPeptideBySlug, getProductsWithPeptide, getRelatedPeptides } from "@/lib/queries/content";
-import { formatDate } from "@/lib/format";
+import { splitTitle } from "@/lib/content/titles";
+import {
+  getArticlesMentioning,
+  getPeptideBySlug,
+  getPeptideSpecimens,
+  getProductsWithPeptide,
+  getRelatedPeptides,
+} from "@/lib/queries/content";
 
 type Params = Promise<{ slug: string }>;
 
@@ -22,7 +29,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug } = await params;
   const peptide = await getPeptideBySlug(slug);
   if (!peptide) return { title: "Peptide not found" };
-  const title = `${peptide.name} (${peptide.inciName}) — mechanism, evidence & how to use`;
+  const title = `${peptide.name} (${peptide.inciName}): mechanism, evidence and how to use it`;
   return {
     title,
     description: peptide.summary,
@@ -36,9 +43,14 @@ export default async function PeptideMonographPage({ params }: { params: Params 
   const peptide = await getPeptideBySlug(slug);
   if (!peptide) notFound();
 
-  const [products, related] = await Promise.all([getProductsWithPeptide(peptide.slug), getRelatedPeptides(peptide, 3)]);
+  const [products, related, specimens, articles] = await Promise.all([
+    getProductsWithPeptide(peptide.slug),
+    getRelatedPeptides(peptide, 3),
+    getPeptideSpecimens(),
+    getArticlesMentioning([peptide.name, peptide.inciName, ...peptide.aliases], 2),
+  ]);
   const evidence = evidenceLevel(peptide.evidenceLevel);
-  const peptideClass = PEPTIDE_CLASSES[peptide.peptideClass];
+  const lead = products[0];
 
   const facts: [string, string | null | undefined][] = [
     ["INCI name", peptide.inciName],
@@ -50,12 +62,6 @@ export default async function PeptideMonographPage({ params }: { params: Params 
     ["Typical concentration", peptide.typicalConcentration],
     ["Formula pH", peptide.phRange],
   ];
-
-  const sections = [
-    { id: "how-it-works", title: "How it works", body: peptide.mechanism },
-    { id: "evidence", title: "What the evidence says", body: peptide.evidence },
-    { id: "how-to-use", title: "How to use it", body: peptide.usage },
-  ].filter((s) => s.body?.trim());
 
   return (
     <article>
@@ -73,230 +79,261 @@ export default async function PeptideMonographPage({ params }: { params: Params 
         }}
       />
 
-      {/* Header */}
-      <header className="border-b border-stone/60 bg-ivory">
-        <div className="container-bp pt-8 pb-12 md:pb-16">
-          <Breadcrumbs
-            items={[{ href: "/", label: "Home" }, { href: "/peptides", label: "Peptide Library" }, { label: peptide.name }]}
-          />
-          <div className="mt-10 grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-end">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge tone={CLASS_TONES[peptide.peptideClass] ?? "neutral"}>{classLabel(peptide.peptideClass)}</Badge>
-                <span className="text-xs text-taupe">Monograph · updated {formatDate(peptide.updatedAt)}</span>
-              </div>
-              <h1 className="mt-5 font-display text-5xl leading-none text-espresso md:text-7xl">{peptide.name}</h1>
-              <p className="mt-4 text-sm tracking-wide text-cocoa">
-                INCI: <span className="text-espresso">{peptide.inciName}</span>
-                {peptide.aliases.length > 0 && <> · also sold as {peptide.aliases.join(", ")}</>}
-              </p>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-cocoa">{peptide.summary}</p>
-            </div>
-            <div className="rounded-2xl border border-stone/70 bg-cream p-6">
-              <p className="eyebrow mb-3">Strength of evidence</p>
+      <header className="container-bp pt-8 lg:pt-10">
+        <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/peptides", label: "Peptide library" }, { label: peptide.name }]} />
+        <div className="mt-8 grid gap-10 lg:mt-12 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-7 lg:pb-2">
+            <h1 className="display-type text-[10.5vw] text-ink sm:text-[clamp(2.75rem,5.9vw,5.75rem)]">{peptide.name}</h1>
+            <p className="mt-5 text-lead text-ink">
+              {peptide.inciName === peptide.name ? "A" : `${peptide.inciName}, a`} {classShortLabel(peptide.peptideClass).toLowerCase()}{" "}
+              peptide
+            </p>
+            <p className="mt-8 max-w-[56ch] text-body text-ink">{peptide.summary}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5">
               <EvidenceMeter level={evidence.level} size="lg" />
-              <p className="mt-3 text-sm leading-relaxed text-cocoa">{evidence.description}</p>
-              <Link
-                href="/peptides#library"
-                className="mt-4 inline-block text-xs text-copper-dark underline underline-offset-4"
-              >
-                How we grade evidence
-              </Link>
+              {products.length > 0 && (
+                <ButtonLink href="#find-it-in">
+                  In {products.length === 1 ? "one of our formulas" : `${products.length} of our formulas`}
+                </ButtonLink>
+              )}
             </div>
           </div>
+          {lead && (
+            <div className="lg:col-span-5">
+              <Link href={`/products/${lead.slug}`} className="group block">
+                <SpecimenTile
+                  product={lead}
+                  tone={toneFor(lead.slug)}
+                  priority
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="aspect-square lg:aspect-[6/5]"
+                />
+                <p className="mt-3 text-small text-ink">
+                  <span className="font-medium group-hover:underline group-hover:underline-offset-4">{lead.name}</span>
+                  <span className="text-muted">, where {peptide.name} does the work</span>
+                </p>
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
-      <div className="container-bp grid gap-12 py-14 lg:grid-cols-[1fr_320px] lg:gap-16">
-        {/* Main column */}
-        <div className="min-w-0">
-          {/* In-page nav */}
-          <nav aria-label="On this page" className="mb-10 flex flex-wrap gap-2">
-            {[
-              { id: "benefits", title: "At a glance" },
-              ...sections.map(({ id, title }) => ({ id, title })),
-              ...(peptide.studies.length ? [{ id: "studies", title: "Key studies" }] : []),
-              ...(products.length ? [{ id: "find-it-in", title: "Find it in" }] : []),
-            ].map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="rounded-full border border-stone bg-cream px-3.5 py-1.5 text-xs text-cocoa hover:border-copper/50 hover:text-espresso"
-              >
-                {s.title}
-              </a>
-            ))}
-          </nav>
-
-          {peptide.benefits.length > 0 && (
-            <section id="benefits" className="scroll-mt-28">
-              <h2 className="font-display text-3xl text-espresso">At a glance</h2>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-                {peptide.benefits.map((b) => (
-                  <li key={b} className="flex gap-3 rounded-xl bg-ivory p-4 text-sm leading-relaxed text-cocoa">
-                    <Check className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-              {peptide.concerns.length > 0 && (
-                <p className="mt-5 text-sm text-cocoa">
-                  <span className="text-taupe">Most relevant for:</span>{" "}
-                  {peptide.concerns.map((c, i) => (
-                    <span key={c}>
-                      {i > 0 && " · "}
-                      <Link href={`/shop?concern=${c}`} className="text-espresso underline-offset-4 hover:underline">
-                        {concernLabel(c)}
-                      </Link>
-                    </span>
-                  ))}
-                </p>
-              )}
-            </section>
-          )}
-
-          {sections.map((s) => (
-            <section key={s.id} id={s.id} className="mt-14 scroll-mt-28">
-              <h2 className="mb-5 font-display text-3xl text-espresso">{s.title}</h2>
-              {s.id === "how-it-works" && peptideClass && (
-                <figure className="mb-6 rounded-2xl border border-stone/60 bg-ivory p-4 sm:p-6">
-                  <ClassDiagram type={peptide.peptideClass} className="mx-auto max-w-sm" />
-                  <figcaption className="mt-3 text-center text-xs text-cocoa">
-                    Schematic: how a {peptideClass.label.toLowerCase()} works. {peptideClass.description}
-                  </figcaption>
-                </figure>
-              )}
-              <Markdown>{s.body}</Markdown>
-            </section>
-          ))}
-
-          {peptide.studies.length > 0 && (
-            <section id="studies" className="mt-14 scroll-mt-28">
-              <h2 className="mb-5 font-display text-3xl text-espresso">Key studies</h2>
-              <ol className="space-y-3">
-                {peptide.studies.map((study, i) => (
-                  <li key={i} className="flex gap-4 rounded-xl border border-stone/60 bg-cream p-4">
-                    <span className="font-display text-lg text-copper">{String(i + 1).padStart(2, "0")}</span>
-                    <div className="min-w-0 text-sm">
-                      <p className="font-medium text-espresso">{study.title}</p>
-                      <p className="mt-1 text-cocoa">
-                        {study.source}
-                        {study.year ? ` · ${study.year}` : ""}
-                      </p>
-                      {study.url && (
-                        <a
-                          href={study.url}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="mt-2 inline-flex items-center gap-1 text-xs text-copper-dark underline underline-offset-4"
-                        >
-                          View source <ExternalLink className="size-3" aria-hidden />
-                          <span className="sr-only">(opens in a new tab)</span>
-                        </a>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )}
-
-          <aside className="mt-14 flex gap-4 rounded-2xl border border-amber/30 bg-amber-light/40 p-5 text-sm leading-relaxed text-cocoa">
-            <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber" aria-hidden />
-            <p>
-              <strong className="text-espresso">Educational information, not medical advice.</strong> This monograph
-              summarises published cosmetic research on topical {peptide.name}. Results in studies are averages and
-              individual results vary. Our products are cosmetics for external use only; they are not intended to
-              diagnose, treat or prevent any condition. Patch test new products and speak to your doctor or
-              dermatologist about skin concerns, or if you are pregnant or breastfeeding.
-            </p>
-          </aside>
+      <section aria-labelledby="facts-title" className="mt-20 bg-surface py-16 lg:mt-32 lg:py-24">
+        <div className="container-bp">
+          <h2 id="facts-title" className="display-type text-head" {...reveal(0)}>
+            The facts
+          </h2>
+          <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-2 lg:grid-cols-4" {...reveal(1)}>
+            {facts
+              .filter(([, v]) => v)
+              .map(([k, v]) => (
+                <div key={k} className="min-w-0">
+                  <dt className="text-small text-muted">{k}</dt>
+                  <dd className={k === "Sequence" ? "mt-1 font-mono text-body break-words" : "mt-1 text-body"}>{v}</dd>
+                </div>
+              ))}
+          </dl>
         </div>
+      </section>
 
-        {/* Quick facts */}
-        <aside className="lg:sticky lg:top-28 lg:self-start">
-          <div className="rounded-2xl border border-stone/70 bg-cream p-6">
-            <p className="eyebrow mb-4">Quick facts</p>
-            <dl className="space-y-3.5 text-sm">
-              {facts
-                .filter(([, v]) => v)
-                .map(([k, v]) => (
-                  <div key={k}>
-                    <dt className="text-xs text-taupe">{k}</dt>
-                    <dd className={k === "Sequence" ? "font-mono text-xs break-all text-espresso" : "text-espresso"}>
-                      {v}
-                    </dd>
-                  </div>
+      <div className="container-bp">
+        {peptide.benefits.length > 0 && (
+          <Chapter id="benefits" title="At a glance">
+            <ul className="space-y-4">
+              {peptide.benefits.map((b) => (
+                <li key={b} className="flex gap-4 text-lead">
+                  <span aria-hidden className="mt-[0.55em] size-2.5 shrink-0 bg-accent" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+            {peptide.concerns.length > 0 && (
+              <p className="mt-8 text-body">
+                Most relevant for{" "}
+                {peptide.concerns.map((c, i) => (
+                  <span key={c}>
+                    {i > 0 && (i === peptide.concerns.length - 1 ? " and " : ", ")}
+                    <Link href={`/shop?concern=${c}`} className="underline underline-offset-4">
+                      {concernLabel(c).toLowerCase()}
+                    </Link>
+                  </span>
                 ))}
-            </dl>
-            {peptide.pairsWith.length > 0 && (
-              <div className="mt-5 border-t border-stone/60 pt-5">
-                <p className="mb-2 text-xs text-taupe">Pairs well with</p>
-                <ul className="flex flex-wrap gap-1.5">
-                  {peptide.pairsWith.map((p) => (
-                    <li key={p} className="rounded-lg bg-sage-light px-2.5 py-1 text-xs leading-snug text-sage">
-                      {p}
-                    </li>
-                  ))}
-                </ul>
+                .
+              </p>
+            )}
+          </Chapter>
+        )}
+
+        {peptide.mechanism?.trim() && (
+          <Chapter
+            id="how-it-works"
+            title="How it works"
+            aside={
+              <figure className="mt-10" {...reveal(1)}>
+                <div className="bg-surface p-6">
+                  <ClassDiagram type={peptide.peptideClass} />
+                </div>
+                <figcaption className="mt-3 max-w-[40ch] text-small">
+                  {classDiagramTitle(peptide.peptideClass)}. The blue beads are the peptide.
+                </figcaption>
+              </figure>
+            }
+          >
+            <Markdown>{peptide.mechanism}</Markdown>
+          </Chapter>
+        )}
+
+        {peptide.evidence?.trim() && (
+          <Chapter
+            id="evidence"
+            title="What the evidence says"
+            aside={
+              <div className="mt-8" {...reveal(1)}>
+                <EvidenceMeter level={evidence.level} size="lg" />
+                <p className="mt-4 max-w-[40ch] text-body">{evidence.description}</p>
+                <Link href="/peptides#grades-title" className="mt-3 inline-block text-body underline underline-offset-4">
+                  How we grade evidence
+                </Link>
+              </div>
+            }
+          >
+            <Markdown>{peptide.evidence}</Markdown>
+          </Chapter>
+        )}
+
+        {peptide.usage?.trim() && (
+          <Chapter
+            id="how-to-use"
+            title="How to use it"
+            aside={
+              <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
+                <Image
+                  src="/images/editorial/ritual.webp"
+                  alt="A woman pressing serum from a glass dropper onto her cheekbone"
+                  fill
+                  sizes="30vw"
+                  className="drift object-cover object-[50%_30%]"
+                />
+              </Figure>
+            }
+          >
+            <Markdown>{peptide.usage}</Markdown>
+            {(peptide.pairsWith.length > 0 || peptide.avoidWith.length > 0) && (
+              <div className="mt-12 grid gap-10 sm:grid-cols-2">
+                {peptide.pairsWith.length > 0 && (
+                  <div>
+                    <h3 className="text-lead font-medium">Pairs well with</h3>
+                    <ul className="mt-3 space-y-2 text-body">
+                      {peptide.pairsWith.map((p) => (
+                        <li key={p}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {peptide.avoidWith.length > 0 && (
+                  <div>
+                    <h3 className="text-lead font-medium">Keep apart from</h3>
+                    <ul className="mt-3 space-y-2 text-body">
+                      {peptide.avoidWith.map((p) => (
+                        <li key={p}>{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
-            {peptide.avoidWith.length > 0 && (
-              <div className="mt-4">
-                <p className="mb-2 text-xs text-taupe">Use separately from</p>
-                <ul className="flex flex-wrap gap-1.5">
-                  {peptide.avoidWith.map((p) => (
-                    <li key={p} className="rounded-lg bg-danger-light px-2.5 py-1 text-xs leading-snug text-danger">
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-          <div className="mt-4 rounded-2xl bg-espresso p-6 text-cream">
-            <Sparkles className="size-5 text-copper-light" aria-hidden />
-            <p className="mt-3 font-display text-xl">Not sure where it fits?</p>
-            <p className="mt-2 text-sm text-cream/70">Answer four questions and we&apos;ll build a peptide routine around your skin.</p>
-            <ButtonLink href="/routine-builder" variant="copper" size="sm" className="mt-5">
-              Build my routine
-            </ButtonLink>
-          </div>
-        </aside>
+          </Chapter>
+        )}
+
+        {peptide.studies.length > 0 && (
+          <Chapter id="studies" title="Key studies">
+            <ol className="list-decimal space-y-6 pl-6 text-body marker:text-muted">
+              {peptide.studies.map((study, i) => (
+                <li key={i} className="pl-2">
+                  <p className="font-medium">{study.title}</p>
+                  <p className="text-muted">
+                    {study.source}
+                    {study.year ? `, ${study.year}` : ""}
+                  </p>
+                  {study.url && (
+                    <a href={study.url} target="_blank" rel="noreferrer noopener" className="mt-1 inline-block underline underline-offset-4">
+                      Read the study<span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ol>
+            <p className="mt-12 bg-surface p-6 text-body sm:p-8">
+              Educational information, not medical advice. This monograph summarises published cosmetic research on
+              topical {peptide.name}; results in studies are averages and yours will vary. Our products are cosmetics
+              for external use only. Patch test anything new, and talk to your doctor or dermatologist about skin
+              concerns, or if you are pregnant or breastfeeding.
+            </p>
+          </Chapter>
+        )}
       </div>
 
       {products.length > 0 && (
-        <section id="find-it-in" className="scroll-mt-28 border-t border-stone/60 bg-ivory/50 py-16">
-          <div className="container-bp">
-            <p className="eyebrow mb-3">Find it in</p>
-            <h2 className="mb-10 font-display text-3xl text-espresso md:text-4xl">
-              Formulas featuring {peptide.name}
+        <section id="find-it-in" aria-labelledby="find-title" className="container-bp mt-28 scroll-mt-24 lg:mt-44">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="find-title" className="display-type text-head" {...reveal(0)}>
+              Formulas with {peptide.name}
             </h2>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            <Link href="/routine-builder" className="text-body underline underline-offset-4">
+              Not sure which? Build a routine
+            </Link>
+          </div>
+          <div className="mt-12 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p, i) => (
+              <div key={p.id} {...reveal(i % 4)}>
+                <ProductCard product={p} index={i} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {articles.length > 0 && (
+        <section aria-labelledby="journal-title" className="container-bp mt-28 lg:mt-44">
+          <h2 id="journal-title" className="display-type text-head" {...reveal(0)}>
+            From the journal
+          </h2>
+          <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-12 md:grid-cols-2">
+            {articles.map((a, i) => {
+              const t = splitTitle(a.title);
+              return (
+                <PictureLink
+                  key={a.id}
+                  href={`/learn/${a.slug}`}
+                  src={a.coverImage ?? "/images/editorial/texture.webp"}
+                  alt=""
+                  title={t.head}
+                  text={t.deck ?? a.excerpt}
+                  ratio="aspect-[3/2]"
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  index={i + 1}
+                />
+              );
+            })}
           </div>
         </section>
       )}
 
       {related.length > 0 && (
-        <section className="container-bp py-16">
-          <div className="mb-10 flex items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow mb-3">Keep reading</p>
-              <h2 className="font-display text-3xl text-espresso">Related peptides</h2>
-            </div>
-            <Link href="/compare" className="hidden items-center gap-1 text-sm text-copper-dark sm:flex">
-              Compare all <ArrowRight className="size-4" aria-hidden />
+        <section aria-labelledby="related-title" className="container-bp mt-28 lg:mt-44">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="related-title" className="display-type text-head" {...reveal(0)}>
+              Related peptides
+            </h2>
+            <Link href="/compare" className="text-body underline underline-offset-4">
+              Compare all of them
             </Link>
           </div>
-          <div className="grid gap-5 md:grid-cols-3">
-            {related.map((p) => (
-              <PeptideCard key={p.id} peptide={p} />
+          <ol className="mt-10">
+            {related.map((p, i) => (
+              <PeptideEntry key={p.id} peptide={p} specimen={specimens[p.slug]} index={i} />
             ))}
-          </div>
+          </ol>
         </section>
       )}
     </article>

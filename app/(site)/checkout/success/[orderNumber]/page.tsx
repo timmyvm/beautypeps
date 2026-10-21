@@ -1,20 +1,12 @@
-import { BookOpen, CheckCircle2, Mail, Package, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import {
-  AddressBlock,
-  OrderItemsList,
-  OrderProgress,
-  OrderStatusBadge,
-  OrderTotals,
-  PaymentInstructions,
-} from "@/components/order/order-parts";
 import { CopyButton } from "@/components/shop/copy-button";
+import { OrderLines, OrderProgressBar, OrderSums, PaymentPanel, ShipTo } from "@/components/shop/order-view";
 import { buttonClasses } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/session";
-import { SHIPPING_METHOD_LABELS } from "@/lib/constants";
+import { ORDER_STATUSES } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
 import { getOrderByNumber, LAST_ORDER_COOKIE } from "@/lib/orders";
 import { getSettings } from "@/lib/settings";
@@ -40,152 +32,138 @@ export default async function OrderSuccessPage({ params }: Props) {
   const awaitingPayment = order.status === "pending_payment";
   const firstName = order.shippingAddress.firstName;
 
-  const steps = [
+  const next = [
     {
-      icon: Wallet,
-      title: awaitingPayment ? "Send your payment" : "Payment received",
+      title: awaitingPayment ? "You send the payment" : "Payment received",
       body: awaitingPayment
-        ? `Transfer ${formatMoney(order.total)} using reference ${order.orderNumber} within ${settings.paymentWindowDays} days.`
-        : "Thank you — your payment has cleared.",
+        ? `Transfer ${formatMoney(order.total)} with reference ${order.orderNumber} within ${settings.paymentWindowDays} days.`
+        : "Thank you, your payment has cleared.",
     },
     {
-      icon: Mail,
       title: "We confirm by email",
-      body: `As soon as payment lands we'll email ${order.email} and start packing.`,
+      body: `When the payment lands we email ${order.email} and start packing.`,
     },
     {
-      icon: Package,
-      title: "Packed & dispatched",
-      body: `${settings.dispatchTime} You'll get an Australia Post tracking number.`,
+      title: "Packed and posted",
+      body: `${settings.dispatchTime} You get an Australia Post tracking number.`,
     },
   ];
 
   return (
-    <div className="container-bp py-12 md:py-16">
-      <div className="mx-auto max-w-3xl text-center">
-        <span className="mx-auto grid size-16 place-items-center rounded-full bg-sage-light text-sage">
-          <CheckCircle2 className="size-8" aria-hidden />
-        </span>
-        <p className="eyebrow mt-6 mb-3">Order {order.orderNumber}</p>
-        <h1 className="font-display text-4xl leading-tight text-espresso md:text-5xl">
+    <div className="container-bp pt-10 pb-24 md:pt-16">
+      <header className="grid gap-6 lg:grid-cols-12">
+        <h1 className="display-type text-[clamp(2.25rem,1rem+3.6vw,4.5rem)] lg:col-span-8">
           Thank you, {firstName}. Your order is reserved.
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-cocoa">
-          {awaitingPayment
-            ? "We've emailed your confirmation and payment details. Complete payment below and we'll get your peptides on their way."
-            : "We've emailed your confirmation. You'll hear from us again when it ships."}
-        </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <OrderStatusBadge status={order.status} />
-          <span className="text-sm text-cocoa">Reference</span>
-          <span className="font-mono text-sm font-semibold tracking-wider text-espresso">{order.orderNumber}</span>
-          <CopyButton value={order.orderNumber} label="Copy reference" />
+        <div className="text-lead lg:col-span-4 lg:self-end">
+          <p>
+            {awaitingPayment
+              ? "Your confirmation and payment details are in your inbox. Pay below and we send your peptides on their way."
+              : "Your confirmation is in your inbox. We write again when it ships."}
+          </p>
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-body">
+            <span>
+              Order <span className="tabular font-medium">{order.orderNumber}</span>,{" "}
+              {ORDER_STATUSES[order.status].label.toLowerCase()}
+            </span>
+            <CopyButton value={order.orderNumber} label="Copy order number" />
+          </p>
         </div>
+      </header>
+
+      <div className="mt-12">
+        <OrderProgressBar status={order.status} />
       </div>
 
-      <div className="mx-auto mt-12 max-w-5xl">
-        <div className="rounded-2xl border border-stone/70 bg-cream p-6 md:p-8">
-          <OrderProgress status={order.status} />
+      <div className="mt-14 grid gap-14 lg:grid-cols-12 lg:gap-8">
+        <div className="space-y-14 lg:col-span-7">
+          {awaitingPayment && <PaymentPanel order={order} settings={settings} copy />}
+
+          <section aria-labelledby="next-heading">
+            <h2 id="next-heading" className="text-lead font-medium">
+              What happens next
+            </h2>
+            <ol className="mt-5 grid gap-2 md:grid-cols-3">
+              {next.map((s) => (
+                <li key={s.title} className="bg-surface p-5">
+                  <p className="text-body font-medium">{s.title}</p>
+                  <p className="mt-1 text-body text-muted">{s.body}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section aria-labelledby="items-heading">
+            <h2 id="items-heading" className="text-lead font-medium">
+              In your order
+            </h2>
+            <div className="mt-5">
+              <OrderLines items={order.items} />
+            </div>
+          </section>
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
-          <div className="space-y-8">
-            {awaitingPayment && (
-              <div>
-                <PaymentInstructions order={order} settings={settings} />
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {order.paymentMethod === "payid" ? (
-                    <CopyButton value={settings.payId} label="Copy PayID" />
-                  ) : (
-                    <>
-                      <CopyButton value={settings.bankBsb} label="Copy BSB" />
-                      <CopyButton value={settings.bankAccountNumber} label="Copy account number" />
-                    </>
-                  )}
-                  <CopyButton value={(order.total / 100).toFixed(2)} label="Copy amount" />
-                </div>
-              </div>
-            )}
+        <aside className="space-y-10 lg:col-span-4 lg:col-start-9">
+          <section aria-labelledby="total-heading">
+            <h2 id="total-heading" className="mb-3 text-lead font-medium">
+              Order total
+            </h2>
+            <OrderSums order={order} />
+          </section>
+          <section aria-labelledby="ship-heading">
+            <h2 id="ship-heading" className="mb-3 text-lead font-medium">
+              Shipping to
+            </h2>
+            <ShipTo address={order.shippingAddress} method={order.shippingMethod} />
+          </section>
 
-            <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-              <h2 className="font-display text-2xl text-espresso">What happens next</h2>
-              <ol className="mt-6 grid gap-6 md:grid-cols-3">
-                {steps.map((s, i) => (
-                  <li key={s.title}>
-                    <span className="grid size-10 place-items-center rounded-full bg-ivory text-copper">
-                      <s.icon className="size-5" aria-hidden />
-                    </span>
-                    <p className="mt-3 text-sm font-medium text-espresso">
-                      {i + 1}. {s.title}
-                    </p>
-                    <p className="mt-1 text-sm leading-relaxed text-cocoa">{s.body}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-              <h2 className="font-display text-2xl text-espresso">Items</h2>
-              <OrderItemsList items={order.items} />
-            </section>
-          </div>
-
-          <aside className="space-y-6">
-            <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-              <h2 className="mb-4 text-sm font-semibold tracking-wide text-espresso">Order total</h2>
-              <OrderTotals order={order} />
-            </section>
-            <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-              <h2 className="mb-3 text-sm font-semibold tracking-wide text-espresso">Shipping to</h2>
-              <AddressBlock address={order.shippingAddress} />
-              <p className="mt-3 text-xs text-taupe">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
-            </section>
-
-            {!user ? (
-              <section className="rounded-2xl bg-espresso p-6 text-cream">
-                <h2 className="font-display text-xl">Track orders in one place</h2>
-                <p className="mt-2 text-sm text-cream/70">
-                  Create an account with {order.email} — we&apos;ll link this order to it automatically.
-                </p>
-                <Link
-                  href={`/register?email=${encodeURIComponent(order.email)}`}
-                  className={buttonClasses({ variant: "light", size: "sm", className: "mt-5" })}
-                >
-                  Create account
-                </Link>
-                <Link
-                  href={`/track?order=${order.orderNumber}&email=${encodeURIComponent(order.email)}`}
-                  className="mt-4 block text-xs text-cream/70 underline underline-offset-4"
-                >
-                  Or track this order as a guest
-                </Link>
-              </section>
-            ) : (
-              <Link href="/account" className={buttonClasses({ variant: "outline", className: "w-full" })}>
-                View in my account
+          {!user ? (
+            <section aria-labelledby="account-heading" className="bg-field-ink p-6 text-field-ink-ink">
+              <h2 id="account-heading" className="text-lead font-medium">
+                Keep your orders in one place
+              </h2>
+              <p className="mt-2 text-body text-field-ink-ink/80">
+                Create an account with {order.email} and we link this order to it.
+              </p>
+              <Link
+                href={`/register?email=${encodeURIComponent(order.email)}`}
+                className={buttonClasses({ variant: "light", className: "mt-5" })}
+              >
+                Create an account
               </Link>
-            )}
-          </aside>
-        </div>
-
-        <section className="mt-12 grid items-center gap-6 rounded-2xl bg-ivory p-8 md:grid-cols-[auto_1fr_auto]">
-          <BookOpen className="size-8 text-copper" aria-hidden />
-          <div>
-            <h2 className="font-display text-2xl text-espresso">While you wait — get to know your peptides</h2>
-            <p className="mt-1 text-sm text-cocoa">
-              How to layer them, what to pair them with, and what the research actually says.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/peptides" className={buttonClasses({ variant: "outline", size: "sm" })}>
-              Peptide Library
+              <Link
+                href={`/track?order=${order.orderNumber}&email=${encodeURIComponent(order.email)}`}
+                className="mt-4 block text-body underline underline-offset-4"
+              >
+                Or track this order as a guest
+              </Link>
+            </section>
+          ) : (
+            <Link href="/account" className={buttonClasses({ variant: "outline", className: "w-full" })}>
+              See it in your account
             </Link>
-            <Link href="/learn/how-to-layer-peptides" className={buttonClasses({ size: "sm" })}>
-              Layering guide
-            </Link>
-          </div>
-        </section>
+          )}
+        </aside>
       </div>
+
+      <section aria-labelledby="learn-heading" className="mt-20 grid gap-6 bg-field-stone p-6 md:p-10 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <h2 id="learn-heading" className="display-type text-head">
+            While you wait, read up on your peptides
+          </h2>
+          <p className="mt-3 max-w-[55ch] text-body">
+            How to layer them, what to pair them with, and what the research actually says.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-end gap-3 lg:col-span-5 lg:justify-end">
+          <Link href="/learn/how-to-layer-peptides" className={buttonClasses()}>
+            Read the layering guide
+          </Link>
+          <Link href="/peptides" className={buttonClasses({ variant: "light" })}>
+            Open the peptide library
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

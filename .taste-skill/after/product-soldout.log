@@ -1,0 +1,31 @@
+TASTESKILL · INSPECT   http://localhost:3101/products/snap-8-pure-powder
+
+MEASURED (first viewport listed)
+  hero headline   "SNAP-8 Pure Peptide Powder"  4 words · 2 line(s) · 53.4px (3.7vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 36px
+  @390px          2 line(s) · 28px
+  typefaces       chillax 100%
+  sizes in use    14 / 19 / 26 / 53 px   body 19px / 1.5
+  colour          page #ffffff · sections #ffffff #dde4e8 #f3f3f1 · button #1f4ab0
+  page            7.3 screens · 577 words · 10 images · hero media 38% img
+  headings        8 · longest 2 line(s) · median 3 words
+
+WARN — fix, or be able to defend
+  [no-footage] @1440px  No video anywhere on the page.
+      → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
+  [first-action] @768px (+390)  No visible button in the first screen.
+      → Give the one primary action a real button in the first screen (a filled or solid-bordered control, 44px or taller), not only a link in the navigation.
+
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/after/product-soldout/desktop-fold.jpg
+                  .taste-skill/after/product-soldout/desktop-page-01.jpg
+                  .taste-skill/after/product-soldout/desktop-page-02.jpg
+  tablet 768px    .taste-skill/after/product-soldout/tablet-fold.jpg
+                  .taste-skill/after/product-soldout/tablet-page-01.jpg
+                  .taste-skill/after/product-soldout/tablet-page-02.jpg
+  mobile 390px    .taste-skill/after/product-soldout/mobile-fold.jpg
+                  .taste-skill/after/product-soldout/mobile-page-01.jpg
+                  .taste-skill/after/product-soldout/mobile-page-02.jpg
+
+report: .taste-skill/after/product-soldout/report.json
+RESULT: 0 FAIL, 2 WARN — measurements pass. Passing the meter is the floor, not the grade: score the screenshots with references/critique.md.

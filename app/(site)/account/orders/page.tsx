@@ -41,11 +41,11 @@ export default async function AccountOrdersPage({ searchParams }: { searchParams
             <li key={o.id}>
               <Link
                 href={`/account/orders/${o.orderNumber}`}
-                className="block rounded-2xl border border-stone/70 bg-cream p-5 transition-colors hover:border-taupe sm:p-6"
+                className="block rounded-2xl border border-surface-2 bg-white p-5 transition-colors hover:border-taupe sm:p-6"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-sm font-medium text-espresso">{o.orderNumber}</p>
+                    <p className="text-sm font-medium text-ink">{o.orderNumber}</p>
                     <p className="mt-1 text-[13px] text-muted">
                       Placed {formatDate(o.createdAt)} · {pluralize(o.itemCount, "item")}
                     </p>
@@ -57,21 +57,21 @@ export default async function AccountOrdersPage({ searchParams }: { searchParams
                     {o.previews.map((p, i) => (
                       <div
                         key={i}
-                        className="relative size-14 overflow-hidden rounded-xl border-2 border-cream bg-ivory"
+                        className="relative size-14 overflow-hidden rounded-xl border-2 border-cream bg-surface"
                         title={p.name}
                       >
                         {p.image && <Image src={p.image} alt={p.name} fill sizes="56px" className="object-cover" />}
                       </div>
                     ))}
                     {o.itemCount > o.previews.length && o.previews.length >= 4 && (
-                      <div className="grid size-14 place-items-center rounded-xl border-2 border-cream bg-sand text-[13px] text-muted">
+                      <div className="grid size-14 place-items-center rounded-xl border-2 border-cream bg-surface-2 text-[13px] text-muted">
                         +
                       </div>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-[13px] text-taupe">Total</p>
-                    <p className="text-base font-medium text-espresso">{formatMoney(o.total)}</p>
+                    <p className="text-[13px] text-muted">Total</p>
+                    <p className="text-base font-medium text-ink">{formatMoney(o.total)}</p>
                   </div>
                 </div>
               </Link>

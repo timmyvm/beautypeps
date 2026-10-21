@@ -46,13 +46,13 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
         />
         <form method="get" className="relative mb-4 w-full max-w-xs">
           {sp.status && <input type="hidden" name="status" value={sp.status} />}
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <input
             name="q"
             defaultValue={sp.q}
             placeholder="Search titles"
             aria-label="Search articles"
-            className="h-10 w-full rounded-full border border-stone bg-cream pr-4 pl-10 text-sm placeholder:text-taupe focus:border-copper focus:outline-none"
+            className="h-10 w-full border border-stone bg-white pr-4 pl-10 text-sm placeholder:text-muted focus:border-ink focus:outline-none"
           />
         </form>
       </div>
@@ -82,25 +82,25 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
             {rows.map((a) => (
               <tr key={a.id}>
                 <td>
-                  <div className="relative h-12 w-18 overflow-hidden rounded-lg bg-ivory">
+                  <div className="relative h-12 w-18 overflow-hidden rounded-lg bg-surface">
                     {a.coverImage && (
                       <Image src={a.coverImage} alt="" fill sizes="72px" className="object-cover" unoptimized={!a.coverImage.startsWith("/images/")} />
                     )}
                   </div>
                 </td>
                 <td className="max-w-80">
-                  <Link href={`/admin/articles/${a.id}`} className="flex items-center gap-1.5 font-medium text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/articles/${a.id}`} className="flex items-center gap-1.5 font-medium text-ink hover:underline">
                     <span className="line-clamp-2">{a.title}</span>
-                    {a.featured && <Star className="size-3.5 shrink-0 fill-copper text-copper" aria-label="Featured" />}
+                    {a.featured && <Star className="size-3.5 shrink-0 fill-ink text-ink" aria-label="Featured" />}
                   </Link>
-                  <p className="text-[13px] text-taupe">/learn/{a.slug}</p>
+                  <p className="text-[13px] text-muted">/learn/{a.slug}</p>
                 </td>
                 <td className="text-muted">{a.category}</td>
-                <td>{a.published ? <Badge tone="sage">Published</Badge> : <Badge tone="amber">Draft</Badge>}</td>
+                <td>{a.published ? <span className="text-muted">Published</span> : <Badge tone="amber">Draft</Badge>}</td>
                 <td className="whitespace-nowrap text-muted">{a.published ? formatDate(a.publishedAt) : "—"}</td>
                 <td className="text-right whitespace-nowrap text-muted">{a.readMinutes} min</td>
                 <td className="text-right">
-                  <Link href={`/admin/articles/${a.id}`} className="text-[13px] font-medium text-copper-dark hover:underline">
+                  <Link href={`/admin/articles/${a.id}`} className="text-[13px] font-medium text-ink hover:underline">
                     Edit
                   </Link>
                 </td>

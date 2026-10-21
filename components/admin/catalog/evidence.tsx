@@ -12,7 +12,7 @@ export function EvidenceDots({ level }: { level: number }) {
   return (
     <span className="inline-flex items-center gap-1" title={`${level}/5 · ${EVIDENCE_LEVELS[level]?.label ?? ""}`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={cn("size-2 rounded-full", i <= level ? "bg-copper" : "bg-stone")} />
+        <span key={i} className={cn("size-2 rounded-full", i <= level ? "bg-accent" : "bg-stone")} />
       ))}
       <span className="sr-only">{level} out of 5</span>
     </span>

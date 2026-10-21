@@ -19,7 +19,7 @@ export const metadata: Metadata = { title: "Discounts" };
 
 function discountStatus(d: Discount, now: Date): { label: string; tone: BadgeTone } {
   if (!d.active) return { label: "Disabled", tone: "neutral" };
-  if (d.startsAt && d.startsAt > now) return { label: "Scheduled", tone: "sapphire" };
+  if (d.startsAt && d.startsAt > now) return { label: "Scheduled", tone: "neutral" };
   if (d.endsAt && d.endsAt < now) return { label: "Expired", tone: "neutral" };
   if (d.maxUses !== null && d.usedCount >= d.maxUses) return { label: "Used up", tone: "amber" };
   return { label: "Active", tone: "sage" };
@@ -51,7 +51,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
 
       {saved && (
         <div role="status" className="mb-6 rounded-xl bg-sage-light px-4 py-3 text-sm text-sage">
-          Discount <strong className="font-mono">{saved}</strong> saved.
+          Discount <strong>{saved}</strong> saved.
         </div>
       )}
 
@@ -82,10 +82,10 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
               return (
                 <tr key={d.id}>
                   <td>
-                    <Link href={`/admin/discounts/${d.id}`} className="font-mono font-medium text-espresso hover:text-copper-dark">
+                    <Link href={`/admin/discounts/${d.id}`} className="font-medium text-ink hover:underline">
                       {d.code}
                     </Link>
-                    {d.description && <span className="block max-w-56 truncate text-[13px] text-taupe">{d.description}</span>}
+                    {d.description && <span className="block max-w-56 truncate text-[13px] text-muted">{d.description}</span>}
                   </td>
                   <td className="whitespace-nowrap">{describeValue(d)}</td>
                   <td className="text-right tabular-nums">{d.minSubtotal ? formatMoney(d.minSubtotal) : "—"}</td>
@@ -97,11 +97,11 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
                     {d.startsAt || d.endsAt ? `${d.startsAt ? formatDate(d.startsAt) : "Now"} → ${d.endsAt ? formatDate(d.endsAt) : "No end"}` : "Always"}
                   </td>
                   <td>
-                    <Badge tone={status.tone}>{status.label}</Badge>
+                    {status.label === "Active" ? <span className="text-muted">Active</span> : <Badge tone={status.tone}>{status.label}</Badge>}
                   </td>
                   <td>
                     <div className="flex justify-end gap-2">
-                      <Link href={`/admin/discounts/${d.id}`} className="rounded-full px-3 py-1.5 text-[13px] text-muted hover:bg-espresso/5">
+                      <Link href={`/admin/discounts/${d.id}`} className="px-3 py-1.5 text-[13px] text-muted hover:bg-surface hover:text-ink">
                         Edit
                       </Link>
                       <ActionForm action={toggleDiscountAction}>

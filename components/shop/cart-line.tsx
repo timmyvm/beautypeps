@@ -1,10 +1,10 @@
 "use client";
 
-import { Loader2, Trash2 } from "lucide-react";
-import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 import { QuantityStepper } from "@/components/product/add-to-cart";
+import { SpecimenTile, toneFor } from "@/components/product/product-card";
 import { removeFromCart, updateCartQuantity } from "@/lib/actions/cart";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -25,34 +25,30 @@ export function CartLineRow({
   const { product } = line;
 
   return (
-    <li className={cn("flex gap-4 py-6 transition-opacity sm:gap-6", pending && "opacity-60")}>
-      <Link
-        href={`/products/${product.slug}`}
-        className="relative aspect-[4/5] w-24 shrink-0 overflow-hidden rounded-xl bg-ivory sm:w-28"
-      >
-        <Image src={product.image} alt={product.name} fill sizes="112px" className="object-cover" />
+    <li className={cn("flex gap-4 bg-surface p-3 transition-opacity sm:gap-6 sm:p-4", pending && "opacity-60")}>
+      <Link href={`/products/${product.slug}`} className="w-24 shrink-0 sm:w-28" aria-label={product.name}>
+        <SpecimenTile product={product} tone={toneFor(product.slug)} sizes="112px" className="aspect-[4/5] w-full" />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <Link href={`/products/${product.slug}`} className="font-display text-lg leading-snug text-espresso hover:text-copper-dark">
+            <Link href={`/products/${product.slug}`} className="text-body font-medium hover:underline hover:underline-offset-4">
               {product.name}
             </Link>
-            <p className="mt-0.5 text-sm text-cocoa">
-              {[product.subtitle, product.size].filter(Boolean).join(" · ")}
+            <p className="mt-0.5 text-small text-muted">
+              {[product.size, `${formatMoney(product.price)} each`].filter(Boolean).join(", ")}
             </p>
-            <p className="mt-1 text-xs text-taupe">{formatMoney(product.price)} each</p>
           </div>
-          <p className="text-sm font-medium whitespace-nowrap text-espresso">{formatMoney(line.lineTotal)}</p>
+          <p className="tabular text-body font-medium whitespace-nowrap">{formatMoney(line.lineTotal)}</p>
         </div>
 
         {line.limited && (
-          <p className="mt-2 rounded-lg bg-amber-light px-3 py-1.5 text-xs text-amber">
-            Only {product.stock} available — we&apos;ve adjusted your quantity.
+          <p className="mt-2 bg-amber-light px-3 py-1.5 text-small text-amber">
+            Only {product.stock} left, so we&apos;ve adjusted your quantity.
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4">
           <QuantityStepper
             size="sm"
             value={line.quantity}
@@ -65,10 +61,10 @@ export function CartLineRow({
             type="button"
             onClick={() => startTransition(async () => void (await removeFromCart(product.id)))}
             disabled={pending}
-            className="inline-flex items-center gap-1.5 text-xs text-cocoa underline-offset-4 hover:text-danger hover:underline"
+            className="press inline-flex items-center gap-1.5 text-small underline underline-offset-4 hover:text-danger"
             aria-label={`Remove ${product.name} from bag`}
           >
-            {pending ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : <Trash2 className="size-3.5" aria-hidden />}
+            {pending && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
             Remove
           </button>
         </div>

@@ -53,7 +53,7 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
         {sp.filter && <input type="hidden" name="filter" value={sp.filter} />}
         <label className="relative min-w-60 flex-1">
           <span className="sr-only">Search customers</span>
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input name="q" defaultValue={sp.q} placeholder="Name, email or phone…" className="pl-10" />
         </label>
         <label className="text-[13px] text-muted">
@@ -64,7 +64,7 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
             <option value="orders">Most orders</option>
           </Select>
         </label>
-        <button type="submit" className={buttonClasses()}>
+        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10 bg-surface-2 hover:bg-stone" })}>
           Apply
         </button>
       </form>
@@ -87,10 +87,10 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
             {rows.map((c) => (
               <tr key={c.id}>
                 <td className="max-w-72">
-                  <Link href={`/admin/customers/${c.id}`} className="block truncate font-medium text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/customers/${c.id}`} className="block truncate font-medium text-ink hover:underline">
                     {[c.firstName, c.lastName].filter(Boolean).join(" ") || "—"}
                   </Link>
-                  <span className="block truncate text-[13px] text-taupe">{c.email}</span>
+                  <span className="block truncate text-[13px] text-muted">{c.email}</span>
                 </td>
                 <td className="text-right tabular-nums">{c.orderCount}</td>
                 <td className="text-right font-medium tabular-nums">{formatMoney(c.spent)}</td>
@@ -98,9 +98,9 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
                 <td className="whitespace-nowrap text-muted">{formatDate(c.createdAt)}</td>
                 <td>
                   <span className="flex flex-wrap gap-1">
-                    {c.role === "admin" && <Badge tone="copper">Admin</Badge>}
-                    {c.disabled ? <Badge tone="danger">Disabled</Badge> : <Badge tone="sage">Active</Badge>}
-                    {c.marketingOptIn && <Badge tone="sapphire">Marketing</Badge>}
+                    {c.role === "admin" && <Badge tone="neutral">Admin</Badge>}
+                    {c.disabled ? <Badge tone="danger">Disabled</Badge> : <span className="text-muted">Active</span>}
+                    {c.marketingOptIn && <span className="text-muted">· subscribed</span>}
                   </span>
                 </td>
               </tr>

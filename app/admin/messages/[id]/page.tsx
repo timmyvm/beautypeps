@@ -84,7 +84,7 @@ export default async function AdminMessagePage({ params }: Props) {
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
         <div className="flex min-w-0 flex-col gap-6">
           <Panel>
-            <p className="text-sm leading-relaxed whitespace-pre-line text-espresso">{message.message}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-line text-ink">{message.message}</p>
           </Panel>
 
           <Panel title="Reply">
@@ -115,34 +115,34 @@ export default async function AdminMessagePage({ params }: Props) {
         <Panel title="Sender">
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <dt className="text-muted">Name</dt>
-            <dd className="text-espresso">{message.name}</dd>
+            <dd className="text-ink">{message.name}</dd>
             <dt className="text-muted">Email</dt>
             <dd className="truncate">
-              <a href={`mailto:${message.email}`} className="text-copper-dark hover:underline">
+              <a href={`mailto:${message.email}`} className="text-ink hover:underline">
                 {message.email}
               </a>
             </dd>
             <dt className="text-muted">Status</dt>
             <dd>
-              <Badge tone={archived ? "neutral" : "sage"}>{archived ? "Archived" : "Read"}</Badge>
+              <Badge tone="neutral">{archived ? "Archived" : "Read"}</Badge>
             </dd>
             {message.orderNumber && (
               <>
                 <dt className="text-muted">Order</dt>
                 <dd>
                   {order ? (
-                    <Link href={`/admin/orders/${order.id}`} className="font-mono text-copper-dark hover:underline">
+                    <Link href={`/admin/orders/${order.id}`} className="text-ink hover:underline">
                       {order.orderNumber}
                     </Link>
                   ) : (
-                    <span className="font-mono text-muted">{message.orderNumber} (not found)</span>
+                    <span className="text-muted">{message.orderNumber} (not found)</span>
                   )}
                 </dd>
               </>
             )}
           </dl>
           {customer && (
-            <Link href={`/admin/customers/${customer.id}`} className="mt-4 inline-block text-sm text-copper-dark hover:underline">
+            <Link href={`/admin/customers/${customer.id}`} className="mt-4 inline-block text-sm text-ink hover:underline">
               View customer profile →
             </Link>
           )}

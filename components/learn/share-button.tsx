@@ -1,10 +1,10 @@
 "use client";
 
-import { Check, Share2 } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 /** Uses the native share sheet when available, otherwise copies the link. */
-export function ShareButton({ title }: { title: string }) {
+export function ShareButton({ title, className }: { title: string; className?: string }) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
@@ -14,7 +14,7 @@ export function ShareButton({ title }: { title: string }) {
         await navigator.share({ title, url });
         return;
       } catch {
-        // user dismissed the share sheet — fall through to copy
+        // the share sheet was dismissed: fall through to copying the link
       }
     }
     try {
@@ -27,13 +27,8 @@ export function ShareButton({ title }: { title: string }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={share}
-      className="inline-flex items-center gap-2 rounded-full border border-stone bg-cream px-4 py-2 text-xs font-medium text-espresso transition-colors hover:border-copper/50"
-    >
-      {copied ? <Check className="size-3.5 text-sage" aria-hidden /> : <Share2 className="size-3.5" aria-hidden />}
-      <span aria-live="polite">{copied ? "Link copied" : "Share"}</span>
+    <button type="button" onClick={share} className={cn("press text-body underline underline-offset-4", className)}>
+      <span aria-live="polite">{copied ? "Link copied" : "Share this guide"}</span>
     </button>
   );
 }

@@ -49,8 +49,8 @@ export default async function AdminEmailsPage({
     <>
       <AdminPageHeader title="Email log" description="Every email the store has generated — order updates, password resets, replies." />
 
-      <div className="mb-6 flex gap-3 rounded-xl border border-stone/70 bg-cream px-4 py-3 text-sm text-muted">
-        <Info className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
+      <div className="mb-6 flex gap-3 rounded-xl border border-surface-2 bg-white px-4 py-3 text-sm text-muted">
+        <Info className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />
         <p>
           {delivering ? (
             <>Emails are being delivered through Resend from <strong>{process.env.EMAIL_FROM}</strong>.</>
@@ -80,10 +80,10 @@ export default async function AdminEmailsPage({
         {sp.status && <input type="hidden" name="status" value={sp.status} />}
         <label className="relative max-w-md flex-1">
           <span className="sr-only">Search emails</span>
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input name="q" defaultValue={sp.q} placeholder="Recipient or subject…" className="pl-10" />
         </label>
-        <button type="submit" className={buttonClasses()}>
+        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10 bg-surface-2 hover:bg-stone" })}>
           Search
         </button>
       </form>
@@ -104,15 +104,19 @@ export default async function AdminEmailsPage({
             {rows.map((e) => (
               <tr key={e.id}>
                 <td className="max-w-96">
-                  <Link href={`/admin/emails/${e.id}`} className="block truncate font-medium text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/emails/${e.id}`} className="block truncate font-medium text-ink hover:underline">
                     {e.subject}
                   </Link>
                 </td>
                 <td className="max-w-64 truncate text-muted">{e.to}</td>
                 <td>
-                  <Badge tone={emailStatusTone(e.status)} className="capitalize">
-                    {e.status}
-                  </Badge>
+                  {e.status === "failed" ? (
+                    <Badge tone={emailStatusTone(e.status)} className="capitalize">
+                      {e.status}
+                    </Badge>
+                  ) : (
+                    <span className="text-muted capitalize">{e.status}</span>
+                  )}
                 </td>
                 <td className="whitespace-nowrap text-muted">{formatDateTime(e.createdAt)}</td>
               </tr>

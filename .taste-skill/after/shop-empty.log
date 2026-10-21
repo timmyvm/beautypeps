@@ -1,0 +1,32 @@
+TASTESKILL · INSPECT   http://localhost:3101/shop?q=zzzz
+
+MEASURED (first viewport listed)
+  hero headline   "All formulas"  2 words · 1 line(s) · 88px (6.1vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 54.4px
+  @390px          1 line(s) · 44px
+  typefaces       chillax 100%
+  sizes in use    14 / 19 / 26 / 64 / 88 px   body 14px / 1.45
+  colour          page #ffffff · sections #ffffff · button #f3f3f1
+  page            2.9 screens · 310 words · 6 images · hero media none
+  headings        3 · longest 1 line(s) · median 5 words
+
+FAIL — fix every one of these
+  [body-size] @1440px (+768, 390)  Body text is 14px (the size most of the running text is set in).
+      → Body copy 16–20px. Map small sizes from blueprints onto your body step.
+
+WARN — fix, or be able to defend
+  [no-footage] @1440px  No video anywhere on the page.
+      → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
+  [still-page] @1440px  Little motion: 12 element(s) moved while the page loaded and scrolled.
+      → Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph.
+
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/after/shop-empty/desktop-fold.jpg
+                  .taste-skill/after/shop-empty/desktop-page-01.jpg
+  tablet 768px    .taste-skill/after/shop-empty/tablet-fold.jpg
+                  .taste-skill/after/shop-empty/tablet-page-01.jpg
+  mobile 390px    .taste-skill/after/shop-empty/mobile-fold.jpg
+                  .taste-skill/after/shop-empty/mobile-page-01.jpg
+
+report: .taste-skill/after/shop-empty/report.json
+RESULT: 1 FAIL, 2 WARN — not done.

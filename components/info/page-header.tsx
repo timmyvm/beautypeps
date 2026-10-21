@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "./breadcrumbs";
@@ -11,6 +13,7 @@ export function PageHeader({
   lead,
   crumbs,
   figure,
+  figureClassName,
   children,
   size = "display",
   className,
@@ -19,6 +22,8 @@ export function PageHeader({
   lead?: ReactNode;
   crumbs?: { href?: string; label: string }[];
   figure?: ReactNode;
+  /** e.g. "hidden lg:block" when the page's first action must reach the first screen on a phone */
+  figureClassName?: string;
   children?: ReactNode;
   size?: "display" | "head";
   className?: string;
@@ -29,10 +34,11 @@ export function PageHeader({
       <div
         className={cn(
           "mt-8 grid grid-cols-1 gap-10 lg:mt-12 lg:gap-[var(--gutter)]",
-          figure && "lg:grid-cols-12 lg:items-end",
+          figure && "lg:grid-cols-12",
         )}
       >
-        <div className={cn(figure ? "lg:col-span-7 lg:pb-2" : "max-w-5xl")}>
+        {/* The title holds the top left; the sentence and any controls sit level with the foot of the picture. */}
+        <div className={cn(figure ? "lg:col-span-7 lg:flex lg:flex-col lg:justify-between lg:gap-12" : "max-w-5xl")}>
           <h1
             className={cn(
               "display-type text-ink",
@@ -41,10 +47,14 @@ export function PageHeader({
           >
             {title}
           </h1>
-          {lead && <p className="mt-8 max-w-[44ch] text-lead text-ink">{lead}</p>}
-          {children && <div className="mt-8">{children}</div>}
+          {(lead || children) && (
+            <div>
+              {lead && <p className="mt-8 max-w-[44ch] text-lead text-ink lg:mt-0">{lead}</p>}
+              {children && <div className="mt-8">{children}</div>}
+            </div>
+          )}
         </div>
-        {figure && <div className="lg:col-span-5">{figure}</div>}
+        {figure && <div className={cn("lg:col-span-5", figureClassName)}>{figure}</div>}
       </div>
     </header>
   );
@@ -67,5 +77,49 @@ export function Figure({
       <div className={cn("relative w-full overflow-hidden bg-surface", ratio)}>{children}</div>
       {caption && <figcaption className="mt-3 text-small text-ink">{caption}</figcaption>}
     </figure>
+  );
+}
+
+/** Entrance for a part of a section; `i` staggers it after its neighbours. */
+export function reveal(i = 0) {
+  return { "data-reveal": "", style: { ["--reveal-i" as string]: i } };
+}
+
+/** A picture that leads somewhere: a photograph with a title and one line under it. */
+export function PictureLink({
+  href,
+  src,
+  alt,
+  title,
+  text,
+  ratio = "aspect-[4/3]",
+  sizes = "(min-width: 1024px) 33vw, 100vw",
+  index = 0,
+  className,
+}: {
+  href: string;
+  src: string;
+  alt: string;
+  title: string;
+  text: string;
+  ratio?: string;
+  sizes?: string;
+  index?: number;
+  className?: string;
+}) {
+  return (
+    <Link href={href} className={cn("group block", className)} {...reveal(index)}>
+      <div className={cn("relative w-full overflow-hidden bg-surface", ratio)}>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes={sizes}
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      </div>
+      <h3 className="mt-4 text-lead font-medium text-ink group-hover:underline group-hover:underline-offset-4">{title}</h3>
+      <p className="mt-1 max-w-[44ch] text-body text-ink">{text}</p>
+    </Link>
   );
 }

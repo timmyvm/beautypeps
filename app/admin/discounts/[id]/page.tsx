@@ -25,7 +25,7 @@ export default async function EditDiscountPage({ params }: Props) {
     <>
       <Toaster />
       <AdminPageHeader
-        title={<span className="font-mono">{discount.code}</span>}
+        title={discount.code}
         description={`Used ${discount.usedCount} ${discount.usedCount === 1 ? "time" : "times"}.`}
         back={{ href: "/admin/discounts", label: "Discounts" }}
       />

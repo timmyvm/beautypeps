@@ -2,7 +2,7 @@
 
 import { Check, Loader2 } from "lucide-react";
 import { useState, useTransition, type ReactNode } from "react";
-import { buttonClasses } from "@/components/ui/button";
+import { adminButtonClasses } from "@/components/admin/ui";
 import { cn } from "@/lib/utils";
 
 export type ActionResult = { ok: boolean; message?: string } | void;
@@ -71,7 +71,7 @@ export function ConfirmButton({
         type="button"
         disabled={pending}
         onClick={() => (confirm ? setAsking(true) : run())}
-        className={buttonClasses({ variant, size, className })}
+        className={adminButtonClasses({ variant, size, className })}
       >
         {pending && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
         {children}

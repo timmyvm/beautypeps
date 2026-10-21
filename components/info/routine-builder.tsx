@@ -1,15 +1,17 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, Loader2, Moon, RotateCcw, ShoppingBag, Sun } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { SpecimenThumb } from "@/components/peptides/peptide-entry";
+import { SpecimenTile, toneFor } from "@/components/product/product-card";
+import { Button } from "@/components/ui/button";
 import { addManyToCart } from "@/lib/actions/cart";
 import { concernLabel } from "@/lib/constants";
 import {
   BUILDER_CONCERNS,
   EXPERIENCE_OPTIONS,
   PREFERENCE_OPTIONS,
+  previewMatches,
   recommend,
   SKIN_TYPE_OPTIONS,
   type Answers,
@@ -34,6 +36,7 @@ export function RoutineBuilder({
   const done = step >= STEPS.length;
   const topRef = useRef<HTMLDivElement>(null);
   const hasInteracted = useRef(false);
+  const preview = useMemo(() => previewMatches(products, answers), [products, answers]);
 
   // Bring the next question (or the results) into view after each step.
   useEffect(() => {
@@ -57,136 +60,148 @@ export function RoutineBuilder({
 
   if (done) {
     return (
-      <div ref={topRef} className="scroll-mt-28">
+      <div ref={topRef} className="scroll-mt-8">
         <Results products={products} answers={answers} peptideNames={peptideNames} onRestart={restart} onBack={() => setStep(3)} />
       </div>
     );
   }
 
   return (
-    <div ref={topRef} className="mx-auto max-w-3xl scroll-mt-28">
-      {/* Progress */}
-      <ol className="mb-10 grid grid-cols-4 gap-2" aria-label="Progress">
-        {STEPS.map((label, i) => (
-          <li key={label}>
-            <div className={cn("h-1 rounded-full transition-colors", i <= step ? "bg-copper" : "bg-stone")} />
-            <p className={cn("mt-2 text-[11px] tracking-wide", i === step ? "font-semibold text-espresso" : "text-taupe")}>
-              <span className="sr-only">Step </span>
-              {i + 1}. {label}
-            </p>
-          </li>
-        ))}
-      </ol>
+    <div ref={topRef} className="grid scroll-mt-8 gap-14 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+      <div className="lg:col-span-7">
+        <ol className="grid grid-cols-4 gap-1.5" aria-label="Progress">
+          {STEPS.map((label, i) => (
+            <li key={label} aria-current={i === step ? "step" : undefined}>
+              <div className={cn("h-1.5 transition-colors duration-300", i <= step ? "bg-accent" : "bg-surface-2")} />
+              <p className={cn("mt-2 text-small", i === step ? "font-medium text-ink" : "text-muted")}>{label}</p>
+            </li>
+          ))}
+        </ol>
 
-      <div className="rounded-2xl border border-stone/70 bg-cream p-6 md:p-10">
-        {step === 0 && (
-          <Question title="What would you like to focus on?" hint={`Choose up to ${MAX_CONCERNS}.`}>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {BUILDER_CONCERNS.map((c) => {
-                const selected = answers.concerns.includes(c.value);
-                const disabled = !selected && answers.concerns.length >= MAX_CONCERNS;
-                return (
-                  <OptionButton
-                    key={c.value}
-                    selected={selected}
-                    disabled={disabled}
-                    multi
-                    onClick={() =>
-                      setAnswers((a) => ({
-                        ...a,
-                        concerns: selected ? a.concerns.filter((x) => x !== c.value) : [...a.concerns, c.value],
-                      }))
-                    }
-                    label={c.label}
+        <div className="mt-12">
+          {step === 0 && (
+            <Question title="What would you like to work on?" hint={`Choose up to ${MAX_CONCERNS}.`}>
+              <div className="flex flex-wrap gap-2">
+                {BUILDER_CONCERNS.map((c) => {
+                  const selected = answers.concerns.includes(c.value);
+                  const disabled = !selected && answers.concerns.length >= MAX_CONCERNS;
+                  return (
+                    <Option
+                      key={c.value}
+                      selected={selected}
+                      disabled={disabled}
+                      multi
+                      onClick={() =>
+                        setAnswers((a) => ({
+                          ...a,
+                          concerns: selected ? a.concerns.filter((x) => x !== c.value) : [...a.concerns, c.value],
+                        }))
+                      }
+                      label={c.label}
+                    />
+                  );
+                })}
+              </div>
+            </Question>
+          )}
+
+          {step === 1 && (
+            <Question title="How would you describe your skin?">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {SKIN_TYPE_OPTIONS.map((o) => (
+                  <Option
+                    key={o.value}
+                    selected={answers.skinType === o.value}
+                    onClick={() => setAnswers((a) => ({ ...a, skinType: o.value }))}
+                    label={o.label}
+                    hint={o.hint}
                   />
-                );
-              })}
-            </div>
-          </Question>
-        )}
+                ))}
+              </div>
+            </Question>
+          )}
 
-        {step === 1 && (
-          <Question title="How would you describe your skin?">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {SKIN_TYPE_OPTIONS.map((o) => (
-                <OptionButton
-                  key={o.value}
-                  selected={answers.skinType === o.value}
-                  onClick={() => setAnswers((a) => ({ ...a, skinType: o.value }))}
-                  label={o.label}
-                  hint={o.hint}
-                />
-              ))}
-            </div>
-          </Question>
-        )}
+          {step === 2 && (
+            <Question title="How used to actives is your skin?">
+              <div className="grid gap-2">
+                {EXPERIENCE_OPTIONS.map((o) => (
+                  <Option
+                    key={o.value}
+                    selected={answers.experience === o.value}
+                    onClick={() => setAnswers((a) => ({ ...a, experience: o.value }))}
+                    label={o.label}
+                    hint={o.hint}
+                  />
+                ))}
+              </div>
+            </Question>
+          )}
 
-        {step === 2 && (
-          <Question title="How familiar are you with active skincare?">
-            <div className="grid gap-3">
-              {EXPERIENCE_OPTIONS.map((o) => (
-                <OptionButton
-                  key={o.value}
-                  selected={answers.experience === o.value}
-                  onClick={() => setAnswers((a) => ({ ...a, experience: o.value }))}
-                  label={o.label}
-                  hint={o.hint}
-                />
-              ))}
-            </div>
-          </Question>
-        )}
+          {step === 3 && (
+            <Question title="How much do you want in your routine?">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {PREFERENCE_OPTIONS.map((o) => (
+                  <Option
+                    key={o.value}
+                    selected={answers.preference === o.value}
+                    onClick={() => setAnswers((a) => ({ ...a, preference: o.value }))}
+                    label={o.label}
+                    hint={o.hint}
+                  />
+                ))}
+              </div>
+            </Question>
+          )}
+        </div>
 
-        {step === 3 && (
-          <Question title="How much do you want in your routine?">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {PREFERENCE_OPTIONS.map((o) => (
-                <OptionButton
-                  key={o.value}
-                  selected={answers.preference === o.value}
-                  onClick={() => setAnswers((a) => ({ ...a, preference: o.value }))}
-                  label={o.label}
-                  hint={o.hint}
-                />
-              ))}
-            </div>
-          </Question>
-        )}
-
-        <div className="mt-10 flex items-center justify-between gap-4 border-t border-stone/60 pt-6">
-          <button
-            type="button"
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-            disabled={step === 0}
-            className="inline-flex items-center gap-1.5 text-sm text-cocoa hover:text-espresso disabled:invisible"
-          >
-            <ArrowLeft className="size-4" aria-hidden /> Back
-          </button>
-          <button
-            type="button"
-            onClick={() => setStep((s) => s + 1)}
-            disabled={!canContinue}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-espresso px-6 text-sm font-medium text-cream transition-colors hover:bg-ink disabled:opacity-40"
-          >
-            {step === STEPS.length - 1 ? "See my routine" : "Continue"} <ArrowRight className="size-4" aria-hidden />
-          </button>
+        <div className="mt-12 flex items-center gap-8">
+          <Button onClick={() => setStep((s) => s + 1)} disabled={!canContinue}>
+            {step === STEPS.length - 1 ? "See my routine" : "Continue"}
+          </Button>
+          {step > 0 && (
+            <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} className="text-body underline underline-offset-4">
+              Back
+            </button>
+          )}
         </div>
       </div>
+
+      <aside aria-labelledby="preview-title" className="lg:col-span-4 lg:col-start-9">
+        <h2 id="preview-title" className="text-lead font-medium">
+          {answers.concerns.length === 0 ? "Where most people start" : "Formulas that match so far"}
+        </h2>
+        <p className="mt-1 text-body text-muted" aria-live="polite">
+          {answers.concerns.length === 0
+            ? "Choose a concern and this narrows."
+            : `For ${answers.concerns.map((c) => concernLabel(c).toLowerCase()).join(", ")}.`}
+        </p>
+        <ul className="mt-6 grid grid-cols-2 gap-2">
+          {preview.map((p) => (
+            <li key={p.id}>
+              <Link href={`/products/${p.slug}`} className="group block">
+                <SpecimenTile product={p} tone={toneFor(p.slug)} sizes="(min-width: 1024px) 16vw, 50vw" className="aspect-[4/5]" />
+                <p className="mt-2 text-small font-medium group-hover:underline group-hover:underline-offset-4">{p.name}</p>
+                <p className="text-small text-muted">{formatMoney(p.price)}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </aside>
     </div>
   );
 }
 
-function Question({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function Question({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
     <fieldset>
-      <legend className="font-display text-2xl text-espresso md:text-3xl">{title}</legend>
-      {hint && <p className="mt-2 text-sm text-cocoa">{hint}</p>}
-      <div className="mt-7">{children}</div>
+      <legend className="display-type text-head">{title}</legend>
+      {hint && <p className="mt-4 text-body text-muted">{hint}</p>}
+      <div className="mt-8">{children}</div>
     </fieldset>
   );
 }
 
-function OptionButton({
+function Option({
   selected,
   disabled,
   multi,
@@ -209,24 +224,14 @@ function OptionButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-4 rounded-xl border px-4 py-3.5 text-left transition-colors",
-        selected ? "border-copper bg-copper-light/30" : "border-stone bg-cream hover:border-taupe",
-        disabled && "cursor-not-allowed opacity-40",
+        "press text-left",
+        hint ? "flex min-h-[72px] w-full flex-col justify-center px-5 py-3" : "inline-flex h-12 items-center px-5",
+        selected ? "bg-ink text-white" : "bg-surface text-ink hover:bg-surface-2",
+        disabled && "cursor-not-allowed text-muted hover:bg-surface",
       )}
     >
-      <span
-        className={cn(
-          "grid size-5 shrink-0 place-items-center border transition-colors",
-          multi ? "rounded-md" : "rounded-full",
-          selected ? "border-copper bg-copper text-cream" : "border-taupe",
-        )}
-      >
-        {selected && <Check className="size-3" aria-hidden />}
-      </span>
-      <span>
-        <span className="block text-sm font-medium text-espresso">{label}</span>
-        {hint && <span className="mt-0.5 block text-xs text-cocoa">{hint}</span>}
-      </span>
+      <span className="text-body font-medium">{label}</span>
+      {hint && <span className={cn("text-small", selected ? "text-white/80" : "text-muted")}>{hint}</span>}
     </button>
   );
 }
@@ -248,6 +253,7 @@ function Results({
   const total = rec.products.reduce((s, p) => s + p.price, 0);
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const skin = SKIN_TYPE_OPTIONS.find((s) => s.value === answers.skinType)?.label.toLowerCase();
 
   const addAll = () =>
     startTransition(async () => {
@@ -257,170 +263,155 @@ function Results({
 
   return (
     <div>
-      <div className="mx-auto max-w-3xl text-center">
-        <p className="eyebrow mb-3">Your routine</p>
-        <h2 className="font-display text-3xl text-espresso md:text-5xl">A peptide routine built for you</h2>
-        <p className="mt-4 text-cocoa">
-          Focused on {answers.concerns.map((c) => concernLabel(c).toLowerCase()).join(", ")} for{" "}
-          {SKIN_TYPE_OPTIONS.find((s) => s.value === answers.skinType)?.label.toLowerCase()} skin.
-        </p>
-      </div>
+      <h2 className="display-type text-head">Your peptide routine</h2>
+      <p className="mt-6 max-w-[56ch] text-lead">
+        For {answers.concerns.map((c) => concernLabel(c).toLowerCase()).join(", ")}, on {skin} skin.
+      </p>
 
       {rec.products.length === 0 ? (
-        <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-dashed border-stone p-8 text-center">
-          <p className="font-display text-xl text-espresso">We couldn&apos;t find an in-stock match right now</p>
-          <p className="mt-2 text-sm text-cocoa">Try different concerns, or browse the full range.</p>
-          <div className="mt-6 flex justify-center gap-3">
-            <button type="button" onClick={onRestart} className="text-sm text-copper-dark underline underline-offset-4">
+        <div className="mt-12 bg-surface px-6 py-12 sm:px-10">
+          <p className="text-lead">Nothing in stock matches those answers right now.</p>
+          <p className="mt-2 text-body">Try different concerns, or browse the full range.</p>
+          <div className="mt-6 flex gap-8 text-body">
+            <button type="button" onClick={onRestart} className="underline underline-offset-4">
               Start over
             </button>
-            <Link href="/shop" className="text-sm text-copper-dark underline underline-offset-4">
+            <Link href="/shop" className="underline underline-offset-4">
               Shop all
             </Link>
           </div>
         </div>
       ) : (
-        <>
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            <RoutineColumn title="Morning" icon={<Sun className="size-5" aria-hidden />} steps={rec.am} />
-            <RoutineColumn title="Evening" icon={<Moon className="size-5" aria-hidden />} steps={rec.pm} />
-          </div>
+        <div className="mt-14 grid gap-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-7">
+            <div className="grid gap-12 md:grid-cols-2 md:gap-[var(--gutter)]">
+              <RoutineColumn title="Morning" steps={rec.am} />
+              <RoutineColumn title="Evening" steps={rec.pm} />
+            </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-            <section className="rounded-2xl border border-stone/70 bg-cream p-6 md:p-8">
-              <h3 className="font-display text-2xl text-espresso">Why these peptides</h3>
-              <ul className="mt-5 space-y-5">
+            <section aria-labelledby="why-title" className="mt-20">
+              <h3 id="why-title" className="text-lead font-medium">
+                Why these formulas
+              </h3>
+              <ul className="mt-6">
                 {rec.introOrder.map((p, i) => (
-                  <li key={p.id} className="flex gap-4">
-                    <span className="font-display text-lg text-copper">{i + 1}</span>
-                    <div className="min-w-0">
-                      <Link href={`/products/${p.slug}`} className="font-medium text-espresso hover:text-copper-dark">
-                        {p.name}
-                      </Link>
-                      {rec.matched[p.id]?.length > 0 && (
-                        <p className="mt-0.5 text-xs text-cocoa">
-                          Targets: {rec.matched[p.id].map((c) => concernLabel(c).toLowerCase()).join(", ")}
-                        </p>
-                      )}
-                      {p.peptideSlugs.length > 0 && (
-                        <p className="mt-1.5 flex flex-wrap gap-1.5">
-                          {p.peptideSlugs.map((s) => (
-                            <Link
-                              key={s}
-                              href={`/peptides/${s}`}
-                              className="rounded-full border border-stone bg-ivory px-2.5 py-0.5 text-[11px] text-espresso hover:border-copper/50"
-                            >
+                  <li key={p.id} className={cn("px-4 py-5 sm:px-5", i % 2 === 0 ? "bg-surface" : "bg-bg")}>
+                    <Link href={`/products/${p.slug}`} className="text-body font-medium underline-offset-4 hover:underline">
+                      {p.name}
+                    </Link>
+                    {rec.matched[p.id]?.length > 0 && (
+                      <p className="mt-1 text-body">
+                        For {rec.matched[p.id].map((c) => concernLabel(c).toLowerCase()).join(", ")}
+                      </p>
+                    )}
+                    {p.peptideSlugs.length > 0 && (
+                      <p className="mt-1 text-body text-muted">
+                        With{" "}
+                        {p.peptideSlugs.map((s, j) => (
+                          <span key={s}>
+                            {j > 0 && (j === p.peptideSlugs.length - 1 ? " and " : ", ")}
+                            <Link href={`/peptides/${s}`} className="text-ink underline underline-offset-4">
                               {peptideNames[s] ?? s}
                             </Link>
-                          ))}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <h3 className="mt-10 font-display text-xl text-espresso">How to start</h3>
-              <ul className="mt-4 space-y-2.5">
-                {rec.notes.map((n) => (
-                  <li key={n} className="flex gap-3 text-sm leading-relaxed text-cocoa">
-                    <Check className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                    {n}
+                          </span>
+                        ))}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
             </section>
 
-            <aside className="h-fit rounded-2xl bg-espresso p-6 text-cream md:p-8 lg:sticky lg:top-28">
-              <p className="text-xs font-semibold tracking-[0.2em] text-copper-light uppercase">Your routine</p>
+            <section aria-labelledby="start-title" className="mt-16">
+              <h3 id="start-title" className="text-lead font-medium">
+                How to start
+              </h3>
               <ul className="mt-5 space-y-3">
-                {rec.products.map((p) => (
-                  <li key={p.id} className="flex items-center gap-3">
-                    <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-cream/10">
-                      <Image src={p.image} alt="" fill sizes="48px" className="object-cover" />
-                    </div>
-                    <span className="min-w-0 flex-1 truncate text-sm">{p.name}</span>
-                    <span className="text-sm">{formatMoney(p.price)}</span>
+                {rec.notes.map((n) => (
+                  <li key={n} className="flex gap-4 text-body">
+                    <span aria-hidden className="mt-[0.6em] size-2 shrink-0 bg-accent" />
+                    {n}
                   </li>
                 ))}
               </ul>
-              <div className="mt-6 flex items-center justify-between border-t border-cream/15 pt-4">
-                <span className="text-sm text-cream/70">Total</span>
-                <span className="font-display text-2xl">{formatMoney(total)}</span>
-              </div>
-              <button
-                type="button"
-                onClick={addAll}
-                disabled={pending}
-                className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-copper text-sm font-medium text-cream transition-colors hover:bg-copper-dark disabled:opacity-60"
-              >
-                {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ShoppingBag className="size-4" aria-hidden />}
-                Add routine to bag
-              </button>
-              {result && (
-                <p className={cn("mt-3 text-center text-sm", result.ok ? "text-copper-light" : "text-cream/70")} role="status">
-                  {result.message}{" "}
-                  <Link href="/cart" className="underline underline-offset-4">
-                    View bag
-                  </Link>
-                </p>
-              )}
-              {rec.kit && (
-                <p className="mt-5 text-xs leading-relaxed text-cream/60">
-                  Prefer a set? The{" "}
-                  <Link href={`/products/${rec.kit.slug}`} className="text-cream underline underline-offset-4">
-                    {rec.kit.name}
-                  </Link>{" "}
-                  covers similar ground.
-                </p>
-              )}
-              <div className="mt-6 flex justify-between gap-3 border-t border-cream/15 pt-4 text-xs">
-                <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-cream/70 hover:text-cream">
-                  <ArrowLeft className="size-3.5" aria-hidden /> Change answers
-                </button>
-                <button type="button" onClick={onRestart} className="inline-flex items-center gap-1 text-cream/70 hover:text-cream">
-                  <RotateCcw className="size-3.5" aria-hidden /> Start over
-                </button>
-              </div>
-            </aside>
+            </section>
           </div>
-        </>
+
+          <aside aria-labelledby="bag-title" className="h-fit bg-field-ink p-6 text-field-ink-ink sm:p-8 lg:sticky lg:top-8 lg:col-span-4 lg:col-start-9">
+            <h3 id="bag-title" className="text-lead font-medium">
+              The routine, in one go
+            </h3>
+            <ul className="mt-6 space-y-3">
+              {rec.products.map((p) => (
+                <li key={p.id} className="flex items-center gap-4">
+                  <SpecimenThumb specimen={p} className="size-14 shrink-0" sizes="56px" />
+                  <span className="min-w-0 flex-1 text-body">{p.name}</span>
+                  <span className="tabular text-body">{formatMoney(p.price)}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 flex items-baseline justify-between text-body">
+              <span>Total</span>
+              <span className="tabular text-lead font-medium">{formatMoney(total)}</span>
+            </p>
+            <Button onClick={addAll} disabled={pending} size="lg" className="mt-6 w-full">
+              {pending ? "Adding…" : "Add routine to bag"}
+            </Button>
+            {result && (
+              <p className="mt-3 text-body" role="status">
+                {result.message}{" "}
+                <Link href="/cart" className="underline underline-offset-4">
+                  View bag
+                </Link>
+              </p>
+            )}
+            {rec.kit && (
+              <p className="mt-6 text-body text-white/80">
+                Prefer a set? The{" "}
+                <Link href={`/products/${rec.kit.slug}`} className="text-white underline underline-offset-4">
+                  {rec.kit.name}
+                </Link>{" "}
+                covers similar ground.
+              </p>
+            )}
+            <div className="mt-8 flex gap-8 text-body">
+              <button type="button" onClick={onBack} className="underline underline-offset-4">
+                Change answers
+              </button>
+              <button type="button" onClick={onRestart} className="underline underline-offset-4">
+                Start over
+              </button>
+            </div>
+          </aside>
+        </div>
       )}
     </div>
   );
 }
 
-function RoutineColumn({ title, icon, steps }: { title: string; icon: React.ReactNode; steps: RoutineStep[] }) {
+function RoutineColumn({ title, steps }: { title: string; steps: RoutineStep[] }) {
   return (
-    <section className="rounded-2xl border border-stone/70 bg-cream p-6 md:p-8">
-      <h3 className="flex items-center gap-2 font-display text-2xl text-espresso">
-        <span className="text-copper">{icon}</span> {title}
-      </h3>
-      <ol className="mt-6 space-y-4">
+    <section aria-label={title}>
+      <h3 className="text-lead font-medium">{title}</h3>
+      <ol className="mt-5 space-y-6">
         {steps.map((s, i) => (
-          <li key={`${s.step}-${i}`} className="flex gap-4">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-ivory text-xs font-semibold text-cocoa">
-              {i + 1}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-copper-dark uppercase">{s.step}</p>
-              {s.product ? (
-                <Link href={`/products/${s.product.slug}`} className="group mt-1.5 flex items-center gap-3">
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-ivory">
-                    <Image src={s.product.image} alt="" fill sizes="56px" className="object-cover" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-espresso group-hover:text-copper-dark">{s.product.name}</p>
-                    <p className="text-xs text-cocoa">
-                      {formatMoney(s.product.price)}
-                      {s.product.size ? ` · ${s.product.size}` : ""}
-                    </p>
-                  </div>
-                </Link>
-              ) : (
-                <p className="mt-1 text-sm text-cocoa">{s.generic}</p>
-              )}
-              {s.note && <p className="mt-1.5 text-xs text-taupe">{s.note}</p>}
-            </div>
+          <li key={`${s.step}-${i}`}>
+            <p className="text-body font-medium">{s.step}</p>
+            {s.product ? (
+              <Link href={`/products/${s.product.slug}`} className="group mt-2 flex items-center gap-4">
+                <SpecimenThumb specimen={s.product} className="size-16 shrink-0" sizes="64px" />
+                <span className="min-w-0">
+                  <span className="block text-body group-hover:underline group-hover:underline-offset-4">{s.product.name}</span>
+                  <span className="block text-small text-muted">
+                    {formatMoney(s.product.price)}
+                    {s.product.size ? `, ${s.product.size}` : ""}
+                  </span>
+                </span>
+              </Link>
+            ) : (
+              <p className="mt-1 text-body text-muted">{s.generic}</p>
+            )}
+            {s.note && <p className="mt-2 text-body">{s.note}</p>}
           </li>
         ))}
       </ol>

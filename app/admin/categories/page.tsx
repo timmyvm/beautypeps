@@ -51,15 +51,15 @@ export default async function AdminCategoriesPage({
                 {rows.map((c) => (
                   <tr key={c.id}>
                     <td>
-                      <div className="relative h-10 w-14 overflow-hidden rounded-lg bg-ivory">
+                      <div className="relative h-10 w-14 overflow-hidden rounded-lg bg-surface">
                         {c.image && <Image src={c.image} alt="" fill sizes="56px" className="object-cover" unoptimized={!c.image.startsWith("/images/")} />}
                       </div>
                     </td>
                     <td>
-                      <Link href={`/admin/categories/${c.id}`} className="font-medium text-espresso hover:text-copper-dark">
+                      <Link href={`/admin/categories/${c.id}`} className="font-medium text-ink hover:underline">
                         {c.name}
                       </Link>
-                      <p className="text-[13px] text-taupe">
+                      <p className="text-[13px] text-muted">
                         /{c.slug}
                         {c.tagline ? ` · ${c.tagline}` : ""}
                       </p>
@@ -71,7 +71,7 @@ export default async function AdminCategoriesPage({
                     </td>
                     <td className="text-right text-muted tabular-nums">{c.sortOrder}</td>
                     <td className="text-right">
-                      <Link href={`/admin/categories/${c.id}`} className="text-[13px] font-medium text-copper-dark hover:underline">
+                      <Link href={`/admin/categories/${c.id}`} className="text-[13px] font-medium text-ink hover:underline">
                         Edit
                       </Link>
                     </td>

@@ -122,3 +122,37 @@ export async function getPeptideSpecimens(): Promise<Record<string, { slug: stri
   }
   return map;
 }
+
+/** Journal articles that name any of the given terms, most mentions first; falls back to the newest. */
+export async function getArticlesMentioning(terms: string[], limit = 2) {
+  const all = await getPublishedArticles();
+  const needles = terms.filter((t) => t.length > 2).map((t) => t.toLowerCase());
+  const scored = all
+    .map((a) => {
+      const hay = `${a.title} ${a.excerpt} ${a.body}`.toLowerCase();
+      return { a, score: needles.reduce((n, t) => n + hay.split(t).length - 1, 0) };
+    })
+    .filter((s) => s.score > 0)
+    .sort((x, y) => y.score - x.score)
+    .map((s) => s.a);
+  const rest = all.filter((a) => !scored.includes(a));
+  return [...scored, ...rest].slice(0, limit);
+}
+
+/** Formulas carrying the peptides an article talks about, those with the most mentioned peptides first. */
+export async function getProductsForArticle(article: Pick<Article, "title" | "body">, limit = 4) {
+  const [peptideList, all] = await Promise.all([getPublishedPeptides(), getActiveProducts()]);
+  const text = `${article.title} ${article.body}`.toLowerCase();
+  const mentioned = new Set(
+    peptideList
+      .filter((p) => [p.name, p.inciName, ...p.aliases].some((t) => t.length > 2 && text.includes(t.toLowerCase())))
+      .map((p) => p.slug),
+  );
+  if (mentioned.size === 0) return [];
+  return all
+    .map((p) => ({ p, n: p.peptideSlugs.filter((s) => mentioned.has(s)).length }))
+    .filter((x) => x.n > 0)
+    .sort((x, y) => y.n - x.n)
+    .slice(0, limit)
+    .map((x) => x.p);
+}

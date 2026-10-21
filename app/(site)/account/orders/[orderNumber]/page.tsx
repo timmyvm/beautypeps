@@ -48,7 +48,7 @@ export default async function AccountOrderPage({ params }: Props) {
         back={{ href: "/account/orders", label: "All orders" }}
         title={
           <span className="flex flex-wrap items-center gap-3">
-            Order <span className="font-mono text-2xl md:text-3xl">{order.orderNumber}</span>
+            Order <span className="text-2xl md:text-3xl">{order.orderNumber}</span>
           </span>
         }
         description={`Placed ${formatDateTime(order.createdAt)}`}
@@ -57,8 +57,8 @@ export default async function AccountOrderPage({ params }: Props) {
 
       <Card className="mb-6">
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-          <p className="text-lg font-semibold text-espresso">{status.label}</p>
-          <p className="text-[13px] text-taupe">Updated {formatDate(latestDate)}</p>
+          <p className="text-lg font-semibold text-ink">{status.label}</p>
+          <p className="text-[13px] text-muted">Updated {formatDate(latestDate)}</p>
         </div>
         <OrderProgress status={order.status} />
         {order.status !== "cancelled" && order.status !== "refunded" && (
@@ -86,9 +86,9 @@ export default async function AccountOrderPage({ params }: Props) {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
           <Card>
-            <h2 className="text-lg font-semibold text-espresso">Items</h2>
+            <h2 className="text-lg font-semibold text-ink">Items</h2>
             <OrderItemsList items={order.items} />
-            <div className="mt-2 border-t border-stone/60 pt-5">
+            <div className="mt-2 border-t border-surface-2 pt-5">
               <OrderTotals order={order} />
             </div>
           </Card>
@@ -105,7 +105,7 @@ export default async function AccountOrderPage({ params }: Props) {
 
           {reviewable.length > 0 && (
             <Card>
-              <h2 className="text-lg font-semibold text-espresso">How are you finding them?</h2>
+              <h2 className="text-lg font-semibold text-ink">How are you finding them?</h2>
               <p className="mt-1 text-sm text-muted">
                 Your review helps others choose the right peptide — it takes a minute.
               </p>
@@ -114,7 +114,7 @@ export default async function AccountOrderPage({ params }: Props) {
                   <li key={item.id}>
                     <Link
                       href={`/products/${item.productSlug}#reviews`}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-stone px-4 py-2 text-sm text-espresso transition-colors hover:border-copper hover:text-copper-dark"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-stone px-4 py-2 text-sm text-ink transition-colors hover:border-copper hover:text-copper-dark"
                     >
                       <PenLine className="size-3.5" aria-hidden /> Review {item.name}
                     </Link>
@@ -127,18 +127,18 @@ export default async function AccountOrderPage({ params }: Props) {
 
         <div className="space-y-6">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-espresso">Shipping to</h2>
+            <h2 className="mb-3 text-sm font-semibold text-ink">Shipping to</h2>
             <AddressBlock address={order.shippingAddress} />
           </Card>
           <Card>
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-[13px] text-taupe">Delivery</dt>
-                <dd className="text-espresso">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</dd>
+                <dt className="text-[13px] text-muted">Delivery</dt>
+                <dd className="text-ink">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</dd>
               </div>
               <div>
-                <dt className="text-[13px] text-taupe">Payment</dt>
-                <dd className="text-espresso">
+                <dt className="text-[13px] text-muted">Payment</dt>
+                <dd className="text-ink">
                   {PAYMENT_METHODS[order.paymentMethod].label} ·{" "}
                   {order.paymentStatus === "paid"
                     ? `paid ${formatDate(order.paidAt)}`
@@ -150,20 +150,20 @@ export default async function AccountOrderPage({ params }: Props) {
                 </dd>
               </div>
               <div>
-                <dt className="text-[13px] text-taupe">Confirmation sent to</dt>
-                <dd className="break-all text-espresso">{order.email}</dd>
+                <dt className="text-[13px] text-muted">Confirmation sent to</dt>
+                <dd className="break-all text-ink">{order.email}</dd>
               </div>
               {order.customerNote && (
                 <div>
-                  <dt className="text-[13px] text-taupe">Your note</dt>
-                  <dd className="text-espresso">{order.customerNote}</dd>
+                  <dt className="text-[13px] text-muted">Your note</dt>
+                  <dd className="text-ink">{order.customerNote}</dd>
                 </div>
               )}
             </dl>
           </Card>
           {order.events.some((e) => e.visibleToCustomer) && (
             <Card>
-              <h2 className="mb-4 text-sm font-semibold text-espresso">Order updates</h2>
+              <h2 className="mb-4 text-sm font-semibold text-ink">Order updates</h2>
               <OrderTimeline events={order.events} />
             </Card>
           )}

@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminSidebar } from "@/components/admin/sidebar";
@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const admin = await requireAdmin();
 
   const [[pendingOrders], [pendingReviews], [newMessages]] = await Promise.all([
-    db.select({ n: count() }).from(orders).where(eq(orders.status, "paid")),
+    db.select({ n: count() }).from(orders).where(inArray(orders.status, ["paid", "processing"])),
     db.select({ n: count() }).from(reviews).where(eq(reviews.status, "pending")),
     db.select({ n: count() }).from(contactMessages).where(eq(contactMessages.status, "new")),
   ]);
@@ -49,8 +49,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/*
           Admin density (app-screens §8, §10): controls 40px tall with 14px text on desktop,
           44px touch targets on a phone. Scoped here so the storefront keeps its larger controls.
+          Checkboxes and radios tick in ink: the brand hue stays off the chrome.
         */}
-        <main className="mx-auto max-w-[80rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8 lg:[&_.press]:h-10 [&_.press]:text-[14px] lg:[&_input.h-12]:h-10 lg:[&_select.h-12]:h-10 [&_input]:text-[14px] [&_select]:text-[14px] [&_textarea]:text-[14px]">
+        <main className="mx-auto max-w-[80rem] px-4 py-6 sm:px-6 lg:px-8 lg:py-8 lg:[&_.press]:h-10 [&_.press]:text-[14px] lg:[&_input.h-12]:h-10 lg:[&_select.h-12]:h-10 [&_input]:text-[14px] [&_input[type=checkbox]]:accent-ink [&_input[type=radio]]:accent-ink [&_select]:text-[14px] [&_textarea]:text-[14px]">
           {children}
         </main>
       </div>

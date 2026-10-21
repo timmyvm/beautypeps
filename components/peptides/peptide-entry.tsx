@@ -75,10 +75,10 @@ export function PeptideEntry({
         <SpecimenThumb specimen={specimen} className="aspect-square w-full" sizes="(min-width: 1024px) 112px, 96px" />
         <span className="min-w-0">
           <h3 className="text-lead font-medium text-ink group-hover:underline group-hover:underline-offset-4">{peptide.name}</h3>
-          <span className="mt-1 block text-small text-ink">
+          <span className="mt-1 block text-body text-ink">
             {peptide.inciName}, a {classShortLabel(peptide.peptideClass).toLowerCase()} peptide
           </span>
-          {!compact && <span className="mt-2 hidden max-w-[60ch] text-small text-muted sm:line-clamp-2">{peptide.summary}</span>}
+          {!compact && <span className="mt-2 hidden max-w-[60ch] text-body text-ink sm:line-clamp-2">{peptide.summary}</span>}
         </span>
         <span className="col-span-2 flex flex-col gap-1 lg:col-span-1 lg:items-end lg:text-right">
           <EvidenceMeter level={peptide.evidenceLevel} />

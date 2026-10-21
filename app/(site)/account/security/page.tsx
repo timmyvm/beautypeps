@@ -18,7 +18,7 @@ export default async function SecurityPage() {
       />
       <div className="space-y-6">
         <Card>
-          <h2 className="mb-1 text-lg font-semibold text-espresso">Change password</h2>
+          <h2 className="mb-1 text-lg font-semibold text-ink">Change password</h2>
           <p className="mb-6 text-sm text-muted">
             Changing your password signs you out on every other device.
           </p>
@@ -26,7 +26,7 @@ export default async function SecurityPage() {
         </Card>
 
         <Card>
-          <h2 className="mb-1 text-lg font-semibold text-espresso">Active sessions</h2>
+          <h2 className="mb-1 text-lg font-semibold text-ink">Active sessions</h2>
           <p className="mb-6 text-sm text-muted">
             Signed in on a shared or lost device? Sign out everywhere except here.
           </p>
@@ -34,7 +34,7 @@ export default async function SecurityPage() {
         </Card>
 
         <Card className="border-danger/30">
-          <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-espresso">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-ink">
             <ShieldAlert className="size-5 text-danger" aria-hidden /> Delete account
           </h2>
           <p className="mb-6 text-sm leading-relaxed text-muted">
@@ -42,7 +42,7 @@ export default async function SecurityPage() {
             link to your account) as required for tax purposes. This can&apos;t be undone.
           </p>
           {user.role === "admin" ? (
-            <p className="text-sm text-taupe">Admin accounts can&apos;t be deleted from here.</p>
+            <p className="text-sm text-muted">Admin accounts can&apos;t be deleted from here.</p>
           ) : (
             <DeleteAccountForm />
           )}

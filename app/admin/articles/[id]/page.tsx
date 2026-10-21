@@ -34,7 +34,7 @@ export default async function EditArticlePage({ params, searchParams }: Props) {
         title={
           <span className="flex flex-wrap items-center gap-3">
             <span className="line-clamp-2">{article.title}</span>
-            {article.published ? <Badge tone="sage">Published</Badge> : <Badge tone="amber">Draft</Badge>}
+            {article.published ? <Badge tone="neutral">Published</Badge> : <Badge tone="amber">Draft</Badge>}
           </span>
         }
         description={`${article.category} · by ${article.author} · updated ${formatDateTime(article.updatedAt)}`}

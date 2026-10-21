@@ -51,7 +51,7 @@ export const PAIRINGS = [
       { label: "Matrixyl 3000", slug: "palmitoyl-tripeptide-1" },
     ],
     verdict: "great" as const,
-    text: "Lines have two causes: repeated movement and a thinning matrix. Pairing a neurotransmitter-inhibitor with a signal peptide addresses both — the logic behind multi-peptide serums.",
+    text: "Lines have two causes: repeated movement and a thinning matrix. Pairing a neurotransmitter-inhibitor with a signal peptide addresses both, which is the logic behind multi-peptide serums.",
   },
   {
     title: "Peptides + retinoids",

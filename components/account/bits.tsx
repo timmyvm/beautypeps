@@ -18,13 +18,13 @@ export function AccountHeading({
   return (
     <div className="mb-8">
       {back && (
-        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-[13px] text-muted hover:text-espresso">
+        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-[13px] text-muted hover:text-ink">
           <ChevronLeft className="size-3.5" aria-hidden /> {back.label}
         </Link>
       )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold leading-tight text-espresso md:text-4xl">{title}</h1>
+          <h1 className="text-2xl font-semibold leading-tight text-ink md:text-4xl">{title}</h1>
           {description && <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p>}
         </div>
         {action && <div className="flex flex-wrap gap-2">{action}</div>}

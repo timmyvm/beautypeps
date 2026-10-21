@@ -1,126 +1,76 @@
+import type { ReactElement } from "react";
 import { cn } from "@/lib/utils";
 
 /*
- * Simple schematic illustrations of the four cosmetic-peptide classes.
- * Drawn with Tailwind fill/stroke utilities so they follow the brand palette.
+ * Schematic drawings of the four cosmetic-peptide classes. The peptide is always the chain of blue beads;
+ * the words live in the HTML caption beside each drawing, never inside the SVG.
  */
 
-function PeptideChain({ x, y, r = 6, n = 3, className }: { x: number; y: number; r?: number; n?: number; className?: string }) {
+function Chain({ x, y, r = 6, n = 3, hollow = false }: { x: number; y: number; r?: number; n?: number; hollow?: boolean }) {
   const gap = r * 2.6;
   return (
-    <g className={className}>
+    <g>
       {Array.from({ length: n - 1 }).map((_, i) => (
-        <line
-          key={`l${i}`}
-          x1={x + i * gap}
-          y1={y}
-          x2={x + (i + 1) * gap}
-          y2={y}
-          className="stroke-copper"
-          strokeWidth={2}
-        />
+        <line key={`l${i}`} x1={x + i * gap} y1={y} x2={x + (i + 1) * gap} y2={y} className="stroke-accent" strokeWidth={2.4} />
       ))}
       {Array.from({ length: n }).map((_, i) => (
-        <circle key={i} cx={x + i * gap} cy={y} r={r} className="fill-cream stroke-copper" strokeWidth={2.2} />
+        <circle
+          key={i}
+          cx={x + i * gap}
+          cy={y}
+          r={r}
+          className={hollow ? "fill-white stroke-accent" : "fill-accent stroke-accent"}
+          strokeWidth={2.2}
+        />
       ))}
     </g>
   );
 }
 
-function Signal() {
+function Signal({ arrow }: { arrow: string }) {
   return (
     <>
-      {/* Fibroblast */}
-      <ellipse cx={150} cy={95} rx={62} ry={40} className="fill-blush/70 stroke-cocoa/40" strokeWidth={1.5} />
-      <ellipse cx={150} cy={95} rx={18} ry={14} className="fill-cocoa/25" />
-      <text x={150} y={150} textAnchor="middle" className="fill-cocoa text-[10px]">
-        Fibroblast
-      </text>
-      {/* Incoming peptide */}
-      <PeptideChain x={22} y={40} />
-      <path d="M64 46 Q 82 58 94 70" className="fill-none stroke-copper" strokeWidth={1.5} strokeDasharray="3 3" markerEnd="url(#arrow-copper)" />
-      <text x={22} y={22} className="fill-copper-dark text-[10px] font-semibold">
-        Signal peptide
-      </text>
-      {/* Collagen output */}
+      <ellipse cx={140} cy={104} rx={70} ry={46} className="fill-field-frost" />
+      <ellipse cx={140} cy={104} rx={20} ry={15} className="fill-field-stone" />
+      <Chain x={22} y={34} />
+      <path d="M62 42 Q 84 54 96 72" className="fill-none stroke-ink" strokeWidth={1.6} strokeDasharray="3 4" markerEnd={`url(#${arrow})`} />
       {[0, 1, 2].map((i) => (
-        <path
-          key={i}
-          d={`M214 ${78 + i * 14} q 8 -6 16 0 t 16 0 t 16 0 t 16 0`}
-          className="fill-none stroke-espresso/70"
-          strokeWidth={2}
-        />
+        <path key={i} d={`M222 ${86 + i * 16} q 8 -7 16 0 t 16 0 t 16 0 t 16 0`} className="fill-none stroke-ink" strokeWidth={2.2} />
       ))}
-      <text x={246} y={136} textAnchor="middle" className="fill-cocoa text-[10px]">
-        Collagen ↑
-      </text>
     </>
   );
 }
 
-function Carrier() {
+function Carrier({ arrow }: { arrow: string }) {
   return (
     <>
-      {/* Skin layers */}
-      <rect x={0} y={96} width={300} height={22} className="fill-sand" />
-      <rect x={0} y={118} width={300} height={52} className="fill-blush/50" />
-      <text x={292} y={111} textAnchor="end" className="fill-cocoa text-[9px]">
-        Epidermis
-      </text>
-      <text x={292} y={160} textAnchor="end" className="fill-cocoa text-[9px]">
-        Dermis
-      </text>
-      {/* Peptide carrying copper */}
-      <PeptideChain x={40} y={52} />
-      <circle cx={57} cy={30} r={11} className="fill-sapphire" />
-      <text x={57} y={34} textAnchor="middle" className="fill-cream text-[10px] font-bold">
-        Cu
-      </text>
-      <line x1={50} y1={40} x2={47} y2={47} className="stroke-sapphire" strokeWidth={1.5} />
-      <line x1={64} y1={40} x2={67} y2={47} className="stroke-sapphire" strokeWidth={1.5} />
-      <path d="M100 52 Q 150 60 170 128" className="fill-none stroke-sapphire" strokeWidth={1.5} strokeDasharray="3 3" markerEnd="url(#arrow-sapphire)" />
-      {/* Released copper reaching enzyme */}
-      <circle cx={190} cy={140} r={8} className="fill-sapphire" />
-      <rect x={206} y={128} width={56} height={24} rx={12} className="fill-cream stroke-cocoa/40" />
-      <text x={234} y={144} textAnchor="middle" className="fill-cocoa text-[9px]">
-        enzymes
-      </text>
-      <text x={110} y={22} className="fill-sapphire text-[10px] font-semibold">
-        Carrier peptide + copper
-      </text>
+      <rect x={0} y={100} width={300} height={24} className="fill-field-stone" />
+      <rect x={0} y={124} width={300} height={56} className="fill-field-frost" />
+      <Chain x={40} y={56} hollow />
+      <circle cx={53} cy={30} r={11} className="fill-accent" />
+      <line x1={47} y1={40} x2={44} y2={50} className="stroke-accent" strokeWidth={2} />
+      <line x1={59} y1={40} x2={62} y2={50} className="stroke-accent" strokeWidth={2} />
+      <path d="M100 56 Q 150 64 168 134" className="fill-none stroke-ink" strokeWidth={1.6} strokeDasharray="3 4" markerEnd={`url(#${arrow})`} />
+      <circle cx={190} cy={150} r={8} className="fill-accent" />
+      <rect x={208} y={138} width={60} height={24} className="fill-white" />
     </>
   );
 }
 
-function Neuro() {
+function Neuro({ arrow }: { arrow: string }) {
   return (
     <>
-      {/* Nerve terminal */}
-      <path d="M40 10 h 90 v 50 q -45 30 -90 0 z" className="fill-sand stroke-cocoa/40" strokeWidth={1.5} />
+      <path d="M105 10 h 90 v 52 q -45 30 -90 0 z" className="fill-field-stone" />
       {[0, 1, 2].map((i) => (
-        <circle key={i} cx={62 + i * 22} cy={42} r={8} className="fill-cream stroke-cocoa/50" strokeWidth={1.2} />
+        <circle key={i} cx={127 + i * 23} cy={42} r={8} className="fill-white" />
       ))}
-      <text x={85} y={24} textAnchor="middle" className="fill-cocoa text-[9px]">
-        nerve ending
-      </text>
-      {/* Blocked release */}
-      <PeptideChain x={66} y={82} r={5} />
-      <line x1={58} y1={96} x2={112} y2={96} className="stroke-sage" strokeWidth={2} />
-      <text x={146} y={86} className="fill-sage text-[10px] font-semibold">
-        Peptide competes for the
-      </text>
-      <text x={146} y={99} className="fill-sage text-[10px] font-semibold">
-        SNARE complex
-      </text>
-      <path d="M85 104 v 14" className="stroke-cocoa/40" strokeWidth={1.5} strokeDasharray="2 3" />
-      {/* Muscle */}
-      <rect x={20} y={124} width={260} height={30} rx={15} className="fill-blush/70 stroke-cocoa/30" />
+      <Chain x={137} y={90} r={5} />
+      <line x1={122} y1={104} x2={178} y2={104} className="stroke-ink" strokeWidth={3} />
+      <path d="M150 108 v 14" className="fill-none stroke-ink" strokeWidth={1.6} strokeDasharray="2 4" markerEnd={`url(#${arrow})`} />
+      <rect x={20} y={132} width={260} height={32} className="fill-field-frost" />
       {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-        <line key={i} x1={44 + i * 34} y1={130} x2={44 + i * 34} y2={148} className="stroke-cocoa/20" strokeWidth={1.5} />
+        <line key={i} x1={44 + i * 35} y1={138} x2={44 + i * 35} y2={158} className="stroke-white" strokeWidth={2} />
       ))}
-      <text x={150} y={168} textAnchor="middle" className="fill-cocoa text-[9px]">
-        Muscle contracts less intensely
-      </text>
     </>
   );
 }
@@ -128,57 +78,55 @@ function Neuro() {
 function Enzyme() {
   return (
     <>
-      {/* Collagen strand */}
       {[0, 1].map((i) => (
         <path
           key={i}
-          d={`M10 ${118 + i * 10} q 12 -8 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0`}
-          className="fill-none stroke-espresso/60"
-          strokeWidth={2}
+          d={`M10 ${132 + i * 12} q 12 -8 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0 t 24 0`}
+          className="fill-none stroke-ink"
+          strokeWidth={2.2}
         />
       ))}
-      <text x={20} y={152} className="fill-cocoa text-[9px]">
-        Collagen
-      </text>
-      {/* Enzyme (MMP) */}
-      <path d="M120 50 L149.4 67 A34 34 0 1 1 149.4 33 Z" className="fill-amber-light stroke-amber" strokeWidth={1.5} />
-      <text x={112} y={100} textAnchor="middle" className="fill-amber text-[10px] font-semibold">
-        MMP / tyrosinase
-      </text>
-      {/* Peptide plugging the active site */}
-      <PeptideChain x={138} y={50} r={5} n={3} />
-      <text x={186} y={42} className="fill-copper-dark text-[10px] font-semibold">
-        Inhibiting peptide
-      </text>
-      <text x={186} y={56} className="fill-cocoa text-[9px]">
-        blocks the active site
-      </text>
+      <path d="M130 62 L161 80 A36 36 0 1 1 161 44 Z" className="fill-field-stone" />
+      <Chain x={146} y={62} r={5} />
     </>
   );
 }
 
-const DIAGRAMS = {
-  signal: { title: "Signal peptide stimulating a fibroblast", Body: Signal },
-  carrier: { title: "Carrier peptide delivering copper into the skin", Body: Carrier },
-  "neurotransmitter-inhibitor": { title: "Neurotransmitter-inhibiting peptide at the nerve–muscle junction", Body: Neuro },
-  "enzyme-inhibitor": { title: "Enzyme-inhibiting peptide blocking a collagen-degrading enzyme", Body: Enzyme },
-} as const;
+const DIAGRAMS: Record<string, { title: string; Body: (props: { arrow: string }) => ReactElement }> = {
+  signal: {
+    title: "A signal peptide reaching a fibroblast, which answers with more collagen",
+    Body: Signal,
+  },
+  carrier: {
+    title: "A carrier peptide taking copper through the skin to the enzymes that need it",
+    Body: Carrier,
+  },
+  "neurotransmitter-inhibitor": {
+    title: "A peptide damping the signal from a nerve ending to the muscle beneath it",
+    Body: Neuro,
+  },
+  "enzyme-inhibitor": {
+    title: "A peptide sitting in the active site of an enzyme that breaks collagen down",
+    Body: Enzyme,
+  },
+};
+
+export function classDiagramTitle(type: string) {
+  return DIAGRAMS[type]?.title;
+}
 
 export function ClassDiagram({ type, className }: { type: string; className?: string }) {
-  const d = DIAGRAMS[type as keyof typeof DIAGRAMS];
+  const d = DIAGRAMS[type];
   if (!d) return null;
+  const arrow = `arrow-${type}`;
   return (
-    <svg viewBox="0 0 300 175" role="img" aria-label={d.title} className={cn("h-auto w-full", className)}>
-      <title>{d.title}</title>
+    <svg viewBox="0 0 300 180" role="img" aria-label={d.title} className={cn("h-auto w-full", className)}>
       <defs>
-        <marker id="arrow-copper" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0 0 L10 5 L0 10 z" className="fill-copper" />
-        </marker>
-        <marker id="arrow-sapphire" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-          <path d="M0 0 L10 5 L0 10 z" className="fill-sapphire" />
+        <marker id={arrow} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" className="fill-ink" />
         </marker>
       </defs>
-      <d.Body />
+      <d.Body arrow={arrow} />
     </svg>
   );
 }

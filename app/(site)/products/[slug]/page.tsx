@@ -8,6 +8,7 @@ import { PeptideRows } from "@/components/product/peptide-chip-card";
 import { SpecimenTile, toneFor } from "@/components/product/product-card";
 import { ReviewsSection } from "@/components/product/reviews-section";
 import { WishlistButton } from "@/components/product/wishlist-button";
+import { LoopVideo } from "@/components/site/loop-video";
 import { SpecimenGrid } from "@/components/shop/specimen-grid";
 import { Price, Stars } from "@/components/ui/misc";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -68,6 +69,7 @@ export default async function ProductPage({ params }: Props) {
   const lowStock = product.stock > 0 && product.stock <= product.lowStockThreshold;
   const lead = product.keyActives[0];
   const leadPeptide = peptides[0];
+  const isCopper = product.peptideSlugs.includes("ghk-cu");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const jsonLd = {
@@ -118,41 +120,21 @@ export default async function ProductPage({ params }: Props) {
       <div className="container-bp pt-6 pb-28 md:pt-10 lg:pb-0">
         {/* The specimen, and everything needed to buy it */}
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6 lg:row-start-1">
             <div className="shutter">
               <SpecimenTile
                 product={product}
                 tone={toneFor(product.slug)}
                 priority
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                className="aspect-[4/5] w-full lg:aspect-auto lg:h-[min(80vh,860px)]"
+                className="aspect-[4/5] w-full md:aspect-[4/3] lg:aspect-auto lg:h-[min(80vh,860px)]"
               />
             </div>
-            {photos.length > 0 && (
-              <ul className="mt-2 grid grid-cols-3 gap-2" aria-label="Photographs">
-                {photos.slice(0, 3).map((src, i) => (
-                  <li key={src + i} className="relative aspect-square overflow-hidden bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
-                    <Image
-                      src={src}
-                      alt={i === 0 ? `${product.name}, photographed on its stone plinth` : `${product.name}: detail`}
-                      fill
-                      sizes="(min-width: 1024px) 16vw, 33vw"
-                      className="object-cover"
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
-          <div className="lg:col-span-6 lg:col-start-7 lg:pl-[4%]">
+          <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pl-[4%]">
             <div className="lg:sticky lg:top-8">
-              {product.category && (
-                <Link href={`/shop?category=${product.category.slug}`} className="text-small underline-offset-4 hover:underline">
-                  Back to {product.category.name.toLowerCase()}
-                </Link>
-              )}
-              <h1 className={`${HEAD} mt-4`}>{product.name}</h1>
+              <h1 className={HEAD}>{product.name}</h1>
               {product.subtitle && <p className="mt-4 max-w-[40ch] text-lead">{product.subtitle}</p>}
 
               <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
@@ -204,7 +186,7 @@ export default async function ProductPage({ params }: Props) {
                 {stock.text}
               </p>
 
-              <div className="mt-4">
+              <div id="buy" className="mt-4">
                 <AddToCart productId={product.id} productName={product.name} price={product.price} maxQuantity={maxQuantity} />
               </div>
               <WishlistButton productId={product.id} productSlug={product.slug} initial={wishlisted} className="mt-4" />
@@ -224,8 +206,30 @@ export default async function ProductPage({ params }: Props) {
                   </Link>
                 </li>
               </ul>
+              {product.category && (
+                <Link href={`/shop?category=${product.category.slug}`} className="mt-6 inline-block text-body underline underline-offset-4">
+                  More {product.category.name.toLowerCase()}
+                </Link>
+              )}
             </div>
           </div>
+          {photos.length > 0 && (
+            <div className="lg:col-span-6 lg:row-start-2">
+              <ul className="grid grid-cols-3 gap-2" aria-label="Photographs">
+                {photos.slice(0, 3).map((src, i) => (
+                  <li key={src + i} className="relative aspect-square overflow-hidden bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
+                    <Image
+                      src={src}
+                      alt={i === 0 ? `${product.name}, photographed on its stone plinth` : `${product.name}: detail`}
+                      fill
+                      sizes="(min-width: 1024px) 16vw, 33vw"
+                      className="object-cover"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* The formula: heading in the left third, the text in the right two thirds */}
@@ -310,6 +314,9 @@ export default async function ProductPage({ params }: Props) {
               <Markdown className="mt-8">{product.howToUse}</Markdown>
             </div>
             <div className="relative aspect-[4/5] overflow-hidden bg-surface lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+              {isCopper ? (
+                <LoopVideo src="/video/copper-drop.mp4" poster="/video/copper-drop-poster.webp" label="Drops of blue copper peptide serum on a brushed copper plate" />
+              ) : (
               <Image
                 src={photos[1] ?? "/images/editorial/ritual.webp"}
                 alt={photos[1] ? `${product.name}: texture and detail` : "Serum pressed onto the cheekbone from a glass dropper"}
@@ -317,6 +324,7 @@ export default async function ProductPage({ params }: Props) {
                 sizes="(min-width: 1024px) 40vw, 100vw"
                 className="drift object-cover"
               />
+              )}
             </div>
           </section>
         )}

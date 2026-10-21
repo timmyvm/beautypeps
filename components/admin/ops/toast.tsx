@@ -57,12 +57,12 @@ function ToastItem({ toast: t }: { toast: Toast }) {
       role={t.ok ? "status" : "alert"}
       className={cn(
         "pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-lg shadow-espresso/10 animate-fade-up",
-        t.ok ? "border-sage/30 bg-cream text-espresso" : "border-danger/30 bg-danger-light text-danger",
+        t.ok ? "border-sage/30 bg-white text-ink" : "border-danger/30 bg-danger-light text-danger",
       )}
     >
       <Icon className={cn("mt-0.5 size-4 shrink-0", t.ok ? "text-sage" : "text-danger")} aria-hidden />
       <p className="flex-1">{t.message}</p>
-      <button type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss" className="text-taupe hover:text-espresso">
+      <button type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss" className="text-muted hover:text-ink">
         <X className="size-4" />
       </button>
     </div>

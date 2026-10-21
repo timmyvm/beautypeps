@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { startTransition, useActionState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ui/form";
@@ -13,10 +13,9 @@ export function ContactForm({ defaultEmail, defaultName }: { defaultEmail?: stri
 
   if (state.ok) {
     return (
-      <div className="flex flex-col items-center rounded-2xl border border-sage/30 bg-sage-light/50 px-6 py-14 text-center" role="status">
-        <CheckCircle2 className="size-10 text-sage" aria-hidden />
-        <h2 className="mt-4 font-display text-2xl text-espresso">Message sent</h2>
-        <p className="mt-2 max-w-sm text-sm text-cocoa">{state.message}</p>
+      <div className="bg-sage-light px-6 py-10" role="status">
+        <p className="text-lead font-medium text-sage">Message sent</p>
+        <p className="mt-2 max-w-[50ch] text-body text-ink">{state.message}</p>
       </div>
     );
   }

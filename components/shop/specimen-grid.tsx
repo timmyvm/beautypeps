@@ -47,10 +47,10 @@ export function SpecimenGrid({
                 </h3>
                 <Price cents={p.price} compareAt={p.compareAtPrice} className="shrink-0 text-body text-ink" />
               </div>
-              <p className="mt-1 text-small text-muted">
+              <p className="mt-1 text-body text-muted">
                 {lead ? `${lead.amount} ${lead.name}` : p.subtitle}
-                {grade ? ` · evidence grade ${grade.grade} of 5` : ""}
-                {p.stock <= 0 ? <span className="text-danger"> · Sold out</span> : null}
+                {grade ? <span className="block">Evidence grade {grade.grade} of 5</span> : null}
+                {p.stock <= 0 ? <span className="block text-danger">Sold out</span> : null}
               </p>
             </Link>
           </li>

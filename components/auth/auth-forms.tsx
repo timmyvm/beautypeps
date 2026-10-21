@@ -134,7 +134,7 @@ export function RegisterForm({ next, defaultEmail }: { next?: string; defaultEma
       <SubmitButton className="w-full" size="lg" pendingText="Creating account…">
         Create account
       </SubmitButton>
-      <p className="text-center text-[13px] leading-relaxed text-taupe">
+      <p className="text-center text-[13px] leading-relaxed text-muted">
         By creating an account you agree to our{" "}
         <Link href="/policies/terms" className="underline hover:text-muted">
           Terms of sale
@@ -157,9 +157,9 @@ export function ForgotPasswordForm({ defaultEmail }: { defaultEmail?: string }) 
     return (
       <div className="rounded-2xl border border-sage/30 bg-sage-light/60 p-6 text-center" role="status">
         <MailCheck className="mx-auto size-8 text-sage" aria-hidden />
-        <p className="mt-3 text-lg font-semibold text-espresso">Check your inbox</p>
+        <p className="mt-3 text-lg font-semibold text-ink">Check your inbox</p>
         <p className="mt-2 text-sm leading-relaxed text-muted">{state.message}</p>
-        <p className="mt-4 text-[13px] text-taupe">Don&apos;t see it? Check your spam folder or try again in a few minutes.</p>
+        <p className="mt-4 text-[13px] text-muted">Don&apos;t see it? Check your spam folder or try again in a few minutes.</p>
       </div>
     );
   }

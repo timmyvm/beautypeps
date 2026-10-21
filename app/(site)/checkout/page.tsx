@@ -1,5 +1,4 @@
 import { asc, desc, eq } from "drizzle-orm";
-import { ChevronLeft, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -31,17 +30,14 @@ export default async function CheckoutPage() {
   };
 
   return (
-    <div className="container-bp py-10 md:py-14">
-      <Link href="/cart" className="mb-6 inline-flex items-center gap-1 text-sm text-cocoa hover:text-espresso">
-        <ChevronLeft className="size-4" aria-hidden /> Back to bag
-      </Link>
-      <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="eyebrow mb-2">Secure checkout</p>
-          <h1 className="font-display text-4xl text-espresso">Checkout</h1>
-        </div>
-        <p className="flex items-center gap-2 text-xs text-cocoa">
-          <ShieldCheck className="size-4 text-sage" aria-hidden /> Your details are encrypted and never shared.
+    <div className="container-bp pt-10 md:pt-16">
+      <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <h1 className="display-type text-head">Checkout</h1>
+        <p className="text-body">
+          Your details are sent securely and never shared.{" "}
+          <Link href="/cart" className="underline underline-offset-4">
+            Back to bag
+          </Link>
         </p>
       </div>
 

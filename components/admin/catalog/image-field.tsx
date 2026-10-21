@@ -64,17 +64,17 @@ export function ImageField({
   return (
     <Field label={label} htmlFor={id} error={uploadError ?? error} hint={hint}>
       <div className="flex gap-4">
-        <div className={cn("relative w-28 shrink-0 overflow-hidden rounded-xl border border-stone bg-ivory", aspect)}>
+        <div className={cn("relative w-28 shrink-0 overflow-hidden rounded-xl border border-stone bg-surface", aspect)}>
           {value && previewable(value) ? (
             <img src={value} alt="" className="absolute inset-0 size-full object-cover" />
           ) : (
-            <div className="absolute inset-0 grid place-items-center text-taupe">
+            <div className="absolute inset-0 grid place-items-center text-muted">
               <ImagePlus className="size-6" aria-hidden />
             </div>
           )}
           {uploading && (
-            <div className="absolute inset-0 grid place-items-center bg-cream/70">
-              <Loader2 className="size-5 animate-spin text-copper" aria-hidden />
+            <div className="absolute inset-0 grid place-items-center bg-white/70">
+              <Loader2 className="size-5 animate-spin text-muted" aria-hidden />
             </div>
           )}
         </div>
@@ -89,7 +89,7 @@ export function ImageField({
           />
           <label
             className={cn(
-              "inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[13px] font-medium text-espresso hover:bg-espresso/5",
+              "inline-flex w-fit cursor-pointer items-center gap-2 bg-surface-2 px-4 py-2 text-[14px] font-medium text-ink hover:bg-stone",
               uploading && "pointer-events-none opacity-60",
             )}
           >
@@ -104,7 +104,7 @@ export function ImageField({
               onChange={onFile}
             />
           </label>
-          <p className="text-[13px] text-taupe">JPG, PNG, WebP or AVIF · max 8 MB</p>
+          <p className="text-[13px] text-muted">JPG, PNG, WebP or AVIF · max 8 MB</p>
         </div>
       </div>
     </Field>
@@ -167,7 +167,7 @@ export function GalleryField({
       {images.length > 0 && (
         <ul className="mb-3 grid grid-cols-3 gap-3 sm:grid-cols-4">
           {images.map((src, i) => (
-            <li key={`${src}-${i}`} className="group relative aspect-square overflow-hidden rounded-xl border border-stone bg-ivory">
+            <li key={`${src}-${i}`} className="group relative aspect-square overflow-hidden rounded-xl border border-stone bg-surface">
               {previewable(src) ? (
                 <img src={src} alt="" className="absolute inset-0 size-full object-cover" />
               ) : (
@@ -193,7 +193,7 @@ export function GalleryField({
       <div className="flex flex-wrap items-center gap-2">
         <label
           className={cn(
-            "inline-flex cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[13px] font-medium text-espresso hover:bg-espresso/5",
+            "inline-flex cursor-pointer items-center gap-2 bg-surface-2 px-4 py-2 text-[14px] font-medium text-ink hover:bg-stone",
             uploading && "pointer-events-none opacity-60",
           )}
         >
@@ -224,7 +224,7 @@ export function GalleryField({
           <button
             type="button"
             onClick={addUrl}
-            className="grid size-9 shrink-0 place-items-center rounded-full border border-espresso/25 hover:bg-espresso/5"
+            className="grid size-10 shrink-0 place-items-center bg-surface-2 hover:bg-stone"
             aria-label="Add image path"
           >
             <Plus className="size-4" />
@@ -253,7 +253,7 @@ function IconBtn({
       disabled={disabled}
       aria-label={label}
       title={label}
-      className="grid size-6 place-items-center rounded-full bg-cream/95 text-espresso shadow-sm disabled:opacity-30"
+      className="grid size-6 place-items-center bg-white text-ink disabled:opacity-30"
     >
       {children}
     </button>

@@ -16,7 +16,7 @@ const dollars = (cents: number) => (cents / 100).toFixed(2);
 function MoneyInput({ id, cents }: { id: string; cents: number }) {
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-taupe">$</span>
+      <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-muted">$</span>
       <Input id={id} name={id} type="number" step="0.01" min="0" defaultValue={dollars(cents)} className="pl-9" required />
     </div>
   );
@@ -24,9 +24,9 @@ function MoneyInput({ id, cents }: { id: string; cents: number }) {
 
 function Section({ title, description, children }: { title: string; description: string; children: ReactNode }) {
   return (
-    <div className="grid gap-6 border-b border-stone/60 py-8 first:pt-0 last:border-0 last:pb-0 lg:grid-cols-[240px_1fr]">
+    <div className="grid gap-6 border-b border-surface-2 py-8 first:pt-0 last:border-0 last:pb-0 lg:grid-cols-[240px_1fr]">
       <div>
-        <h2 className="text-sm font-semibold text-espresso">{title}</h2>
+        <h2 className="text-sm font-semibold text-ink">{title}</h2>
         <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">{children}</div>
@@ -40,10 +40,10 @@ function EnvRow({ label, ok, detail }: { label: string; ok: boolean; detail: str
       {ok ? (
         <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-sage" aria-label="Configured" />
       ) : (
-        <CircleDashed className="mt-0.5 size-4 shrink-0 text-taupe" aria-label="Not configured" />
+        <CircleDashed className="mt-0.5 size-4 shrink-0 text-muted" aria-label="Not configured" />
       )}
       <div>
-        <p className="text-sm text-espresso">{label}</p>
+        <p className="text-sm text-ink">{label}</p>
         <p className="text-[13px] text-muted">{detail}</p>
       </div>
     </li>
@@ -148,7 +148,7 @@ export default async function AdminSettingsPage() {
 
         <Panel title="Environment" className="self-start">
           <p className="mb-2 text-[13px] text-muted">Read-only. Configure these as environment variables on your host.</p>
-          <ul className="divide-y divide-stone/50">
+          <ul className="divide-y divide-surface">
             <EnvRow
               label="Session secret"
               ok={env.authSecret}

@@ -77,7 +77,7 @@ export function AddressForm({ address, isFirst }: { address?: Address; isFirst?:
         <Input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={v("phone")} aria-invalid={!!e.phone} />
       </Field>
 
-      <p className="text-[13px] text-taupe">We currently ship within Australia only.</p>
+      <p className="text-[13px] text-muted">We currently ship within Australia only.</p>
 
       {isFirst ? (
         <p className="text-sm text-muted">This will be your default address.</p>

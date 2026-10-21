@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Breadcrumbs } from "@/components/info/breadcrumbs";
+import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-header";
 import { Markdown } from "@/components/markdown";
 import { getPolicy, POLICY_LINKS } from "@/lib/content/policies";
 import { DEFAULT_SETTINGS, getSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
+
+const PICTURES: Record<string, { src: string; alt: string }> = {
+  shipping: { src: "/images/editorial/unboxing.webp", alt: "An opened box holding three serums in tissue paper" },
+  returns: { src: "/images/editorial/hero.webp", alt: "Three peptide serums on a travertine plinth in soft afternoon light" },
+  terms: { src: "/images/editorial/lab.webp", alt: "A formulation bench with beakers, a scale and amber vials" },
+  privacy: { src: "/images/articles/beginner-peptide-routine.webp", alt: "Three serums and a vase on a travertine tray in a bathroom" },
+};
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
@@ -21,46 +29,73 @@ export default async function PolicyPage({ params }: { params: Params }) {
   const settings = await getSettings();
   const policy = getPolicy(slug, settings);
   if (!policy) notFound();
+  const pic = PICTURES[slug];
+  const others = POLICY_LINKS.filter((p) => p.slug !== slug).map((p) => getPolicy(p.slug, settings)!);
 
   return (
-    <div className="container-bp py-10 md:py-14">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Policies" }, { label: policy.title }]} />
-      <div className="mt-10 grid gap-10 lg:grid-cols-[220px_1fr] lg:gap-16">
-        <nav aria-label="Policies" className="lg:sticky lg:top-28 lg:self-start">
-          <p className="eyebrow mb-4">Policies</p>
-          <ul className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:block lg:space-y-1 lg:px-0">
-            {POLICY_LINKS.map((p) => (
-              <li key={p.slug} className="shrink-0">
-                <Link
-                  href={`/policies/${p.slug}`}
-                  aria-current={p.slug === slug ? "page" : undefined}
-                  className={cn(
-                    "block rounded-full border px-3.5 py-1.5 text-xs lg:rounded-lg lg:border-0 lg:px-3 lg:py-2 lg:text-sm",
-                    p.slug === slug
-                      ? "border-espresso bg-espresso text-cream lg:bg-ivory lg:font-medium lg:text-espresso"
-                      : "border-stone bg-cream text-cocoa hover:text-espresso lg:bg-transparent lg:hover:bg-ivory",
-                  )}
-                >
-                  {p.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 hidden text-xs leading-relaxed text-taupe lg:block">
-            Questions? Email{" "}
-            <a href={`mailto:${settings.supportEmail}`} className="text-copper-dark underline underline-offset-2">
-              {settings.supportEmail}
-            </a>
-          </p>
+    <>
+      <PageHeader
+        crumbs={[{ href: "/", label: "Home" }, { label: "Policies" }, { label: policy.title }]}
+        title={policy.title}
+        lead={policy.summary}
+        figure={
+          pic && (
+            <Figure ratio="aspect-[4/3]">
+              <Image src={pic.src} alt={pic.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+            </Figure>
+          )
+        }
+      >
+        <p className="text-body text-muted">Last updated {policy.updated}</p>
+        <nav aria-label="Policies" className="mt-6 flex flex-wrap gap-2">
+          {POLICY_LINKS.map((p) => (
+            <Link
+              key={p.slug}
+              href={`/policies/${p.slug}`}
+              aria-current={p.slug === slug ? "page" : undefined}
+              className={cn(
+                "press inline-flex h-11 items-center px-4 text-body whitespace-nowrap",
+                p.slug === slug ? "bg-ink text-white" : "bg-surface text-ink hover:bg-surface-2",
+              )}
+            >
+              {p.title.replace(" & ", " and ")}
+            </Link>
+          ))}
         </nav>
+      </PageHeader>
 
-        <article className="min-w-0 max-w-3xl">
-          <h1 className="font-display text-4xl text-espresso md:text-5xl">{policy.title}</h1>
-          <p className="mt-4 text-lg leading-relaxed text-cocoa">{policy.summary}</p>
-          <p className="mt-3 text-xs text-taupe">Last updated {policy.updated}</p>
-          <Markdown className="mt-10 border-t border-stone/60 pt-6">{policy.body}</Markdown>
-        </article>
+      <div className="container-bp mt-20 grid gap-12 lg:mt-32 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        <aside className="lg:col-span-3">
+          <h2 className="text-lead font-medium">Questions?</h2>
+          <p className="mt-2 text-body">
+            Email{" "}
+            <a href={`mailto:${settings.supportEmail}`} className="underline underline-offset-4">
+              {settings.supportEmail}
+            </a>{" "}
+            and we will reply within one business day.
+          </p>
+        </aside>
+        <Markdown className="min-w-0 lg:col-span-7 lg:col-start-5">{policy.body}</Markdown>
       </div>
-    </div>
+
+      <section aria-labelledby="others-title" className="container-bp mt-28 lg:mt-44">
+        <h2 id="others-title" className="display-type text-head" {...reveal(0)}>
+          The other policies
+        </h2>
+        <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-12 md:grid-cols-3">
+          {others.map((p, i) => (
+            <PictureLink
+              key={p.slug}
+              href={`/policies/${p.slug}`}
+              src={PICTURES[p.slug]?.src ?? "/images/editorial/texture.webp"}
+              alt={PICTURES[p.slug]?.alt ?? ""}
+              title={p.title.replace(" & ", " and ")}
+              text={p.summary}
+              index={i + 1}
+            />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }

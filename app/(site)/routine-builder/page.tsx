@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/info/page-header";
 import { RoutineBuilder } from "@/components/info/routine-builder";
-import { PageHero } from "@/components/info/page-hero";
-import { getActiveProducts, getPublishedPeptides } from "@/lib/queries/content";
 import type { BuilderProduct } from "@/lib/content/routine";
+import { getActiveProducts, getPublishedPeptides } from "@/lib/queries/content";
 
 export const metadata: Metadata = {
-  title: "Routine builder — find your peptide routine",
+  title: "Routine builder: find your peptide routine",
   description:
-    "Answer four quick questions about your skin and goals, and we'll build a morning and evening peptide routine — with the reasoning behind every product.",
+    "Answer four quick questions about your skin and goals, and we'll build a morning and evening peptide routine, with the reasoning behind every product.",
 };
 
 export default async function RoutineBuilderPage() {
@@ -33,15 +33,14 @@ export default async function RoutineBuilderPage() {
 
   return (
     <>
-      <PageHero
-        align="center"
-        eyebrow="Routine builder"
-        title="Your peptide routine in four questions"
-        description="Tell us what you'd like to work on and we'll match you with the right peptides — morning and night, with the reasoning behind every step."
+      <PageHeader
+        crumbs={[{ href: "/", label: "Home" }, { label: "Routine builder" }]}
+        title="Your routine in four questions"
+        lead="Tell us what you want to work on and we'll match you with the right peptides, morning and night, with the reasoning behind every step."
       />
-      <section className="container-bp py-14 md:py-20">
+      <section aria-label="Routine builder" className="container-bp mt-16 lg:mt-24">
         <RoutineBuilder products={builderProducts} peptideNames={peptideNames} />
-        <p className="mx-auto mt-10 max-w-2xl text-center text-xs leading-relaxed text-taupe">
+        <p className="mt-20 max-w-[64ch] text-body text-muted">
           Recommendations are general cosmetic guidance based on your answers, not a diagnosis. If you have a skin
           condition, are pregnant or are under medical care, check with your doctor or dermatologist first.
         </p>

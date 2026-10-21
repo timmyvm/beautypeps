@@ -45,26 +45,26 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
           {addresses.map((a) => (
             <li
               key={a.id}
-              className={`flex flex-col rounded-2xl border bg-cream p-5 ${a.isDefault ? "border-copper/50" : "border-stone/70"}`}
+              className={`flex flex-col rounded-2xl border bg-white p-5 ${a.isDefault ? "border-copper/50" : "border-surface-2"}`}
             >
               <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-espresso">{a.label}</p>
+                <p className="text-sm font-semibold text-ink">{a.label}</p>
                 {a.isDefault && <Badge tone="copper">Default</Badge>}
               </div>
               <div className="mb-5">
                 <AddressBlock address={a} />
               </div>
-              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-stone/60 pt-4 text-sm">
+              <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-surface-2 pt-4 text-sm">
                 <Link
                   href={`/account/addresses/${a.id}`}
-                  className="flex items-center gap-1.5 text-espresso hover:text-copper-dark"
+                  className="flex items-center gap-1.5 text-ink hover:text-copper-dark"
                 >
                   <Pencil className="size-3.5" aria-hidden /> Edit
                 </Link>
                 {!a.isDefault && (
                   <form action={setDefaultAddressAction}>
                     <input type="hidden" name="id" value={a.id} />
-                    <button type="submit" className="text-muted hover:text-espresso">
+                    <button type="submit" className="text-muted hover:text-ink">
                       Make default
                     </button>
                   </form>

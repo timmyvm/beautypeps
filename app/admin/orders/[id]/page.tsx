@@ -2,11 +2,12 @@ import { Mail, Printer } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { ActionField, ActionForm } from "@/components/admin/ops/action-form";
 import { OpsSubmit } from "@/components/admin/ops/buttons";
 import { OrderActions } from "@/components/admin/ops/order-actions";
 import { Toaster } from "@/components/admin/ops/toast";
-import { AdminPageHeader, Panel } from "@/components/admin/ui";
+import { adminButtonClasses, AdminPageHeader } from "@/components/admin/ui";
 import {
   AddressBlock,
   OrderItemsList,
@@ -15,8 +16,6 @@ import {
   OrderTotals,
   TrackingLink,
 } from "@/components/order/order-parts";
-import { Badge } from "@/components/ui/badge";
-import { buttonClasses } from "@/components/ui/button";
 import { Checkbox, Input, Select, Textarea } from "@/components/ui/form";
 import {
   addOrderNoteAction,
@@ -26,7 +25,7 @@ import {
   updateTrackingAction,
 } from "@/lib/actions/admin/orders";
 import { AU_STATES, PAYMENT_METHODS, SHIPPING_METHOD_LABELS } from "@/lib/constants";
-import { formatDateTime, formatMoney } from "@/lib/format";
+import { formatDateTime, formatMoney, pluralize } from "@/lib/format";
 import { getOrderDetail } from "@/lib/queries/admin-ops";
 
 type Props = { params: Promise<{ id: string }> };
@@ -36,6 +35,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: detail ? `Order ${detail.order.orderNumber}` : "Order not found" };
 }
 
+/** One section of the order sheet: a heading and its content, divided from the next by a rule. */
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="px-5 py-5">
+      <h2 className="mb-4 text-[16px] font-semibold text-ink">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+const summaryClass = "cursor-pointer text-[14px] text-ink hover:underline";
+
 export default async function AdminOrderPage({ params }: Props) {
   const detail = await getOrderDetail((await params).id);
   if (!detail) notFound();
@@ -43,6 +54,7 @@ export default async function AdminOrderPage({ params }: Props) {
   const a = order.shippingAddress;
   const units = order.items.reduce((s, i) => s + i.quantity, 0);
   const restocked = order.events.some((e) => e.type === "restock");
+  const paymentLabel = order.paymentStatus === "paid" ? "Received" : order.paymentStatus === "refunded" ? "Refunded" : "Not received";
 
   return (
     <>
@@ -52,84 +64,78 @@ export default async function AdminOrderPage({ params }: Props) {
         title={
           <span className="flex flex-wrap items-center gap-3">
             {order.orderNumber}
-            <span className="flex gap-2 font-sans">
-              <OrderStatusBadge status={order.status} />
-              <Badge tone={order.paymentStatus === "paid" ? "sage" : order.paymentStatus === "refunded" ? "danger" : "amber"}>
-                Payment: {order.paymentStatus === "paid" ? "received" : order.paymentStatus === "refunded" ? "refunded" : "unpaid"}
-              </Badge>
-            </span>
+            <OrderStatusBadge status={order.status} />
           </span>
         }
-        description={`Placed ${formatDateTime(order.createdAt)} · ${units} ${units === 1 ? "item" : "items"} · ${formatMoney(order.total)}`}
+        description={`${a.firstName} ${a.lastName} · placed ${formatDateTime(order.createdAt)} · ${pluralize(units, "item")} · ${formatMoney(order.total)}`}
         actions={
           <>
             <ActionForm action={resendConfirmationAction}>
               <input type="hidden" name="orderId" value={order.id} />
               <OpsSubmit variant="outline">
-                <Mail className="size-4" /> Resend confirmation
+                <Mail className="size-4" aria-hidden /> Resend confirmation
               </OpsSubmit>
             </ActionForm>
-            <Link href={`/admin/orders/${order.id}/packing-slip`} className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
-              <Printer className="size-4" /> Packing slip
+            <Link href={`/admin/orders/${order.id}/packing-slip`} className={adminButtonClasses({ variant: "outline" })}>
+              <Printer className="size-4" aria-hidden /> Packing slip
             </Link>
           </>
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel title="Fulfilment">
+      {/* The order as one sheet: what happens next and what was bought on the left, who and where on the right */}
+      <div className="grid grid-cols-1 border border-surface-2 bg-white xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+        <div className="min-w-0 divide-y divide-surface-2">
+          <Section title="Next step">
             <OrderActions order={order} restocked={restocked} />
-          </Panel>
+          </Section>
 
-          <Panel title={`Items (${units})`} bodyClassName="px-5 py-1">
+          <Section title={`Items (${units})`}>
             <OrderItemsList items={order.items} />
-            <div className="border-t border-stone/60 py-4">
+            <div className="border-t border-surface-2 pt-4">
               <OrderTotals order={order} />
             </div>
-          </Panel>
+          </Section>
 
-          <Panel title="Timeline">
-            <ActionForm action={addOrderNoteAction} resetOnSuccess className="mb-6 rounded-xl bg-ivory/60 p-4">
+          <Section title="Timeline">
+            <OrderTimeline events={order.events} showInternal />
+            <ActionForm action={addOrderNoteAction} resetOnSuccess className="mt-6 border-t border-surface pt-5">
               <input type="hidden" name="orderId" value={order.id} />
               <ActionField name="message" label="Add a note">
                 <Textarea id="message" name="message" rows={2} placeholder="e.g. Customer called to confirm the address." required className="min-h-16" />
               </ActionField>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-[13px] text-muted">
+                <label className="flex items-center gap-2 text-[14px] text-muted">
                   <Checkbox name="visibleToCustomer" /> Visible to the customer
                 </label>
-                <OpsSubmit>Add note</OpsSubmit>
+                <OpsSubmit variant="outline">Add note</OpsSubmit>
               </div>
             </ActionForm>
-            <OrderTimeline events={order.events} showInternal />
-          </Panel>
+          </Section>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-6">
-          <Panel title="Customer">
-            <p className="font-medium text-espresso">
+        <div className="min-w-0 divide-y divide-surface-2 border-t border-surface-2 xl:border-t-0 xl:border-l">
+          <Section title="Customer">
+            <p className="text-[14px] font-medium text-ink">
               {a.firstName} {a.lastName}
             </p>
-            <a href={`mailto:${order.email}`} className="block truncate text-sm text-copper-dark hover:underline">
+            <a href={`mailto:${order.email}`} className="block truncate text-[14px] text-ink underline-offset-4 hover:underline">
               {order.email}
             </a>
-            {a.phone && <p className="text-sm text-muted">{a.phone}</p>}
-            <div className="mt-4 flex items-center justify-between border-t border-stone/50 pt-4 text-sm">
+            {a.phone && <p className="text-[14px] text-muted tabular-nums">{a.phone}</p>}
+            <div className="mt-4 flex items-center justify-between border-t border-surface pt-4 text-[14px]">
               {order.user ? (
-                <Link href={`/admin/customers/${order.user.id}`} className="text-copper-dark hover:underline">
-                  View customer profile
+                <Link href={`/admin/customers/${order.user.id}`} className="text-ink underline-offset-4 hover:underline">
+                  Customer profile →
                 </Link>
               ) : (
                 <span className="text-muted">Guest checkout</span>
               )}
-              <span className="text-[13px] text-taupe">
-                {customerOrderCount} {customerOrderCount === 1 ? "order" : "orders"}
-              </span>
+              <span className="text-[13px] text-muted tabular-nums">{pluralize(customerOrderCount, "order")}</span>
             </div>
-          </Panel>
+          </Section>
 
-          <Panel title="Shipping">
+          <Section title="Shipping">
             <AddressBlock address={a} />
             <p className="mt-3 text-[13px] text-muted">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
             {order.trackingNumber && (
@@ -138,8 +144,8 @@ export default async function AdminOrderPage({ params }: Props) {
               </div>
             )}
             {(order.status === "shipped" || order.status === "delivered") && (
-              <details className="mt-4 border-t border-stone/50 pt-4">
-                <summary className="cursor-pointer text-[13px] font-medium text-muted hover:text-espresso">Edit tracking</summary>
+              <details className="mt-4 border-t border-surface pt-4">
+                <summary className={summaryClass}>Edit tracking</summary>
                 <ActionForm action={updateTrackingAction} className="mt-3 grid gap-3">
                   <input type="hidden" name="orderId" value={order.id} />
                   <ActionField name="trackingCarrier" htmlFor="trk-carrier" label="Carrier">
@@ -149,13 +155,13 @@ export default async function AdminOrderPage({ params }: Props) {
                     <Input id="trk-number" name="trackingNumber" defaultValue={order.trackingNumber ?? ""} required />
                   </ActionField>
                   <div className="flex justify-end">
-                    <OpsSubmit>Save tracking</OpsSubmit>
+                    <OpsSubmit variant="outline">Save tracking</OpsSubmit>
                   </div>
                 </ActionForm>
               </details>
             )}
-            <details className="mt-4 border-t border-stone/50 pt-4">
-              <summary className="cursor-pointer text-[13px] font-medium text-muted hover:text-espresso">Edit address</summary>
+            <details className="mt-4 border-t border-surface pt-4">
+              <summary className={summaryClass}>Edit address</summary>
               <ActionForm action={updateShippingAddressAction} className="mt-3 grid grid-cols-2 gap-3">
                 <input type="hidden" name="orderId" value={order.id} />
                 <ActionField name="firstName" label="First name">
@@ -190,46 +196,46 @@ export default async function AdminOrderPage({ params }: Props) {
                   <Input id="phone" name="phone" defaultValue={a.phone ?? ""} />
                 </ActionField>
                 <div className="col-span-2 flex justify-end">
-                  <OpsSubmit>Save address</OpsSubmit>
+                  <OpsSubmit variant="outline">Save address</OpsSubmit>
                 </div>
               </ActionForm>
             </details>
-          </Panel>
+          </Section>
 
-          <Panel title="Payment">
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+          <Section title="Payment">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-[14px]">
               <dt className="text-muted">Method</dt>
-              <dd className="text-espresso">{PAYMENT_METHODS[order.paymentMethod].label}</dd>
+              <dd className="text-ink">{PAYMENT_METHODS[order.paymentMethod].label}</dd>
               <dt className="text-muted">Reference</dt>
-              <dd className="font-mono text-espresso">{order.orderNumber}</dd>
+              <dd className="text-ink">{order.orderNumber}</dd>
               <dt className="text-muted">Amount</dt>
-              <dd className="text-espresso">{formatMoney(order.total)}</dd>
-              <dt className="text-muted">Status</dt>
-              <dd className="text-espresso capitalize">{order.paymentStatus}</dd>
+              <dd className="text-ink tabular-nums">{formatMoney(order.total)}</dd>
+              <dt className="text-muted">Payment</dt>
+              <dd className="text-ink">{paymentLabel}</dd>
               {order.paidAt && (
                 <>
                   <dt className="text-muted">Paid</dt>
-                  <dd className="text-espresso">{formatDateTime(order.paidAt)}</dd>
+                  <dd className="text-ink">{formatDateTime(order.paidAt)}</dd>
                 </>
               )}
               {order.discountCode && (
                 <>
                   <dt className="text-muted">Discount</dt>
-                  <dd className="text-espresso">
+                  <dd className="text-ink">
                     {order.discountCode} (−{formatMoney(order.discountTotal)})
                   </dd>
                 </>
               )}
             </dl>
-          </Panel>
+          </Section>
 
           {order.customerNote && (
-            <Panel title="Customer note">
-              <p className="text-sm whitespace-pre-line text-muted">{order.customerNote}</p>
-            </Panel>
+            <Section title="Customer note">
+              <p className="text-[14px] whitespace-pre-line text-ink">{order.customerNote}</p>
+            </Section>
           )}
 
-          <Panel title="Admin note">
+          <Section title="Admin note">
             <ActionForm action={updateAdminNoteAction}>
               <input type="hidden" name="orderId" value={order.id} />
               <Textarea
@@ -244,7 +250,7 @@ export default async function AdminOrderPage({ params }: Props) {
                 <OpsSubmit variant="outline">Save note</OpsSubmit>
               </div>
             </ActionForm>
-          </Panel>
+          </Section>
         </div>
       </div>
     </>

@@ -147,7 +147,7 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
                         key={value}
                         className={cn(
                           "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2 transition-colors",
-                          level === n ? "border-copper bg-copper-light/30" : "border-stone/70 hover:border-taupe",
+                          level === n ? "border-ink bg-surface" : "border-surface-2 hover:border-stone",
                         )}
                       >
                         <input
@@ -156,10 +156,10 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
                           value={value}
                           checked={level === n}
                           onChange={() => setLevel(n)}
-                          className="mt-1 accent-copper"
+                          className="mt-1 accent-ink"
                         />
                         <span>
-                          <span className="block text-sm font-medium text-espresso">
+                          <span className="block text-sm font-medium text-ink">
                             {n} · {l.label}
                           </span>
                           <span className="block text-[13px] text-muted">{l.description}</span>

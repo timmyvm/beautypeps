@@ -59,7 +59,7 @@ export function CancelOrderButton({ orderNumber }: { orderNumber: string }) {
   return (
     <form action={action} className="w-full rounded-2xl border border-danger/30 bg-danger-light/50 p-4 sm:max-w-md">
       <input type="hidden" name="orderNumber" value={orderNumber} />
-      <p className="text-sm font-medium text-espresso">Cancel order {orderNumber}?</p>
+      <p className="text-sm font-medium text-ink">Cancel order {orderNumber}?</p>
       <p className="mt-1 text-[13px] text-muted">
         Only cancel if you haven&apos;t sent payment yet. If you already have, contact us instead so we can match it up.
       </p>

@@ -61,7 +61,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
           name="rating"
           defaultValue={sp.rating ?? ""}
           aria-label="Rating"
-          className="select-chevron h-10 appearance-none rounded-full border border-stone bg-cream pr-10 pl-4 text-sm focus:border-copper focus:outline-none"
+          className="select-chevron h-10 appearance-none border border-stone bg-white pr-10 pl-4 text-sm focus:border-ink focus:outline-none"
         >
           <option value="">Any rating</option>
           {[5, 4, 3, 2, 1].map((r) => (
@@ -74,7 +74,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
           name="product"
           defaultValue={sp.product ?? ""}
           aria-label="Product"
-          className="select-chevron h-10 max-w-64 appearance-none rounded-full border border-stone bg-cream pr-10 pl-4 text-sm focus:border-copper focus:outline-none"
+          className="select-chevron h-10 max-w-64 appearance-none border border-stone bg-white pr-10 pl-4 text-sm focus:border-ink focus:outline-none"
         >
           <option value="">All products</option>
           {productOptions.map((p) => (
@@ -101,8 +101,8 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
       ) : (
         <form action={bulkApproveReviewsAction}>
           {pendingOnPage.length > 1 && (
-            <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-stone/70 bg-cream px-4 py-3">
-              <p className="text-sm text-muted">Tick reviews to approve several at once.</p>
+            <div className="mb-4 flex items-center justify-between gap-3 border border-surface-2 bg-white px-4 py-3">
+              <p className="text-[14px] text-muted">Tick reviews to approve several at once.</p>
               <button type="submit" className={buttonClasses({ variant: "dark", size: "sm" })}>
                 Approve selected
               </button>
@@ -111,7 +111,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
 
           <ul className="space-y-4">
             {rows.map((r) => (
-              <li key={r.id} className="rounded-2xl border border-stone/70 bg-cream p-5">
+              <li key={r.id} className="rounded-2xl border border-surface-2 bg-white p-5">
                 <div className="flex gap-4">
                   {r.status === "pending" && (
                     <input
@@ -119,25 +119,25 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                       name="ids"
                       value={r.id}
                       aria-label={`Select review “${r.title}”`}
-                      className="mt-1 size-4 shrink-0 accent-copper"
+                      className="mt-1 size-4 shrink-0 accent-ink"
                     />
                   )}
-                  <Link href={`/admin/products/${r.productId}`} className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-ivory">
+                  <Link href={`/admin/products/${r.productId}`} className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-surface">
                     <Image src={r.productImage} alt="" fill sizes="56px" className="object-cover" unoptimized={!r.productImage.startsWith("/images/")} />
                   </Link>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <Link href={`/admin/products/${r.productId}`} className="text-[13px] font-medium text-copper-dark hover:underline">
+                      <Link href={`/admin/products/${r.productId}`} className="text-[13px] font-medium text-ink hover:underline">
                         {r.productName}
                       </Link>
-                      <Badge tone={REVIEW_STATUSES[r.status].tone}>{REVIEW_STATUSES[r.status].label}</Badge>
+                      {status !== r.status && <Badge tone={REVIEW_STATUSES[r.status].tone}>{REVIEW_STATUSES[r.status].label}</Badge>}
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       <Stars rating={r.rating} />
-                      <h2 className="font-medium text-espresso">{r.title}</h2>
+                      <h2 className="font-medium text-ink">{r.title}</h2>
                     </div>
                     <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-muted">{r.body}</p>
-                    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-taupe">
+                    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted">
                       <span className="font-medium text-muted">{r.authorName}</span>
                       {r.verifiedPurchase && (
                         <span className="inline-flex items-center gap-1 text-sage">
@@ -149,15 +149,18 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                     </p>
 
                     {r.adminReply && (
-                      <div className="mt-3 rounded-xl border-l-2 border-copper bg-ivory px-4 py-2.5 text-sm text-muted">
-                        <p className="mb-0.5 text-[13px] font-semibold text-copper-dark">Beauty Peps replied</p>
+                      <div className="mt-3 border-l-2 border-ink bg-surface px-4 py-2.5 text-[14px] text-muted">
+                        <p className="mb-0.5 text-[13px] font-semibold text-ink">Beauty Peps replied</p>
                         {r.adminReply}
                       </div>
                     )}
 
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       {r.status !== "approved" && (
-                        <ConfirmButton action={setReviewStatusAction.bind(null, r.id, "approved")} variant="primary">
+                        <ConfirmButton
+                          action={setReviewStatusAction.bind(null, r.id, "approved")}
+                          variant={pendingOnPage.length > 1 ? "outline" : "primary"}
+                        >
                           Approve
                         </ConfirmButton>
                       )}
@@ -176,7 +179,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                     </div>
 
                     <details className="group mt-3">
-                      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-[13px] font-medium text-muted hover:text-espresso">
+                      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-[13px] font-medium text-muted hover:text-ink">
                         <MessageSquareReply className="size-3.5" aria-hidden />
                         {r.adminReply ? "Edit reply" : "Reply publicly"}
                       </summary>
@@ -188,7 +191,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                           maxLength={2000}
                           aria-label="Public reply"
                           placeholder="Thanks so much for sharing your results…"
-                          className="w-full rounded-xl border border-stone bg-cream px-4 py-3 text-sm focus:border-copper focus:ring-2 focus:ring-copper/20 focus:outline-none"
+                          className="w-full border border-stone bg-white px-4 py-3 text-sm focus:border-ink focus:ring-2 focus:ring-ink/10 focus:outline-none"
                         />
                         <div className="flex items-center gap-3">
                           <button
@@ -198,7 +201,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                           >
                             Save reply
                           </button>
-                          <span className="text-[13px] text-taupe">Shown under the review on the product page. Leave empty to remove.</span>
+                          <span className="text-[13px] text-muted">Shown under the review on the product page. Leave empty to remove.</span>
                         </div>
                       </div>
                     </details>
@@ -210,7 +213,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
         </form>
       )}
 
-      <p className="mt-4 text-[13px] text-taupe">{total} review{total === 1 ? "" : "s"}</p>
+      <p className="mt-4 text-[13px] text-muted">{total} review{total === 1 ? "" : "s"}</p>
       <Pagination page={page} pageCount={pageCount} basePath="/admin/reviews" searchParams={{ ...sp, status }} />
     </>
   );

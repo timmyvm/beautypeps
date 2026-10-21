@@ -1,8 +1,8 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function SiteError({ error, retry }: { error: unknown; retry: () => void }) {
   useEffect(() => {
@@ -12,29 +12,20 @@ export default function SiteError({ error, retry }: { error: unknown; retry: () 
   const digest = error instanceof Error && "digest" in error ? String((error as Error & { digest?: string }).digest ?? "") : "";
 
   return (
-    <section className="container-bp flex flex-col items-center py-24 text-center">
-      <p className="eyebrow mb-4">Something went wrong</p>
-      <h1 className="font-display text-3xl text-espresso md:text-5xl">We couldn&apos;t load this page</h1>
-      <p className="mt-4 max-w-md text-cocoa">
-        It&apos;s probably a temporary hiccup. Please try again — if it keeps happening, let us know and we&apos;ll look
-        into it.
+    <section aria-labelledby="error-title" className="container-bp pt-12 pb-24 lg:pt-20 lg:pb-40">
+      <h1 id="error-title" className="display-type max-w-5xl text-[10.5vw] text-ink sm:text-[clamp(2.75rem,5.9vw,5.75rem)]">
+        This page didn&apos;t load
+      </h1>
+      <p className="mt-8 max-w-[44ch] text-lead">
+        It is probably a passing hiccup. Try again, and if it keeps happening, tell us and we will look into it.
       </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => retry()}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-espresso px-6 text-sm font-medium text-cream hover:bg-ink"
-        >
-          <RotateCcw className="size-4" aria-hidden /> Try again
-        </button>
-        <Link
-          href="/contact"
-          className="inline-flex h-11 items-center rounded-full border border-espresso/25 px-6 text-sm font-medium text-espresso hover:border-espresso"
-        >
+      <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+        <Button onClick={() => retry()}>Try again</Button>
+        <Link href="/contact" className="text-body underline underline-offset-4">
           Contact support
         </Link>
       </div>
-      {digest && <p className="mt-8 font-mono text-xs text-taupe">Reference: {digest}</p>}
+      {digest && <p className="mt-10 text-small text-muted">Reference {digest}</p>}
     </section>
   );
 }

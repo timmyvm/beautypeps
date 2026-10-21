@@ -3,11 +3,12 @@
 import { Loader2, Printer } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
+import { adminButtonClasses } from "@/components/admin/ui";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useActionFormPending } from "./action-form";
 
-type Variant = "primary" | "copper" | "outline" | "ghost" | "danger" | "light";
+type Variant = "primary" | "copper" | "dark" | "outline" | "ghost" | "danger" | "light";
 
 /**
  * Two-step destructive submit: first click arms it ("Click again to confirm"),
@@ -47,7 +48,7 @@ export function ConfirmSubmit({
           setArmed(true);
         }
       }}
-      className={buttonClasses({ variant: armed ? "danger" : variant, size, className })}
+      className={adminButtonClasses({ variant: armed ? "danger" : variant, size, className })}
     >
       {pending && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
       {armed ? confirmLabel : children}
@@ -58,7 +59,7 @@ export function ConfirmSubmit({
 /** Small submit with pending spinner, sized for admin toolbars. */
 export function OpsSubmit({
   children,
-  variant = "primary",
+  variant = "dark",
   size = "sm",
   className,
   name,
@@ -81,7 +82,7 @@ export function OpsSubmit({
       value={value}
       disabled={pending}
       aria-busy={pending}
-      className={buttonClasses({ variant, size, className })}
+      className={adminButtonClasses({ variant, size, className })}
     >
       {pending && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
       {children}

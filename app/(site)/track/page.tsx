@@ -1,21 +1,22 @@
-import { PackageSearch } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { JournalShelf } from "@/components/shop/journal-shelf";
 import {
-  AddressBlock,
-  OrderItemsList,
-  OrderProgress,
-  OrderStatusBadge,
-  OrderTimeline,
-  OrderTotals,
-  PaymentInstructions,
-  TrackingLink,
-} from "@/components/order/order-parts";
+  OrderHistory,
+  OrderLines,
+  OrderProgressBar,
+  OrderSums,
+  ParcelLink,
+  PaymentPanel,
+  ShipTo,
+} from "@/components/shop/order-view";
 import { buttonClasses } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/form";
 import { ORDER_STATUSES } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import { findOrderForTracking } from "@/lib/orders";
+import { getPublishedArticles } from "@/lib/queries/content";
 import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
@@ -33,104 +34,140 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
   const submitted = !!(orderNumber || email);
   const missing = submitted && (!orderNumber || !email);
 
-  const [order, settings] = await Promise.all([
+  const [order, settings, articles] = await Promise.all([
     orderNumber && email ? findOrderForTracking(orderNumber, email) : Promise.resolve(null),
     getSettings(),
+    getPublishedArticles(),
   ]);
 
   return (
-    <div className="container-bp py-12 md:py-16">
-      <div className="mx-auto max-w-xl text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-ivory text-copper">
-          <PackageSearch className="size-6" aria-hidden />
-        </span>
-        <h1 className="mt-5 font-display text-4xl text-espresso md:text-5xl">Track your order</h1>
-        <p className="mt-3 text-cocoa">
-          Enter your order number (e.g. BP10001) and the email you used at checkout.
-          {" "}
-          <Link href="/login?next=/account/orders" className="text-copper-dark underline underline-offset-4">
-            Have an account? Sign in
-          </Link>
-        </p>
-      </div>
+    <div className="container-bp pt-10 pb-24 md:pt-16">
+      <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="lg:col-span-7">
+          <h1 className="display-type text-[clamp(2.25rem,1rem+3.6vw,4.5rem)]" data-reveal="">
+            Track your order
+          </h1>
+          <p className="mt-5 max-w-[44ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+            Enter your order number and the email you used at checkout to see where it is.{" "}
+            <Link href="/login?next=/account/orders" className="underline underline-offset-4">
+              Have an account? Sign in
+            </Link>
+          </p>
 
-      <form action="/track" method="get" className="mx-auto mt-10 grid max-w-2xl gap-4 rounded-2xl border border-stone/70 bg-cream p-6 sm:grid-cols-[1fr_1.4fr_auto] sm:items-end">
-        <Field label="Order number" htmlFor="order">
-          <Input id="order" name="order" defaultValue={orderNumber} placeholder="BP10001" required autoComplete="off" className="uppercase" />
-        </Field>
-        <Field label="Email address" htmlFor="email">
-          <Input id="email" name="email" type="email" defaultValue={email} placeholder="you@example.com" required autoComplete="email" />
-        </Field>
-        <button type="submit" className={buttonClasses({ className: "h-11" })}>
-          Find order
-        </button>
-      </form>
+          <form
+            action="/track"
+            method="get"
+            className="mt-10 grid gap-4 bg-surface p-5 sm:grid-cols-[1fr_1.4fr] md:p-8"
+            data-reveal=""
+            style={{ ["--reveal-i" as string]: 2 }}
+          >
+            <Field label="Order number" htmlFor="order">
+              <Input id="order" name="order" defaultValue={orderNumber} placeholder="BP10001" required autoComplete="off" className="uppercase" />
+            </Field>
+            <Field label="Email address" htmlFor="email">
+              <Input id="email" name="email" type="email" defaultValue={email} placeholder="you@example.com" required autoComplete="email" />
+            </Field>
+            <button type="submit" className={buttonClasses({ variant: "dark", className: "sm:col-span-2 sm:justify-self-start" })}>
+              Find my order
+            </button>
+          </form>
 
-      {submitted && !order && (
-        <div role="alert" className="mx-auto mt-6 max-w-2xl rounded-xl bg-danger-light px-4 py-3 text-center text-sm text-danger">
-          {missing
-            ? "Please enter both your order number and email address."
-            : "We couldn't find that order. Check the order number and use the same email you checked out with."}
-          {!missing && (
-            <>
-              {" "}
-              <Link href="/contact" className="font-medium underline underline-offset-2">
-                Contact us
-              </Link>{" "}
-              if you need a hand.
-            </>
+          {submitted && !order && (
+            <div role="alert" className="mt-4 bg-danger-light px-5 py-4 text-body text-danger">
+              {missing
+                ? "Please enter both your order number and email address."
+                : "We couldn't find that order. Check the order number and use the same email you checked out with."}
+              {!missing && (
+                <>
+                  {" "}
+                  <Link href="/contact" className="font-medium underline underline-offset-4">
+                    Contact us
+                  </Link>{" "}
+                  if you need a hand.
+                </>
+              )}
+            </div>
           )}
         </div>
-      )}
+
+        <figure className="lg:col-span-5">
+          <div className="shutter relative aspect-[4/3] overflow-hidden bg-surface-2 lg:aspect-[4/5]">
+            <Image
+              src="/images/editorial/unboxing.webp"
+              alt="An opened Beauty Peps parcel: three serums in tissue with a handwritten card"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-body text-muted">
+            {settings.dispatchTime} Every parcel goes by Australia Post with a tracking number.
+          </figcaption>
+        </figure>
+      </div>
 
       {order && (
-        <div className="mx-auto mt-12 max-w-5xl">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="eyebrow mb-2">Placed {formatDate(order.createdAt)}</p>
-              <h2 className="font-display text-3xl text-espresso">Order {order.orderNumber}</h2>
-            </div>
-            <OrderStatusBadge status={order.status} />
+        <section aria-labelledby="order-heading" className="mt-20">
+          <div className="grid gap-4 lg:grid-cols-12" data-reveal="">
+            <h2 id="order-heading" className="display-type text-head lg:col-span-7">
+              Order {order.orderNumber} is {ORDER_STATUSES[order.status].label.toLowerCase()}
+            </h2>
+            <p className="text-body text-muted lg:col-span-5 lg:self-end">
+              Placed {formatDate(order.createdAt)}. {ORDER_STATUSES[order.status].description}
+            </p>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-stone/70 bg-cream p-6 md:p-8">
-            <OrderProgress status={order.status} />
-            <p className="mt-6 text-center text-sm text-cocoa">{ORDER_STATUSES[order.status].description}</p>
-            {order.trackingNumber && (
-              <div className="mt-4 text-center">
-                <TrackingLink order={order} />
-              </div>
-            )}
+          <div className="mt-8 space-y-4" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+            <OrderProgressBar status={order.status} />
+            <ParcelLink order={order} />
           </div>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-            <div className="space-y-8">
-              {order.status === "pending_payment" && <PaymentInstructions order={order} settings={settings} />}
-              <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-                <h3 className="font-display text-2xl text-espresso">Items</h3>
-                <OrderItemsList items={order.items} />
+          <div className="mt-14 grid gap-14 lg:grid-cols-12 lg:gap-8">
+            <div className="space-y-14 lg:col-span-7" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+              {order.status === "pending_payment" && <PaymentPanel order={order} settings={settings} copy />}
+              <section aria-labelledby="items-heading">
+                <h3 id="items-heading" className="text-lead font-medium">
+                  In this order
+                </h3>
+                <div className="mt-5">
+                  <OrderLines items={order.items} />
+                </div>
               </section>
-              <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-                <h3 className="mb-5 font-display text-2xl text-espresso">Order history</h3>
-                <OrderTimeline events={order.events} />
+              <section aria-labelledby="history-heading">
+                <h3 id="history-heading" className="mb-5 text-lead font-medium">
+                  Order history
+                </h3>
+                <OrderHistory events={order.events} />
               </section>
             </div>
-            <aside className="space-y-6">
-              <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-                <h3 className="mb-4 text-sm font-semibold tracking-wide text-espresso">Summary</h3>
-                <OrderTotals order={order} />
+            <aside className="space-y-10 lg:col-span-4 lg:col-start-9" data-reveal="" style={{ ["--reveal-i" as string]: 3 }}>
+              <section aria-labelledby="sum-heading">
+                <h3 id="sum-heading" className="mb-3 text-lead font-medium">
+                  Summary
+                </h3>
+                <OrderSums order={order} />
               </section>
-              <section className="rounded-2xl border border-stone/70 bg-cream p-6">
-                <h3 className="mb-3 text-sm font-semibold tracking-wide text-espresso">Shipping to</h3>
-                <AddressBlock address={order.shippingAddress} />
+              <section aria-labelledby="ship-heading">
+                <h3 id="ship-heading" className="mb-3 text-lead font-medium">
+                  Shipping to
+                </h3>
+                <ShipTo address={order.shippingAddress} method={order.shippingMethod} />
               </section>
               <Link href="/contact" className={buttonClasses({ variant: "outline", className: "w-full" })}>
-                Need help with this order?
+                Ask about this order
               </Link>
             </aside>
           </div>
-        </div>
+        </section>
       )}
+
+      <JournalShelf
+        id="wait-heading"
+        title="Read while it travels"
+        intro="How to start, layer and store your peptides, so they are ready to use the day the parcel arrives."
+        articles={articles.slice(0, 3)}
+      />
     </div>
   );
 }

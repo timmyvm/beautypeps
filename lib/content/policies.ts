@@ -44,7 +44,7 @@ Delivery estimates are Australia Post's, start from dispatch, and can be longer 
 
 ## Dispatch
 
-${s.dispatchTime} Orders placed on weekends or public holidays are processed the next business day. Because we accept bank transfer and PayID, your order is dispatched once payment has cleared in our account — PayID is usually instant; bank transfers can take 1–2 business days.
+${s.dispatchTime} Orders placed on weekends or public holidays are processed the next business day. Because we accept bank transfer and PayID, your order is dispatched once payment has cleared in our account. PayID is usually instant; bank transfers can take 1–2 business days.
 
 ## Tracking
 
@@ -56,7 +56,7 @@ If your tracking hasn't updated for 5 business days, or a parcel marked delivere
 
 ## Heat & handling
 
-Our products are packed to handle normal transit. In summer we recommend bringing parcels inside promptly — like most actives, peptides prefer to stay below 25°C.
+Our products are packed to handle normal transit. In summer we recommend bringing parcels inside promptly: like most actives, peptides prefer to stay below 25°C.
 `,
       };
     case "returns":
@@ -76,13 +76,13 @@ We want you to love what you ordered. If you change your mind, you can return **
 
 ## Faulty, damaged or incorrect items
 
-Our products come with guarantees that cannot be excluded under the **Australian Consumer Law**. If an item is faulty, damaged in transit, or not what you ordered, you're entitled to a replacement or refund — opened or not.
+Our products come with guarantees that cannot be excluded under the **Australian Consumer Law**. If an item is faulty, damaged in transit, or not what you ordered, you're entitled to a replacement or refund, opened or not.
 
 Please email ${s.supportEmail} within 7 days of delivery where possible, with your order number and a photo of the issue. We'll cover any return postage.
 
 ## Skin reactions
 
-If you experience irritation, stop using the product and seek medical advice if needed. Contact us — we review every report and will work with you on a fair outcome, including a refund where appropriate.
+If you experience irritation, stop using the product and seek medical advice if needed. Contact us; we review every report and will work with you on a fair outcome, including a refund where appropriate.
 
 ## How to return
 
@@ -110,7 +110,7 @@ These terms apply to purchases from ${s.storeName}${s.abn ? ` (ABN ${s.abn})` : 
 
 ## Our products
 
-All Beauty Peps products — including serums, treatments and pure actives — are **cosmetics for external, topical use only**. They are not medicines, are not intended to diagnose, treat, cure or prevent any disease, and are not for injection or ingestion. Information in our Peptide Library and Journal is educational and is not medical advice.
+All Beauty Peps products, including serums, treatments and pure actives, are **cosmetics for external, topical use only**. They are not medicines, are not intended to diagnose, treat, cure or prevent any disease, and are not for injection or ingestion. Information in our Peptide Library and Journal is educational and is not medical advice.
 
 Pure actives are cosmetic raw materials intended for use by formulators in properly preserved topical products. You're responsible for using them safely and in line with applicable regulations.
 
@@ -164,7 +164,7 @@ ${s.storeName} respects your privacy and handles personal information in line wi
 - **Reviews:** your display name, rating and review text.
 - **Technical data:** basic information such as IP address and browser type used to keep the site secure and working.
 
-We **do not collect or store card details** — we accept bank transfer and PayID, which you make directly from your bank.
+We **do not collect or store card details**: we accept bank transfer and PayID, which you make directly from your bank.
 
 ## How we use it
 
@@ -180,7 +180,7 @@ We use essential cookies to keep you signed in and to remember your shopping bag
 
 ## Sharing
 
-We don't sell your personal information. We share it only with service providers who help us run the store — such as our hosting, email delivery and shipping partners — and only as needed for those services, or where required by law.
+We don't sell your personal information. We share it only with service providers who help us run the store (such as our hosting, email delivery and shipping partners) and only as needed for those services, or where required by law.
 
 ## Storage & security
 

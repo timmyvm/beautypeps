@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminPageHeader, DataTable, FilterTabs, Pagination } from "@/components/admin/ui";
 import { OrderStatusBadge } from "@/components/order/order-parts";
-import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
 import { Input } from "@/components/ui/form";
 import { EmptyState } from "@/components/ui/misc";
@@ -11,6 +10,7 @@ import { ORDER_STATUSES, PAYMENT_METHODS } from "@/lib/constants";
 import type { OrderStatus } from "@/lib/db/schema";
 import { formatDate, formatMoney } from "@/lib/format";
 import { listOrders, parsePage } from "@/lib/queries/admin-ops";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Orders" };
 
@@ -60,7 +60,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
         {sp.status && <input type="hidden" name="status" value={sp.status} />}
         <label className="relative min-w-60 flex-1">
           <span className="sr-only">Search orders</span>
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
+          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted" aria-hidden />
           <Input name="q" defaultValue={sp.q} placeholder="Order #, email, name, tracking…" className="pl-10" />
         </label>
         <label className="text-[13px] text-muted">
@@ -77,7 +77,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
         {hasFilters && (
           <Link
             href={sp.status ? `/admin/orders?status=${sp.status}` : "/admin/orders"}
-            className="px-2 text-[13px] text-muted underline underline-offset-4 hover:text-espresso"
+            className="px-2 text-[13px] text-muted underline underline-offset-4 hover:text-ink"
           >
             Clear
           </Link>
@@ -106,28 +106,30 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
             {rows.map((o) => (
               <tr key={o.id}>
                 <td>
-                  <Link href={`/admin/orders/${o.id}`} className="font-medium text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:underline">
                     {o.orderNumber}
                   </Link>
-                  {!o.userId && <span className="ml-2 text-[13px] text-taupe">Guest</span>}
+                  {!o.userId && <span className="ml-2 text-[13px] text-muted">Guest</span>}
                 </td>
                 <td className="whitespace-nowrap text-muted">{formatDate(o.createdAt)}</td>
                 <td className="max-w-64">
-                  <span className="block truncate text-espresso">
+                  <span className="block truncate text-ink">
                     {o.shippingAddress.firstName} {o.shippingAddress.lastName}
                   </span>
-                  <span className="block truncate text-[13px] text-taupe">{o.email}</span>
+                  <span className="block truncate text-[13px] text-muted">{o.email}</span>
                 </td>
                 <td className="text-right tabular-nums">{itemCounts.get(o.id) ?? 0}</td>
                 <td className="text-right font-medium tabular-nums">{formatMoney(o.total)}</td>
                 <td>
                   <span className="block text-[13px] text-muted">{PAYMENT_METHODS[o.paymentMethod].label}</span>
-                  <Badge
-                    tone={o.paymentStatus === "paid" ? "sage" : o.paymentStatus === "refunded" ? "danger" : "amber"}
-                    className="mt-1"
+                  <span
+                    className={cn(
+                      "block text-[13px]",
+                      o.paymentStatus === "paid" ? "text-muted" : o.paymentStatus === "refunded" ? "text-danger" : "text-amber",
+                    )}
                   >
                     {o.paymentStatus === "paid" ? "Paid" : o.paymentStatus === "refunded" ? "Refunded" : "Unpaid"}
-                  </Badge>
+                  </span>
                 </td>
                 <td>
                   <OrderStatusBadge status={o.status} />

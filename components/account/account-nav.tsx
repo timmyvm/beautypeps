@@ -33,8 +33,8 @@ export function AccountNav({ isAdmin, signOut }: { isAdmin: boolean; signOut: Re
                 className={cn(
                   "flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm transition-colors",
                   isActive(item.href)
-                    ? "border-espresso bg-espresso text-cream"
-                    : "border-stone bg-cream text-muted hover:border-taupe",
+                    ? "border-ink bg-ink text-white"
+                    : "border-stone bg-white text-muted hover:border-taupe",
                 )}
               >
                 <item.icon className="size-3.5" aria-hidden />
@@ -66,8 +66,8 @@ export function AccountNav({ isAdmin, signOut }: { isAdmin: boolean; signOut: Re
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm transition-colors",
                   isActive(item.href)
-                    ? "bg-espresso text-cream"
-                    : "text-muted hover:bg-ivory hover:text-espresso",
+                    ? "bg-ink text-white"
+                    : "text-muted hover:bg-surface hover:text-ink",
                 )}
               >
                 <item.icon className="size-4" aria-hidden />
@@ -76,7 +76,7 @@ export function AccountNav({ isAdmin, signOut }: { isAdmin: boolean; signOut: Re
             </li>
           ))}
         </ul>
-        <div className="mt-6 space-y-1 border-t border-stone/70 pt-6">
+        <div className="mt-6 space-y-1 border-t border-surface-2 pt-6">
           {isAdmin && (
             <Link
               href="/admin"

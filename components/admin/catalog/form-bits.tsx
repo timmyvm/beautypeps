@@ -24,7 +24,7 @@ export function SaveBar({
 }) {
   const errorCount = state.errors ? Object.keys(state.errors).length : 0;
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-stone/70 bg-ivory/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+    <div className="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-surface-2 bg-surface px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-h-5 text-sm" role="status" aria-live="polite">
           {state.message && (
@@ -69,7 +69,7 @@ export function Toggle({
   return (
     <label htmlFor={id} className="flex cursor-pointer items-start justify-between gap-4">
       <span>
-        <span className="block text-sm font-medium text-espresso">{label}</span>
+        <span className="block text-sm font-medium text-ink">{label}</span>
         {description && <span className="mt-0.5 block text-[13px] text-muted">{description}</span>}
       </span>
       <span className="relative mt-0.5 inline-flex shrink-0">
@@ -82,8 +82,8 @@ export function Toggle({
           onChange={(e) => onChange?.(e.target.checked)}
           className="peer sr-only"
         />
-        <span className="h-6 w-11 rounded-full bg-stone transition-colors peer-checked:bg-copper peer-focus-visible:ring-2 peer-focus-visible:ring-copper/40" />
-        <span className="absolute top-0.5 left-0.5 size-5 rounded-full bg-cream shadow transition-transform peer-checked:translate-x-5" />
+        <span className="h-6 w-11 bg-stone transition-colors peer-checked:bg-ink peer-focus-visible:ring-2 peer-focus-visible:ring-ink/30" />
+        <span className="absolute top-0.5 left-0.5 size-5 bg-white transition-transform peer-checked:translate-x-5" />
       </span>
     </label>
   );
@@ -113,11 +113,11 @@ export function CheckboxGroup({
       {label && <legend className="mb-2 text-[13px] font-medium text-muted">{label}</legend>}
       <div className={cn("grid gap-2", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
-          <label key={o.value} className="flex cursor-pointer items-start gap-2.5 text-sm text-espresso">
+          <label key={o.value} className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
             <Checkbox name={name} value={o.value} defaultChecked={defaultValue.includes(o.value)} className="mt-0.5" />
             <span>
               {o.label}
-              {o.description && <span className="block text-[13px] text-taupe">{o.description}</span>}
+              {o.description && <span className="block text-[13px] text-muted">{o.description}</span>}
             </span>
           </label>
         ))}
@@ -167,7 +167,7 @@ export function CountedField({
     <div>
       <div className="flex items-end justify-between">
         <Label htmlFor={id}>{label}</Label>
-        <span className={cn("mb-1.5 text-[13px] tabular-nums", over ? "text-danger" : "text-taupe")}>
+        <span className={cn("mb-1.5 text-[13px] tabular-nums", over ? "text-danger" : "text-muted")}>
           {value.length}/{max}
         </span>
       </div>
@@ -175,7 +175,7 @@ export function CountedField({
       {error ? (
         <p className="mt-1.5 text-[13px] text-danger">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-[13px] text-taupe">{hint}</p>
+        <p className="mt-1.5 text-[13px] text-muted">{hint}</p>
       ) : null}
     </div>
   );
@@ -237,10 +237,10 @@ export function RepeatableRows({
     <div>
       <input type="hidden" name={name} value={JSON.stringify(serialised)} />
       <p className="mb-2 text-[13px] font-medium text-muted">{label}</p>
-      {rows.length === 0 && <p className="mb-3 text-sm text-taupe">None yet.</p>}
+      {rows.length === 0 && <p className="mb-3 text-sm text-muted">None yet.</p>}
       <ul className="space-y-3">
         {rows.map((row, index) => (
-          <li key={row._id} className="relative rounded-xl border border-stone/70 bg-ivory/50 p-3 pr-12">
+          <li key={row._id} className="relative rounded-xl border border-surface-2 bg-surface/50 p-3 pr-12">
             <div className={cn("grid gap-3", columnsClass)}>
               {fields.map((f) => (
                 <Field key={f.key} label={index === 0 || f.multiline ? f.label : undefined} className={f.className}>
@@ -269,7 +269,7 @@ export function RepeatableRows({
               type="button"
               onClick={() => setRows((prev) => prev.filter((r) => r._id !== row._id))}
               aria-label="Remove row"
-              className="absolute top-3 right-3 grid size-8 place-items-center rounded-full text-muted hover:bg-danger-light hover:text-danger"
+              className="absolute top-3 right-3 grid size-8 place-items-center text-muted hover:bg-danger-light hover:text-danger"
             >
               <Trash2 className="size-4" />
             </button>
@@ -279,14 +279,14 @@ export function RepeatableRows({
       <button
         type="button"
         onClick={() => setRows((prev) => [...prev, { ...blank(), _id: newRowId() }])}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-taupe px-4 py-2 text-[13px] font-medium text-muted hover:border-espresso hover:text-espresso"
+        className="mt-3 inline-flex items-center gap-1.5 bg-surface-2 px-4 py-2 text-[14px] font-medium text-ink hover:bg-stone"
       >
         <Plus className="size-3.5" /> {addLabel}
       </button>
       {error ? (
         <p className="mt-1.5 text-[13px] text-danger">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-[13px] text-taupe">{hint}</p>
+        <p className="mt-1.5 text-[13px] text-muted">{hint}</p>
       ) : null}
     </div>
   );

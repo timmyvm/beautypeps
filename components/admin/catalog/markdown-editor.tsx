@@ -40,7 +40,7 @@ export function MarkdownEditor({
         <Label htmlFor={id} className="mb-0">
           {label}
         </Label>
-        <div className="flex rounded-full border border-stone bg-ivory p-0.5 text-[13px] font-medium" role="tablist">
+        <div className="flex border border-surface-2 bg-white text-[13px] font-medium" role="tablist">
           {(["write", "preview"] as const).map((t) => (
             <button
               key={t}
@@ -49,8 +49,8 @@ export function MarkdownEditor({
               aria-selected={tab === t}
               onClick={() => setTab(t)}
               className={cn(
-                "rounded-full px-3 py-1 capitalize transition-colors",
-                tab === t ? "bg-espresso text-cream" : "text-muted hover:text-espresso",
+                "px-3 py-1 capitalize transition-colors",
+                tab === t ? "bg-ink text-white" : "text-muted hover:text-ink",
               )}
             >
               {t}
@@ -71,19 +71,19 @@ export function MarkdownEditor({
         }}
         aria-invalid={!!error}
         className={cn(
-          "w-full rounded-xl border border-stone bg-cream px-4 py-3 font-mono text-[13px] leading-relaxed text-espresso placeholder:text-taupe focus:border-copper focus:ring-2 focus:ring-copper/20 focus:outline-none aria-[invalid=true]:border-danger",
+          "w-full border border-stone bg-white px-4 py-3 font-mono text-[13px] leading-relaxed text-ink placeholder:text-muted focus:border-ink focus:ring-2 focus:ring-ink/10 focus:outline-none aria-[invalid=true]:border-danger",
           tab === "preview" && "hidden",
         )}
         placeholder="Write in Markdown — ## headings, **bold**, - lists, | tables |"
       />
       {tab === "preview" && (
-        <div className="min-h-40 rounded-xl border border-stone bg-cream px-5 py-4">
+        <div className="min-h-40 border border-stone bg-white px-5 py-4">
           {value.trim() ? (
             <div className="prose-bp prose-sm">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>
             </div>
           ) : (
-            <p className="text-sm text-taupe">Nothing to preview yet.</p>
+            <p className="text-sm text-muted">Nothing to preview yet.</p>
           )}
         </div>
       )}
@@ -93,9 +93,9 @@ export function MarkdownEditor({
             {error}
           </p>
         ) : (
-          <p className="text-taupe">{hint ?? "Markdown supported."}</p>
+          <p className="text-muted">{hint ?? "Markdown supported."}</p>
         )}
-        {showWordCount && <p className="shrink-0 text-taupe">{countWords(value)} words</p>}
+        {showWordCount && <p className="shrink-0 text-muted">{countWords(value)} words</p>}
       </div>
     </div>
   );

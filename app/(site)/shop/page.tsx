@@ -5,7 +5,7 @@ import { FilterChip, SpecimenGrid } from "@/components/shop/specimen-grid";
 import { SortSelect } from "@/components/shop/sort-select";
 import { buttonClasses } from "@/components/ui/button";
 import { CONCERNS, concernLabel } from "@/lib/constants";
-import { getCategories, listProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/queries/catalog";
+import { getCategories, getFeaturedProducts, listProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/queries/catalog";
 import { getPublishedPeptides } from "@/lib/queries/content";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -43,6 +43,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     getPublishedPeptides(),
   ]);
   const category = categories.find((c) => c.slug === categorySlug);
+  const fallback = products.length === 0 ? await getFeaturedProducts(4) : [];
   const grades = Object.fromEntries(peptides.map((p) => [p.slug, { name: p.name, grade: p.evidenceLevel }]));
 
   const href = (patch: Record<string, string | undefined>) => {
@@ -72,17 +73,17 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     <div className="container-bp pt-10 md:pt-16">
       {/* Heading and its first sentence at opposite ends of one baseline */}
       <header className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
-        <h1 className="display-type text-head lg:col-span-6" data-reveal="">
+        <h1 className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] lg:col-span-7" data-reveal="">
           {heading}
         </h1>
-        <p className="max-w-[52ch] text-body lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+        <p className="max-w-[44ch] text-lead lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
           {intro}
         </p>
       </header>
 
       {/* Filters: plain, filled controls at text size */}
       <div className="mt-12 space-y-3">
-        <nav aria-label="Categories" className="flex flex-wrap gap-2">
+        <nav aria-label="Categories" className="flex flex-wrap gap-2" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
           <FilterChip href={href({ category: undefined })} active={!categorySlug}>
             Everything
           </FilterChip>
@@ -92,7 +93,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
             </FilterChip>
           ))}
         </nav>
-        <nav aria-label="Concerns" className="flex flex-wrap gap-2">
+        <nav aria-label="Concerns" className="flex flex-wrap gap-2" data-reveal="" style={{ ["--reveal-i" as string]: 3 }}>
           {CONCERNS.map((c) => (
             <FilterChip key={c.slug} href={href({ concern: c.slug === concern ? undefined : c.slug })} active={c.slug === concern}>
               {c.label}
@@ -101,7 +102,11 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         </nav>
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 bg-surface px-4 py-3 md:flex-row md:items-center md:justify-between">
+      <div
+        className="mt-8 flex flex-col gap-4 bg-surface px-4 py-3 md:flex-row md:items-center md:justify-between"
+        data-reveal=""
+        style={{ ["--reveal-i" as string]: 4 }}
+      >
         <p className="text-body" aria-live="polite">
           {count}
           {q ? (
@@ -146,7 +151,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
       <section className="mt-10" aria-label="Formulas">
         {products.length === 0 ? (
-          <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12">
+          <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" data-reveal="">
             <div>
               <h2 className="display-type text-head">Nothing matches yet</h2>
               <p className="mt-4 max-w-[48ch] text-body">
@@ -161,6 +166,15 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
           <SpecimenGrid products={products} grades={grades} priority={4} />
         )}
       </section>
+
+      {fallback.length > 0 && (
+        <section className="mt-24 md:mt-32" aria-labelledby="fallback-heading">
+          <h2 id="fallback-heading" className="display-type mb-10 text-head" data-reveal="">
+            What most people start with
+          </h2>
+          <SpecimenGrid products={fallback} grades={grades} doubles={false} />
+        </section>
+      )}
     </div>
   );
 }

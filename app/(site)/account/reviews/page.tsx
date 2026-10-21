@@ -38,11 +38,11 @@ export default async function MyReviewsPage() {
           {reviews.map((r) => {
             const status = REVIEW_STATUSES[r.status];
             return (
-              <li key={r.id} className="rounded-2xl border border-stone/70 bg-cream p-5 sm:p-6">
+              <li key={r.id} className="rounded-2xl border border-surface-2 bg-white p-5 sm:p-6">
                 <div className="flex gap-4">
                   <Link
                     href={`/products/${r.productSlug}`}
-                    className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-ivory"
+                    className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-surface"
                   >
                     <Image src={r.productImage} alt={r.productName} fill sizes="64px" className="object-cover" />
                   </Link>
@@ -50,32 +50,32 @@ export default async function MyReviewsPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <Link
                         href={`/products/${r.productSlug}`}
-                        className="text-sm font-medium text-espresso hover:text-copper-dark"
+                        className="text-sm font-medium text-ink hover:text-copper-dark"
                       >
                         {r.productName}
                       </Link>
                       <Badge tone={status.tone}>{status.label}</Badge>
                     </div>
-                    <div className="mt-1 flex items-center gap-2 text-[13px] text-taupe">
+                    <div className="mt-1 flex items-center gap-2 text-[13px] text-muted">
                       <Stars rating={r.rating} size={12} />
                       <span>{formatDate(r.createdAt)}</span>
                       {r.verifiedPurchase && <span>· Verified purchase</span>}
                     </div>
                   </div>
                 </div>
-                <p className="mt-4 text-base font-semibold text-espresso">{r.title}</p>
+                <p className="mt-4 text-base font-semibold text-ink">{r.title}</p>
                 <p className="mt-1 text-sm leading-relaxed whitespace-pre-line text-muted">{r.body}</p>
                 {r.adminReply && (
-                  <div className="mt-4 flex gap-3 rounded-xl bg-ivory p-4">
+                  <div className="mt-4 flex gap-3 rounded-xl bg-surface p-4">
                     <MessageSquareQuote className="size-4 shrink-0 text-copper" aria-hidden />
                     <div>
-                      <p className="text-[13px] font-semibold text-espresso">Reply from Beauty Peps</p>
+                      <p className="text-[13px] font-semibold text-ink">Reply from Beauty Peps</p>
                       <p className="mt-1 text-sm text-muted">{r.adminReply}</p>
                     </div>
                   </div>
                 )}
                 {r.status === "rejected" && (
-                  <p className="mt-3 text-[13px] text-taupe">
+                  <p className="mt-3 text-[13px] text-muted">
                     This review wasn&apos;t published — usually because it mentioned medical claims or another brand.
                   </p>
                 )}

@@ -20,7 +20,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
     discount?.type === "fixed" ? (discount.value / 100).toFixed(2) : discount?.type === "percent" ? String(discount.value) : "";
 
   return (
-    <ActionForm action={saveDiscountAction} className="grid max-w-3xl gap-5 rounded-2xl border border-stone/70 bg-cream p-6 sm:grid-cols-2">
+    <ActionForm action={saveDiscountAction} className="grid gap-5 border border-surface-2 bg-white p-6 sm:grid-cols-2">
       {discount && <input type="hidden" name="id" value={discount.id} />}
 
       <ActionField name="code" label="Code" hint="Customers type this at checkout. Letters, numbers, - and _.">
@@ -31,7 +31,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
           required
           minLength={3}
           maxLength={32}
-          className="font-mono"
+          className="uppercase"
           placeholder="GLOW15"
         />
       </ActionField>
@@ -53,7 +53,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
           hint={type === "percent" ? "1–100" : "Taken off the subtotal, never below $0"}
         >
           <div className="relative">
-            <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-taupe">
+            <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-muted">
               {type === "percent" ? "%" : "$"}
             </span>
             <Input
@@ -70,14 +70,14 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
           </div>
         </ActionField>
       ) : (
-        <div className="self-end rounded-xl bg-ivory px-4 py-3 text-[13px] text-muted">
+        <div className="self-end rounded-xl bg-surface px-4 py-3 text-[13px] text-muted">
           Standard shipping becomes free; express is discounted by the standard rate.
         </div>
       )}
 
       <ActionField name="minSubtotal" label="Minimum spend (AUD)" hint="Leave blank for no minimum">
         <div className="relative">
-          <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-taupe">$</span>
+          <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-muted">$</span>
           <Input
             id="minSubtotal"
             name="minSubtotal"

@@ -63,15 +63,15 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
         </Panel>
         <Panel title="Products" className="h-fit">
           {inCategory.length === 0 ? (
-            <p className="text-sm text-taupe">No products yet.</p>
+            <p className="text-sm text-muted">No products yet.</p>
           ) : (
             <ul className="space-y-2">
               {inCategory.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
-                  <Link href={`/admin/products/${p.id}`} className="truncate text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/products/${p.id}`} className="truncate text-ink hover:underline">
                     {p.name}
                   </Link>
-                  {p.status !== "active" && <span className="text-[13px] text-taupe capitalize">{p.status}</span>}
+                  {p.status !== "active" && <span className="text-[13px] text-muted capitalize">{p.status}</span>}
                 </li>
               ))}
             </ul>

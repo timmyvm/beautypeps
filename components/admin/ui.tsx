@@ -1,12 +1,28 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /*
  * Admin building blocks — achromatic ledger: white panels with one hairline on the stone ground,
  * a noun title at 24px, 13px grey sentence-case table headers, rules instead of zebra bands.
  */
+
+type ButtonVariant = "primary" | "copper" | "dark" | "outline" | "ghost" | "danger" | "light";
+
+/**
+ * Achromatic chrome: the admin's primary is near-black, never the brand hue, and its secondary is a
+ * grey fill one step darker than the stone ground so it still reads as a button there.
+ */
+export function adminButtonClasses({
+  variant = "outline",
+  size = "sm",
+  className,
+}: { variant?: ButtonVariant; size?: "sm" | "md"; className?: string } = {}) {
+  if (variant === "primary" || variant === "copper") variant = "dark";
+  return buttonClasses({ variant, size, className: cn(variant === "outline" && "bg-surface-2 hover:bg-stone", className) });
+}
 
 export function AdminPageHeader({
   title,

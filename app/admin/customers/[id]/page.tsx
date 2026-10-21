@@ -4,9 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ActionForm } from "@/components/admin/ops/action-form";
 import { ConfirmSubmit, OpsSubmit } from "@/components/admin/ops/buttons";
-import { KpiTile } from "@/components/admin/ops/revenue-chart";
 import { Toaster } from "@/components/admin/ops/toast";
-import { AdminPageHeader, DataTable, Panel } from "@/components/admin/ui";
+import { AdminPageHeader, DataTable, KpiStrip, Panel, StatCard } from "@/components/admin/ui";
 import { OrderStatusBadge } from "@/components/order/order-parts";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/form";
@@ -47,8 +46,8 @@ export default async function AdminCustomerPage({ params }: Props) {
         title={
           <span className="flex flex-wrap items-center gap-3">
             {name}
-            <span className="flex gap-2 font-sans">
-              {user.role === "admin" && <Badge tone="copper">Admin</Badge>}
+            <span className="flex gap-2">
+              {user.role === "admin" && <Badge tone="neutral">Admin</Badge>}
               {user.disabled && <Badge tone="danger">Disabled</Badge>}
             </span>
           </span>
@@ -56,12 +55,12 @@ export default async function AdminCustomerPage({ params }: Props) {
         description={`Customer since ${formatDate(user.createdAt)}`}
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <KpiTile label="Orders" value={String(stats.orderCount)} />
-        <KpiTile label="Lifetime value" value={formatMoney(stats.lifetimeValue)} hint="Paid orders" />
-        <KpiTile label="Average order" value={formatMoney(stats.aov)} />
-        <KpiTile label="Last order" value={stats.lastOrder ? formatDate(stats.lastOrder) : "—"} hint={`${wishlistCount} wishlisted`} />
-      </div>
+      <KpiStrip>
+        <StatCard label="Orders" value={String(stats.orderCount)} />
+        <StatCard label="Lifetime value" value={formatMoney(stats.lifetimeValue)} hint="Paid orders" />
+        <StatCard label="Average order" value={formatMoney(stats.aov)} />
+        <StatCard label="Last order" value={stats.lastOrder ? formatDate(stats.lastOrder) : "—"} hint={`${wishlistCount} wishlisted`} />
+      </KpiStrip>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.7fr_1fr]">
         <div className="flex min-w-0 flex-col gap-6">
@@ -83,7 +82,7 @@ export default async function AdminCustomerPage({ params }: Props) {
                   {orders.map((o) => (
                     <tr key={o.id}>
                       <td>
-                        <Link href={`/admin/orders/${o.id}`} className="font-medium text-espresso hover:text-copper-dark">
+                        <Link href={`/admin/orders/${o.id}`} className="font-medium text-ink hover:underline">
                           {o.orderNumber}
                         </Link>
                       </td>
@@ -104,16 +103,16 @@ export default async function AdminCustomerPage({ params }: Props) {
             {reviews.length === 0 ? (
               <p className="text-sm text-muted">No reviews written.</p>
             ) : (
-              <ul className="divide-y divide-stone/50">
+              <ul className="divide-y divide-surface">
                 {reviews.map((r) => (
                   <li key={r.id} className="py-3 first:pt-0 last:pb-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <Stars rating={r.rating} size={12} />
-                      <span className="text-sm font-medium text-espresso">{r.title}</span>
+                      <span className="text-sm font-medium text-ink">{r.title}</span>
                       <Badge tone={REVIEW_STATUSES[r.status].tone}>{REVIEW_STATUSES[r.status].label}</Badge>
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm text-muted">{r.body}</p>
-                    <p className="mt-1 text-[13px] text-taupe">
+                    <p className="mt-1 text-[13px] text-muted">
                       {r.product ? (
                         <Link href={`/products/${r.product.slug}`} className="hover:underline">
                           {r.product.name}
@@ -135,10 +134,10 @@ export default async function AdminCustomerPage({ params }: Props) {
             ) : (
               <ul className="grid gap-4 sm:grid-cols-2">
                 {addresses.map((ad) => (
-                  <li key={ad.id} className="rounded-xl border border-stone/60 p-4 text-sm text-muted">
-                    <p className="mb-1 flex items-center gap-2 font-medium text-espresso">
+                  <li key={ad.id} className="rounded-xl border border-surface-2 p-4 text-sm text-muted">
+                    <p className="mb-1 flex items-center gap-2 font-medium text-ink">
                       {ad.label}
-                      {ad.isDefault && <Badge tone="sage">Default</Badge>}
+                      {ad.isDefault && <Badge tone="neutral">Default</Badge>}
                     </p>
                     {ad.firstName} {ad.lastName}
                     <br />
@@ -164,20 +163,20 @@ export default async function AdminCustomerPage({ params }: Props) {
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted">Email</dt>
               <dd className="truncate">
-                <a href={`mailto:${user.email}`} className="text-copper-dark hover:underline">
+                <a href={`mailto:${user.email}`} className="text-ink hover:underline">
                   {user.email}
                 </a>
               </dd>
               <dt className="text-muted">Phone</dt>
-              <dd className="text-espresso">{user.phone || "—"}</dd>
+              <dd className="text-ink">{user.phone || "—"}</dd>
               <dt className="text-muted">Role</dt>
-              <dd className="text-espresso capitalize">{user.role}</dd>
+              <dd className="text-ink capitalize">{user.role}</dd>
               <dt className="text-muted">Marketing</dt>
-              <dd className="text-espresso">{user.marketingOptIn ? "Subscribed" : "Not subscribed"}</dd>
+              <dd className="text-ink">{user.marketingOptIn ? "Subscribed" : "Not subscribed"}</dd>
               <dt className="text-muted">Joined</dt>
-              <dd className="text-espresso">{formatDateTime(user.createdAt)}</dd>
+              <dd className="text-ink">{formatDateTime(user.createdAt)}</dd>
               <dt className="text-muted">Last login</dt>
-              <dd className="text-espresso">{user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Never"}</dd>
+              <dd className="text-ink">{user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Never"}</dd>
             </dl>
           </Panel>
 
@@ -226,7 +225,7 @@ export default async function AdminCustomerPage({ params }: Props) {
                   </ActionForm>
                 </>
               )}
-              {isSelf && <p className="text-[13px] text-taupe">This is your account — role and status can&apos;t be changed here.</p>}
+              {isSelf && <p className="text-[13px] text-muted">This is your account — role and status can&apos;t be changed here.</p>}
             </div>
           </Panel>
 

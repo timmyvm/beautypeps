@@ -175,7 +175,7 @@ export function ProductForm({
 
           <Panel title="Search engine listing">
             <div className="space-y-4">
-              <div className="rounded-xl border border-stone/70 bg-white/60 p-4">
+              <div className="rounded-xl border border-surface-2 bg-white/60 p-4">
                 <p className="truncate text-[13px] text-sage">beautypeps.com.au › products › {slug || "…"}</p>
                 <p className="mt-1 truncate text-[17px] text-[#1a0dab]">{previewTitle}</p>
                 <p className="mt-1 line-clamp-2 text-[13px] text-muted">{previewDescription}</p>
@@ -237,7 +237,7 @@ export function ProductForm({
                 <MoneyInput id="compareAtPrice" name="compareAtPrice" defaultValue={centsToInput(product?.compareAtPrice)} invalid={!!e.compareAtPrice} />
               </Field>
               {!Number.isNaN(priceCents) && priceCents > 0 && (
-                <p className="rounded-lg bg-ivory px-3 py-2 text-[13px] text-muted">
+                <p className="rounded-lg bg-surface px-3 py-2 text-[13px] text-muted">
                   Includes {formatMoney(Math.round(priceCents / 11))} GST · ex-GST {formatMoney(priceCents - Math.round(priceCents / 11))}
                 </p>
               )}
@@ -261,7 +261,7 @@ export function ProductForm({
 
           <Panel title="Peptides in this formula">
             {peptides.length === 0 ? (
-              <p className="text-sm text-taupe">Add peptides in the Peptide library first.</p>
+              <p className="text-sm text-muted">Add peptides in the Peptide library first.</p>
             ) : (
               <CheckboxGroup
                 name="peptideSlugs"
@@ -314,7 +314,7 @@ function MoneyInput({
 }) {
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-taupe">$</span>
+      <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sm text-muted">$</span>
       <Input
         id={id}
         name={name}
@@ -348,23 +348,23 @@ function StockAdjuster({ productId, initialStock, threshold }: { productId: stri
     });
   }
 
-  const tone = stock <= 0 ? "text-danger" : stock <= threshold ? "text-copper-dark" : "text-espresso";
+  const tone = stock <= 0 ? "text-danger" : stock <= threshold ? "text-amber" : "text-ink";
 
   return (
     <div>
       <p className="text-[13px] font-medium text-muted">Stock on hand</p>
       <div className="mt-1 flex items-center gap-3">
         <span className={cn("text-2xl font-semibold tabular-nums", tone)}>{stock}</span>
-        <span className="text-[13px] text-taupe">{stock <= 0 ? "Sold out" : stock <= threshold ? "Low stock" : "In stock"}</span>
+        <span className="text-[13px] text-muted">{stock <= 0 ? "Sold out" : stock <= threshold ? "Low stock" : "In stock"}</span>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button size="sm" variant="outline" disabled={pending || stock <= 0} onClick={() => run("delta", -1)} aria-label="Decrease stock by 1">
+        <Button size="sm" variant="outline" className="bg-surface-2 hover:bg-stone" disabled={pending || stock <= 0} onClick={() => run("delta", -1)} aria-label="Decrease stock by 1">
           <Minus className="size-3.5" /> 1
         </Button>
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("delta", 1)} aria-label="Increase stock by 1">
+        <Button size="sm" variant="outline" className="bg-surface-2 hover:bg-stone" disabled={pending} onClick={() => run("delta", 1)} aria-label="Increase stock by 1">
           <Plus className="size-3.5" /> 1
         </Button>
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("delta", 10)} aria-label="Increase stock by 10">
+        <Button size="sm" variant="outline" className="bg-surface-2 hover:bg-stone" disabled={pending} onClick={() => run("delta", 10)} aria-label="Increase stock by 10">
           <Plus className="size-3.5" /> 10
         </Button>
       </div>
@@ -384,12 +384,12 @@ function StockAdjuster({ productId, initialStock, threshold }: { productId: stri
           aria-label="Set exact stock count"
           className="h-9"
         />
-        <Button size="sm" variant="outline" disabled={pending || setTo === ""} onClick={() => run("set", Number(setTo))}>
+        <Button size="sm" variant="outline" className="bg-surface-2 hover:bg-stone" disabled={pending || setTo === ""} onClick={() => run("set", Number(setTo))}>
           Set
         </Button>
       </div>
       {message && <p className={cn("mt-2 text-[13px]", message.ok ? "text-sage" : "text-danger")}>{message.text}</p>}
-      <p className="mt-2 text-[13px] text-taupe">Stock changes save instantly.</p>
+      <p className="mt-2 text-[13px] text-muted">Stock changes save instantly.</p>
     </div>
   );
 }

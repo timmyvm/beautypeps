@@ -1,18 +1,41 @@
-import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { PageHero } from "@/components/info/page-hero";
+import { Figure, PageHeader, reveal } from "@/components/info/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { GLOSSARY } from "@/lib/content/glossary";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Peptide & skincare glossary",
+  title: "Peptide and skincare glossary",
   description:
-    "Plain-English definitions of the terms you'll meet in peptide skincare: INCI names, Daltons, fibroblasts, the extracellular matrix, palmitoylation, SNARE complex, MMPs and more.",
+    "Plain-English definitions of the terms you'll meet in peptide skincare: INCI names, daltons, fibroblasts, the extracellular matrix, palmitoylation, the SNARE complex, MMPs and more.",
 };
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+/* A photograph beside some letters, of the thing one of its terms describes. */
+const LETTER_PICTURES: Record<string, { src: string; alt: string; caption: string }> = {
+  C: {
+    src: "/images/articles/matrixyl-collagen-signal-peptides.webp",
+    alt: "Close-up of fine pink and cream fibres, like collagen under magnification",
+    caption: "Collagen: the fibres that give skin its strength.",
+  },
+  L: {
+    src: "/images/articles/storing-peptide-powders.webp",
+    alt: "Amber vials of freeze-dried peptide powder in a refrigerator door",
+    caption: "Lyophilised: freeze-dried, and kept cold.",
+  },
+  P: {
+    src: "/images/editorial/actives.webp",
+    alt: "A row of amber vials of freeze-dried peptide powder on a travertine bench beside a scale",
+    caption: "Peptides, weighed out as pure actives.",
+  },
+  S: {
+    src: "/images/editorial/texture.webp",
+    alt: "A clear gel and a white cream swatched side by side on a pale ground",
+    caption: "The vehicle: what carries a peptide to the stratum corneum.",
+  },
+};
 
 function letterOf(term: string) {
   const first = term.normalize("NFKD").replace(/[^A-Za-z]/g, "").charAt(0).toUpperCase();
@@ -20,7 +43,9 @@ function letterOf(term: string) {
 }
 
 export default function GlossaryPage() {
-  const sorted = [...GLOSSARY].sort((a, b) => letterOf(a.term).localeCompare(letterOf(b.term)) || a.term.localeCompare(b.term));
+  const sorted = [...GLOSSARY].sort(
+    (a, b) => letterOf(a.term).localeCompare(letterOf(b.term)) || a.term.localeCompare(b.term),
+  );
   const groups = new Map<string, typeof GLOSSARY>();
   for (const t of sorted) {
     const l = letterOf(t.term);
@@ -29,63 +54,74 @@ export default function GlossaryPage() {
 
   return (
     <>
-      <PageHero
-        eyebrow="Glossary"
-        title="The language of peptides, decoded"
-        description={`${GLOSSARY.length} terms you'll meet on ingredient lists, in research papers and across our Peptide Library — explained in plain English.`}
-      />
-
-      <nav
-        aria-label="Jump to letter"
-        className="sticky top-16 z-30 border-b border-stone/60 bg-cream/95 backdrop-blur md:top-20"
+      <PageHeader
+        crumbs={[{ href: "/", label: "Home" }, { label: "Glossary" }]}
+        title="The glossary"
+        lead={`${GLOSSARY.length} terms you'll meet on ingredient lists, in research papers and across the peptide library, in plain English.`}
+        figure={
+          <Figure ratio="aspect-[4/3]">
+            <Image
+              src="/images/articles/what-are-peptides.webp"
+              alt="A chain of copper and glass beads curving across a cream ground"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </Figure>
+        }
       >
-        <div className="container-bp scrollbar-none flex gap-1 overflow-x-auto py-3">
-          {ALPHABET.map((l) =>
-            groups.has(l) ? (
-              <a
-                key={l}
-                href={`#letter-${l}`}
-                className="grid size-8 shrink-0 place-items-center rounded-full text-sm font-medium text-espresso hover:bg-copper-light/50"
-              >
-                {l}
-              </a>
-            ) : (
-              <span key={l} className="grid size-8 shrink-0 place-items-center text-sm text-stone" aria-hidden>
-                {l}
-              </span>
-            ),
-          )}
-        </div>
-      </nav>
+        <nav aria-label="Jump to a letter" className="flex flex-wrap gap-1.5">
+          {ALPHABET.filter((l) => groups.has(l)).map((l) => (
+            <a
+              key={l}
+              href={`#letter-${l}`}
+              className="press grid size-11 place-items-center bg-surface text-body font-medium hover:bg-surface-2"
+            >
+              {l}
+            </a>
+          ))}
+        </nav>
+      </PageHeader>
 
-      <div className="container-bp py-14">
-        <div className="mx-auto max-w-4xl space-y-14">
-          {[...groups.entries()].map(([letter, terms]) => (
-            <section key={letter} id={`letter-${letter}`} className="scroll-mt-40" aria-labelledby={`h-${letter}`}>
-              <h2 id={`h-${letter}`} className="mb-6 border-b border-stone pb-3 font-display text-4xl text-copper">
-                {letter}
-              </h2>
-              <dl className="space-y-4">
+      <div className="container-bp mt-12 lg:mt-20">
+        {[...groups.entries()].map(([letter, terms]) => {
+          const pic = LETTER_PICTURES[letter];
+          return (
+            <section
+              key={letter}
+              id={`letter-${letter}`}
+              aria-labelledby={`h-${letter}`}
+              className="mt-16 grid scroll-mt-8 gap-6 lg:mt-24 lg:grid-cols-12 lg:gap-[var(--gutter)]"
+            >
+              <div className="lg:col-span-3">
+                <h2 id={`h-${letter}`} className="display-type text-head" {...reveal(0)}>
+                  {letter}
+                </h2>
+                {pic && (
+                  <Figure ratio="aspect-[4/5]" caption={pic.caption} className="mt-8 hidden max-w-[320px] lg:block">
+                    <Image src={pic.src} alt={pic.alt} fill sizes="22vw" className="object-cover" />
+                  </Figure>
+                )}
+              </div>
+              <dl className="lg:col-span-8 lg:col-start-5">
                 {terms.map((t) => (
                   <div
                     key={t.id}
                     id={t.id}
-                    className={cn(
-                      "scroll-mt-40 rounded-2xl border border-stone/60 bg-cream p-5 transition-colors md:grid md:grid-cols-[220px_1fr] md:gap-8",
-                      "target:border-copper target:bg-copper-light/20",
-                    )}
+                    className="scroll-mt-8 px-4 py-6 target:bg-accent-soft sm:grid sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-8 sm:px-5"
                   >
                     <dt>
-                      <span className="font-display text-xl text-espresso">{t.term}</span>
-                      {t.aka && <span className="mt-1 block text-xs text-taupe">{t.aka}</span>}
+                      <span className="block text-lead font-medium">{t.term}</span>
+                      {t.aka && <span className="mt-1 block text-small text-muted">{t.aka}</span>}
                     </dt>
-                    <dd className="mt-2 md:mt-0">
-                      <p className="text-sm leading-relaxed text-cocoa">{t.definition}</p>
+                    <dd className="mt-2 sm:mt-0">
+                      <p className="max-w-[60ch] text-body">{t.definition}</p>
                       {t.links && t.links.length > 0 && (
-                        <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                        <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-body">
                           {t.links.map((l) => (
-                            <Link key={l.href} href={l.href} className="inline-flex items-center gap-1 text-copper-dark hover:underline">
-                              {l.label} <ArrowRight className="size-3" aria-hidden />
+                            <Link key={l.href} href={l.href} className="underline underline-offset-4">
+                              {l.label}
                             </Link>
                           ))}
                         </p>
@@ -95,19 +131,34 @@ export default function GlossaryPage() {
                 ))}
               </dl>
             </section>
-          ))}
-        </div>
-
-        <div className="mx-auto mt-16 flex max-w-4xl flex-col items-start gap-4 rounded-2xl bg-ivory p-8 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-display text-2xl text-espresso">Ready for the deep dive?</p>
-            <p className="mt-1 text-sm text-cocoa">See these terms in action in our guide to how peptides work.</p>
-          </div>
-          <ButtonLink href="/science">
-            Read the science <ArrowRight className="size-4" />
-          </ButtonLink>
-        </div>
+          );
+        })}
       </div>
+
+      <section aria-labelledby="deeper-title" className="container-bp mt-28 lg:mt-44">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+          <Figure ratio="aspect-[16/9]" className="lg:col-span-6">
+            <Image
+              src="/images/editorial/science.webp"
+              alt="A model of a peptide chain in copper and blue beads beside a single droplet"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="drift object-cover"
+            />
+          </Figure>
+          <div className="lg:col-span-5 lg:col-start-8 lg:pb-2">
+            <h2 id="deeper-title" className="display-type text-head" {...reveal(0)}>
+              The terms, at work
+            </h2>
+            <p className="mt-6 max-w-[44ch] text-body" {...reveal(1)}>
+              See how they fit together in our guide to how cosmetic peptides work.
+            </p>
+            <ButtonLink href="/science" className="mt-8">
+              Read the science
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

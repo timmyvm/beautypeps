@@ -1,6 +1,5 @@
 "use client";
 
-import { Tag, X } from "lucide-react";
 import { useActionState, useTransition } from "react";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { applyDiscountAction, removeDiscountAction } from "@/lib/actions/cart";
@@ -18,27 +17,18 @@ export function DiscountForm({
 
   if (appliedCode) {
     return (
-      <div
-        className={cn(
-          "flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm",
-          invalidReason ? "bg-amber-light text-amber" : "bg-sage-light text-sage",
-        )}
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          <Tag className="size-4 shrink-0" aria-hidden />
-          <span className="min-w-0">
-            <span className="font-mono font-semibold tracking-wide">{appliedCode}</span>
-            {invalidReason ? <span className="block text-xs">{invalidReason}</span> : <span> applied</span>}
-          </span>
+      <div className={cn("flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-body", invalidReason ? "bg-amber-light text-amber" : "bg-sage-light text-sage")}>
+        <span className="min-w-0">
+          <span className="font-medium">{appliedCode}</span>
+          {invalidReason ? <span className="block text-small">{invalidReason}</span> : <span> applied</span>}
         </span>
         <button
           type="button"
           onClick={() => startTransition(() => removeDiscountAction())}
           disabled={removing}
-          className="grid size-7 shrink-0 place-items-center rounded-full hover:bg-cream/60"
-          aria-label={`Remove code ${appliedCode}`}
+          className="press text-small underline underline-offset-4"
         >
-          <X className="size-4" aria-hidden />
+          Remove code
         </button>
       </div>
     );
@@ -46,24 +36,24 @@ export function DiscountForm({
 
   return (
     <form action={action}>
-      <label htmlFor="discount-code" className="mb-1.5 block text-xs font-medium tracking-wide text-cocoa">
+      <label htmlFor="discount-code" className="mb-1.5 block text-small font-medium">
         Discount code
       </label>
-      <div className="flex gap-2">
+      <div className="flex">
         <input
           id="discount-code"
           name="code"
           autoComplete="off"
           placeholder="e.g. WELCOME10"
-          className="h-11 min-w-0 flex-1 rounded-xl border border-stone bg-cream px-4 font-mono text-sm uppercase placeholder:font-sans placeholder:normal-case focus:border-copper focus:ring-2 focus:ring-copper/20 focus:outline-none"
+          className="h-12 min-w-0 flex-1 bg-white px-4 text-body uppercase placeholder:normal-case placeholder:text-taupe focus:outline-2 focus:outline-accent"
           aria-invalid={state.ok === false}
           aria-describedby="discount-msg"
         />
-        <SubmitButton variant="outline" className="h-11" pendingText="Applying">
+        <SubmitButton variant="dark" className="h-12" pendingText="Applying">
           Apply
         </SubmitButton>
       </div>
-      <p id="discount-msg" aria-live="polite" className={cn("mt-1.5 text-xs", state.ok ? "text-sage" : "text-danger")}>
+      <p id="discount-msg" aria-live="polite" className={cn("mt-1.5 text-small", state.ok ? "text-sage" : "text-danger")}>
         {state.message}
       </p>
     </form>

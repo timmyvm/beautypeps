@@ -1,0 +1,30 @@
+TASTESKILL · INSPECT   http://localhost:3101/products/copper-ritual-kit
+
+MEASURED (first viewport listed)
+  hero headline   "The Copper Ritual Kit"  4 words · 1 line(s) · 53.4px (3.7vw) · chillax 600 · tracking -0.03em · leading 1
+  @768px          1 line(s) · 36px
+  @390px          1 line(s) · 28px
+  typefaces       chillax 100%
+  sizes in use    14 / 16 / 19 / 22 / 26 / 53 px   body 19px / 1.5
+  colour          page #ffffff · sections #ffffff #e2dfda #f3f3f1 · button #1f4ab0
+  page            9.1 screens · 997 words · 9 images · hero media 38% img
+  headings        8 · longest 2 line(s) · median 3 words
+
+FAIL — fix every one of these
+  [covered-text] @390px  Large text lies under another element at some scroll position: "The peptides inside" (screen 6, 100% hidden)
+      → Nothing may sit on top of a headline or statement. Move the picture, shorten the pinned run, or raise the text above it (z-index) and give it a ground.
+
+LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:
+  desktop 1440px  .taste-skill/after/product-kit/desktop-fold.jpg
+                  .taste-skill/after/product-kit/desktop-page-01.jpg
+                  .taste-skill/after/product-kit/desktop-page-02.jpg
+                  .taste-skill/after/product-kit/desktop-page-03.jpg
+  tablet 768px    .taste-skill/after/product-kit/tablet-fold.jpg
+                  .taste-skill/after/product-kit/tablet-page-01.jpg
+                  .taste-skill/after/product-kit/tablet-page-02.jpg
+  mobile 390px    .taste-skill/after/product-kit/mobile-fold.jpg
+                  .taste-skill/after/product-kit/mobile-page-01.jpg
+                  .taste-skill/after/product-kit/mobile-page-02.jpg
+
+report: .taste-skill/after/product-kit/report.json
+RESULT: 1 FAIL, 0 WARN — not done.

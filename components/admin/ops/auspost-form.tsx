@@ -42,9 +42,9 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
   return (
     <form action="/admin/orders/export-auspost" method="get" className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
       {/* Orders */}
-      <section className="self-start rounded-2xl border border-stone/70 bg-cream">
-        <div className="flex items-center justify-between gap-4 border-b border-stone/60 px-5 py-4">
-          <h2 className="text-sm font-semibold text-espresso">Orders ready to ship ({orders.length})</h2>
+      <section className="self-start rounded-2xl border border-surface-2 bg-white">
+        <div className="flex items-center justify-between gap-4 border-b border-surface-2 px-5 py-4">
+          <h2 className="text-sm font-semibold text-ink">Orders ready to ship ({orders.length})</h2>
           <label className="flex items-center gap-2 text-[13px] text-muted">
             <Checkbox
               checked={allChecked}
@@ -56,29 +56,29 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
         {orders.length === 0 ? (
           <p className="p-5 text-sm text-muted">No paid or packing orders right now.</p>
         ) : (
-          <ul className="max-h-[560px] divide-y divide-stone/50 overflow-y-auto">
+          <ul className="max-h-[560px] divide-y divide-surface overflow-y-auto">
             {orders.map((o) => (
               <li key={o.id}>
-                <label className="flex cursor-pointer items-center gap-4 px-5 py-3 hover:bg-ivory/50">
+                <label className="flex cursor-pointer items-center gap-4 px-5 py-3 hover:bg-surface/50">
                   <Checkbox name="id" value={o.id} checked={selected.has(o.id)} onChange={() => toggle(o.id)} />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium text-espresso">
+                    <span className="block text-sm font-medium text-ink">
                       {o.orderNumber} · {o.name}
                     </span>
-                    <span className="block text-[13px] text-taupe">
+                    <span className="block text-[13px] text-muted">
                       {o.suburb} {o.state} {o.postcode} · {o.units} {o.units === 1 ? "item" : "items"} · {o.placed}
                     </span>
                   </span>
                   <span className="flex flex-col items-end gap-1 text-[13px]">
                     <span
                       className={cn(
-                        "rounded-full px-2 py-0.5 font-semibold",
-                        o.method === "express" ? "bg-copper-light text-copper-dark" : "bg-sand text-muted",
+                        "px-2 py-0.5 font-medium",
+                        o.method === "express" ? "bg-ink text-white" : "bg-surface-2 text-muted",
                       )}
                     >
                       {o.method === "express" ? "EXP" : "PP"}
                     </span>
-                    <span className="text-taupe">{o.status === "paid" ? "Paid" : "Packing"}</span>
+                    <span className="text-muted">{o.status === "paid" ? "Paid" : "Packing"}</span>
                   </span>
                 </label>
               </li>
@@ -89,8 +89,8 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
 
       <div className="flex flex-col gap-6">
         {/* Sender */}
-        <section className="rounded-2xl border border-stone/70 bg-cream p-5">
-          <h2 className="mb-4 text-sm font-semibold text-espresso">Send from</h2>
+        <section className="rounded-2xl border border-surface-2 bg-white p-5">
+          <h2 className="mb-4 text-sm font-semibold text-ink">Send from</h2>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Name *" htmlFor="s_name" className="col-span-2 sm:col-span-1">
               <Input id="s_name" name="s_name" defaultValue={sender.name} maxLength={35} required />
@@ -135,12 +135,12 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
               <Input id="s_email" name="s_email" type="email" defaultValue={sender.email} maxLength={50} />
             </Field>
           </div>
-          <p className="mt-3 text-[13px] text-taupe">Remembered on this browser after your first export.</p>
+          <p className="mt-3 text-[13px] text-muted">Remembered on this browser after your first export.</p>
         </section>
 
         {/* Parcel */}
-        <section className="rounded-2xl border border-stone/70 bg-cream p-5">
-          <h2 className="mb-4 text-sm font-semibold text-espresso">Parcel</h2>
+        <section className="rounded-2xl border border-surface-2 bg-white p-5">
+          <h2 className="mb-4 text-sm font-semibold text-ink">Parcel</h2>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Packaging" htmlFor="packaging" className="col-span-2">
               <Select
@@ -192,7 +192,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
               <Checkbox name="signature" /> Signature on delivery
             </label>
           </div>
-          <p className="mt-3 text-[13px] text-taupe">
+          <p className="mt-3 text-[13px] text-muted">
             Standard orders export as <strong>PP</strong> (Parcel Post), express as <strong>EXP</strong> (Express Post).
           </p>
         </section>
@@ -210,7 +210,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
             <PackageCheck className="size-4" /> Mark {paidSelected} paid as packing
           </button>
         </div>
-        <p className="text-[13px] leading-relaxed text-taupe">
+        <p className="text-[13px] leading-relaxed text-muted">
           Upload the file at MyPost Business → Send a parcel → Import. Don&apos;t open it in Excel first — Excel strips
           leading zeros from phone numbers and postcodes.
         </p>

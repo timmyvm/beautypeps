@@ -1,6 +1,6 @@
 "use client";
 
-import { Landmark, Loader2, Lock, Smartphone } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { startTransition, useActionState, useState, type FormEvent, type ReactNode } from "react";
@@ -9,6 +9,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { placeOrderAction } from "@/lib/actions/checkout";
 import { AU_STATES, PAYMENT_METHODS, SHIPPING_METHOD_LABELS } from "@/lib/constants";
 import type { Address, PaymentMethod, ShippingMethod } from "@/lib/db/schema";
+import { specimenSrc } from "@/components/product/product-card";
 import { formatMoney } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -70,14 +71,14 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
   const useNew = addressId === "new";
 
   return (
-    <form onSubmit={onSubmit} onChange={onFieldChange} noValidate className="grid gap-10 lg:grid-cols-[1fr_420px] lg:gap-14">
-      <div className="space-y-10">
+    <form onSubmit={onSubmit} onChange={onFieldChange} noValidate className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+      <div className="space-y-14 lg:col-span-7">
         <FormMessage state={state} />
 
-        <Section step={1} title="Contact">
+        <Section id="contact" title="Contact">
           {user ? (
-            <div className="rounded-xl bg-ivory px-4 py-3 text-sm text-cocoa">
-              Signed in as <span className="font-medium text-espresso">{user.email}</span>
+            <div className="bg-surface px-4 py-3 text-body">
+              Signed in as <span className="font-medium">{user.email}</span>
               <input type="hidden" name="email" value={user.email} />
             </div>
           ) : (
@@ -85,9 +86,9 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
               <Field label="Email address" htmlFor="email" error={e.email} hint="We'll send your order confirmation and payment details here.">
                 <Input id="email" name="email" type="email" autoComplete="email" required aria-invalid={!!e.email} />
               </Field>
-              <p className="mt-3 text-sm text-cocoa">
+              <p className="mt-3 text-body">
                 Already have an account?{" "}
-                <Link href="/login?next=/checkout" className="font-medium text-copper-dark underline underline-offset-4">
+                <Link href="/login?next=/checkout" className="font-medium underline underline-offset-4">
                   Sign in
                 </Link>{" "}
                 for faster checkout and order tracking.
@@ -96,7 +97,7 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
           )}
         </Section>
 
-        <Section step={2} title="Shipping address">
+        <Section id="address" title="Shipping address">
           {addresses.length > 0 && (
             <fieldset className="mb-6">
               <legend className="sr-only">Choose a saved address</legend>
@@ -109,11 +110,11 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
                     checked={addressId === a.id}
                     onChange={() => setAddressId(a.id)}
                   >
-                    <span className="block text-sm font-medium text-espresso">
+                    <span className="block text-body font-medium">
                       {a.label}
-                      {a.isDefault && <span className="ml-2 text-[10px] tracking-wider text-copper-dark uppercase">Default</span>}
+                      {a.isDefault && <span className="font-normal text-muted"> (default)</span>}
                     </span>
-                    <span className="mt-1 block text-xs leading-relaxed text-cocoa">
+                    <span className="mt-1 block text-small">
                       {a.firstName} {a.lastName}
                       <br />
                       {a.line1}
@@ -124,11 +125,11 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
                   </RadioCard>
                 ))}
                 <RadioCard name="addressId" value="new" checked={useNew} onChange={() => setAddressId("new")}>
-                  <span className="block text-sm font-medium text-espresso">Use a new address</span>
-                  <span className="mt-1 block text-xs text-cocoa">Ship somewhere else this time</span>
+                  <span className="block text-body font-medium">Use a new address</span>
+                  <span className="mt-1 block text-small">Ship somewhere else this time</span>
                 </RadioCard>
               </div>
-              {e.addressId && <p className="mt-2 text-xs text-danger">{e.addressId}</p>}
+              {e.addressId && <p className="mt-2 text-small text-danger">{e.addressId}</p>}
             </fieldset>
           )}
 
@@ -181,9 +182,9 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
               <Field label="Phone (for delivery updates)" htmlFor="phone" error={e.phone} className="sm:col-span-2">
                 <Input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={user?.phone ?? ""} aria-invalid={!!e.phone} />
               </Field>
-              <p className="text-xs text-taupe sm:col-span-2">We currently ship within Australia only.</p>
+              <p className="text-small text-muted sm:col-span-2">We ship within Australia only.</p>
               {user && (
-                <label className="flex items-center gap-2.5 text-sm text-cocoa sm:col-span-2">
+                <label className="flex items-center gap-2.5 text-body sm:col-span-2">
                   <Checkbox name="saveAddress" defaultChecked={addresses.length === 0} />
                   Save this address to my account
                 </label>
@@ -192,7 +193,7 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
           )}
         </Section>
 
-        <Section step={3} title="Delivery">
+        <Section id="delivery" title="Delivery">
           <fieldset>
             <legend className="sr-only">Shipping method</legend>
             <div className="grid gap-3">
@@ -200,12 +201,12 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
                 <RadioCard key={m} name="shippingMethod" value={m} checked={shipping === m} onChange={() => setShipping(m)}>
                   <span className="flex items-center justify-between gap-4">
                     <span>
-                      <span className="block text-sm font-medium text-espresso">{SHIPPING_METHOD_LABELS[m]}</span>
-                      <span className="mt-0.5 block text-xs text-cocoa">
+                      <span className="block text-body font-medium">{SHIPPING_METHOD_LABELS[m]}</span>
+                      <span className="mt-0.5 block text-small">
                         {m === "standard" ? "2–6 business days after dispatch" : "1–3 business days after dispatch"}
                       </span>
                     </span>
-                    <span className="text-sm font-medium whitespace-nowrap text-espresso">
+                    <span className="tabular text-body font-medium whitespace-nowrap">
                       {totals[m].shippingTotal === 0 ? "Free" : formatMoney(totals[m].shippingTotal)}
                     </span>
                   </span>
@@ -215,90 +216,80 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
           </fieldset>
         </Section>
 
-        <Section step={4} title="Payment">
+        <Section id="payment" title="Payment">
           <fieldset>
             <legend className="sr-only">Payment method</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {(Object.keys(PAYMENT_METHODS) as PaymentMethod[]).map((m) => (
                 <RadioCard key={m} name="paymentMethod" value={m} checked={payment === m} onChange={() => setPayment(m)}>
-                  <span className="flex items-start gap-3">
-                    <span className="mt-0.5 text-copper">
-                      {m === "payid" ? <Smartphone className="size-5" aria-hidden /> : <Landmark className="size-5" aria-hidden />}
-                    </span>
-                    <span>
-                      <span className="block text-sm font-medium text-espresso">{PAYMENT_METHODS[m].label}</span>
-                      <span className="mt-0.5 block text-xs leading-relaxed text-cocoa">{PAYMENT_METHODS[m].description}</span>
-                    </span>
-                  </span>
+                  <span className="block text-body font-medium">{PAYMENT_METHODS[m].label}</span>
+                  <span className="mt-0.5 block text-small">{PAYMENT_METHODS[m].description}</span>
                 </RadioCard>
               ))}
             </div>
           </fieldset>
-          <p className="mt-4 rounded-xl bg-ivory px-4 py-3 text-xs leading-relaxed text-cocoa">
+          <p className="mt-4 bg-field-frost px-4 py-3 text-body">
             You&apos;ll see our {payment === "payid" ? "PayID" : "bank account"} details on the next page and in your
             confirmation email. Your items are reserved while payment clears — we dispatch as soon as it lands.
           </p>
         </Section>
 
-        <Section step={5} title="Anything else?">
+        <Section id="note" title="Anything else?">
           <Field label="Order note (optional)" htmlFor="customerNote" hint="Delivery instructions, gift notes, etc.">
             <Textarea id="customerNote" name="customerNote" rows={3} maxLength={500} />
           </Field>
         </Section>
 
         <div>
-          <label className="flex items-start gap-3 text-sm leading-relaxed text-cocoa">
+          <label className="flex items-start gap-3 text-body">
             <Checkbox name="terms" required className="mt-1" aria-invalid={!!e.terms} />
             <span>
               I agree to the{" "}
-              <Link href="/policies/terms" target="_blank" className="text-copper-dark underline underline-offset-2">
+              <Link href="/policies/terms" target="_blank" className="underline underline-offset-2">
                 Terms of Sale
               </Link>{" "}
               and understand these are cosmetic products for external use only.
             </span>
           </label>
-          {e.terms && <p className="mt-1.5 text-xs text-danger">{e.terms}</p>}
+          {e.terms && <p className="mt-1.5 text-small text-danger">{e.terms}</p>}
 
           <button
             type="submit"
             disabled={pending}
-            className={buttonClasses({ size: "lg", className: "mt-6 h-14 w-full text-base" })}
+            className={buttonClasses({ size: "lg", className: "mt-6 w-full" })}
           >
-            {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Lock className="size-4" aria-hidden />}
+            {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
             {pending ? "Placing order…" : `Place order · ${formatMoney(t.total)}`}
           </button>
-          <p className="mt-3 text-center text-xs text-taupe">No card details needed — you&apos;ll pay by bank transfer or PayID.</p>
+          <p className="mt-3 text-small">No card details needed: you pay by bank transfer or PayID.</p>
         </div>
       </div>
 
-      <aside className="order-first h-fit rounded-2xl border border-stone/70 bg-cream p-6 lg:sticky lg:top-28 lg:order-none">
+      <aside className="order-first h-fit bg-surface p-6 md:p-8 lg:sticky lg:top-8 lg:order-none lg:col-span-4 lg:col-start-9">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-2xl text-espresso">Summary</h2>
-          <Link href="/cart" className="text-xs text-cocoa underline underline-offset-4 hover:text-espresso">
+          <h2 className="text-lead font-medium">Summary</h2>
+          <Link href="/cart" className="text-small underline underline-offset-4">
             Edit bag
           </Link>
         </div>
         <ul className="mt-5 space-y-4">
           {lines.map((l) => (
             <li key={l.id} className="flex items-center gap-4">
-              <div className="relative">
-                <div className="relative size-16 overflow-hidden rounded-xl bg-ivory">
-                  <Image src={l.image} alt="" fill sizes="64px" className="object-cover" />
-                </div>
-                <span className="absolute -top-1.5 -right-1.5 grid min-w-5 place-items-center rounded-full bg-espresso px-1 text-[10px] leading-5 font-semibold text-cream">
-                  {l.quantity}
-                </span>
+              <div className="relative size-16 shrink-0 overflow-hidden bg-white">
+                <Image src={specimenSrc(l.image) ?? l.image} alt="" fill sizes="64px" className={specimenSrc(l.image) ? "object-contain" : "object-cover"} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-espresso">{l.name}</p>
-                {l.size && <p className="text-xs text-taupe">{l.size}</p>}
+                <p className="text-body font-medium">{l.name}</p>
+                <p className="text-small text-muted">
+                  {l.size ? `${l.size}, ` : ""}quantity {l.quantity}
+                </p>
               </div>
-              <p className="text-sm text-espresso">{formatMoney(l.lineTotal)}</p>
+              <p className="tabular text-body">{formatMoney(l.lineTotal)}</p>
             </li>
           ))}
         </ul>
-        <dl className="mt-6 space-y-3 border-t border-stone/60 pt-5 text-sm" aria-live="polite">
-          <div className="flex justify-between text-cocoa">
+        <dl className="tabular mt-8 space-y-1 text-body" aria-live="polite">
+          <div className="flex justify-between">
             <dt>Subtotal</dt>
             <dd>{formatMoney(t.subtotal)}</dd>
           </div>
@@ -309,32 +300,29 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
             </div>
           )}
           {discountCode && discountInvalid && (
-            <p className="rounded-lg bg-amber-light px-3 py-2 text-xs text-amber">
+            <p className="bg-amber-light px-3 py-2 text-small text-amber">
               Code {discountCode} not applied: {discountInvalid}
             </p>
           )}
-          <div className="flex justify-between text-cocoa">
+          <div className="flex justify-between">
             <dt>{shipping === "express" ? "Express shipping" : "Standard shipping"}</dt>
             <dd>{t.shippingTotal === 0 ? "Free" : formatMoney(t.shippingTotal)}</dd>
           </div>
-          <div className="flex justify-between border-t border-stone/60 pt-4 text-base font-semibold text-espresso">
+          <div className="mt-3 flex justify-between bg-surface-2 px-3 py-3 font-medium">
             <dt>Total</dt>
-            <dd>{formatMoney(t.total)} <span className="text-xs font-normal text-taupe">AUD</span></dd>
+            <dd>{formatMoney(t.total)} AUD</dd>
           </div>
-          <p className="text-right text-xs text-taupe">Includes {formatMoney(t.gstTotal)} GST</p>
+          <p className="pt-1 text-small text-muted">Includes {formatMoney(t.gstTotal)} GST</p>
         </dl>
       </aside>
     </form>
   );
 }
 
-function Section({ step, title, children }: { step: number; title: string; children: ReactNode }) {
+function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
-    <section aria-labelledby={`checkout-step-${step}`}>
-      <h2 id={`checkout-step-${step}`} className="mb-5 flex items-center gap-3 font-display text-2xl text-espresso">
-        <span className="grid size-7 place-items-center rounded-full bg-espresso font-sans text-xs font-semibold text-cream">
-          {step}
-        </span>
+    <section aria-labelledby={`checkout-${id}`}>
+      <h2 id={`checkout-${id}`} className="mb-5 text-lead font-medium">
         {title}
       </h2>
       {children}
@@ -358,11 +346,11 @@ function RadioCard({
   return (
     <label
       className={cn(
-        "relative flex cursor-pointer gap-3 rounded-xl border bg-cream p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-copper/40",
-        checked ? "border-copper bg-copper-light/15" : "border-stone hover:border-taupe",
+        "relative flex cursor-pointer gap-3 p-4 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+        checked ? "bg-accent-soft" : "bg-surface hover:bg-surface-2",
       )}
     >
-      <input type="radio" name={name} value={value} checked={checked} onChange={onChange} className="mt-1 accent-copper" />
+      <input type="radio" name={name} value={value} checked={checked} onChange={onChange} className="mt-1.5 accent-accent" />
       <span className="min-w-0 flex-1">{children}</span>
     </label>
   );

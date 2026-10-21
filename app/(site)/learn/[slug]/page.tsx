@@ -1,16 +1,18 @@
-import { ArrowRight, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/info/breadcrumbs";
 import { JsonLd, siteUrl } from "@/components/info/json-ld";
+import { reveal } from "@/components/info/page-header";
 import { ArticleBody, extractToc } from "@/components/learn/article-body";
 import { ArticleCard, ArticleMeta } from "@/components/learn/article-card";
 import { ShareButton } from "@/components/learn/share-button";
+import { ProductCard } from "@/components/product/product-card";
 import { NewsletterForm } from "@/components/site/newsletter-form";
-import { ButtonLink } from "@/components/ui/button";
-import { getArticleBySlug, getRelatedArticles } from "@/lib/queries/content";
+import { splitTitle } from "@/lib/content/titles";
+import { getArticleBySlug, getProductsForArticle, getRelatedArticles } from "@/lib/queries/content";
+import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
 
@@ -39,8 +41,10 @@ export default async function ArticlePage({ params }: { params: Params }) {
   const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
-  const [related, toc] = [await getRelatedArticles(article, 3), extractToc(article.body)];
+  const [related, products] = await Promise.all([getRelatedArticles(article, 3), getProductsForArticle(article, 4)]);
+  const toc = extractToc(article.body);
   const published = article.publishedAt ?? article.createdAt;
+  const t = splitTitle(article.title);
 
   return (
     <article>
@@ -63,38 +67,42 @@ export default async function ArticlePage({ params }: { params: Params }) {
         }}
       />
 
-      <header className="container-bp pt-8">
-        <Breadcrumbs
-          items={[{ href: "/", label: "Home" }, { href: "/learn", label: "Journal" }, { label: article.title }]}
-        />
-        <div className="mx-auto mt-12 max-w-3xl text-center">
-          <ArticleMeta article={article} className="justify-center" />
-          <h1 className="mt-5 font-display text-4xl leading-[1.08] text-espresso md:text-6xl">{article.title}</h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-cocoa">{article.excerpt}</p>
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <p className="text-sm text-cocoa">
-              By <span className="font-medium text-espresso">{article.author}</span>
-            </p>
+      <header className="container-bp pt-8 lg:pt-10">
+        <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/learn", label: "Journal" }, { label: t.head }]} />
+        <div className="mt-8 max-w-5xl lg:mt-12">
+          <h1
+            className={cn(
+              "display-type text-ink sm:text-head",
+              t.head.length > 38 ? "text-lead" : "text-[8.4vw]",
+            )}
+          >
+            {t.head}
+          </h1>
+          <p className="mt-6 max-w-[48ch] text-lead text-ink">{t.deck ?? article.excerpt}</p>
+          <div className="mt-6 flex flex-wrap items-baseline gap-x-8 gap-y-3">
+            <ArticleMeta article={article} className="text-body" />
+            <p className="text-body">By {article.author}</p>
             <ShareButton title={article.title} />
           </div>
         </div>
         {article.coverImage && (
-          <div className="relative mx-auto mt-12 aspect-[3/2] max-w-5xl overflow-hidden rounded-2xl bg-sand md:aspect-[2/1]">
-            <Image src={article.coverImage} alt="" fill priority sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" />
+          <div className="shutter relative mt-10 aspect-[3/2] w-full overflow-hidden bg-surface sm:aspect-[2/1] lg:mt-14 lg:aspect-[21/9]">
+            <Image src={article.coverImage} alt="" fill priority sizes="100vw" className="object-cover" />
           </div>
         )}
       </header>
 
-      <div className="container-bp mt-14 grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)_220px]">
-        {/* Table of contents */}
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+      <div className="container-bp mt-16 grid gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        <div className="lg:col-span-3">
           {toc.length > 1 && (
-            <nav aria-label="Table of contents" className="rounded-2xl border border-stone/70 bg-ivory/60 p-5 lg:border-0 lg:bg-transparent lg:p-0">
-              <p className="eyebrow mb-3">In this guide</p>
-              <ol className="space-y-2.5 border-l border-stone pl-4">
+            <nav aria-labelledby="toc-title" className="bg-surface p-6 lg:bg-transparent lg:p-0">
+              <h2 id="toc-title" className="text-lead font-medium">
+                In this guide
+              </h2>
+              <ol className="mt-4 list-decimal space-y-2 pl-6 text-body marker:text-muted">
                 {toc.map((item) => (
-                  <li key={item.id}>
-                    <a href={`#${item.id}`} className="block text-sm leading-snug text-cocoa hover:text-copper-dark">
+                  <li key={item.id} className="pl-1">
+                    <a href={`#${item.id}`} className="link-quiet">
                       {item.title}
                     </a>
                   </li>
@@ -102,76 +110,72 @@ export default async function ArticlePage({ params }: { params: Params }) {
               </ol>
             </nav>
           )}
-        </aside>
-
-        <div className="min-w-0">
-          <ArticleBody className="mx-auto max-w-[68ch]">{article.body}</ArticleBody>
-
-          <div className="mx-auto mt-12 max-w-[68ch] rounded-2xl border border-stone/70 bg-ivory p-6 text-sm leading-relaxed text-cocoa">
-            <p>
-              <strong className="text-espresso">A note on evidence.</strong> We cite published research wherever we
-              can and grade every peptide in our{" "}
-              <Link href="/peptides" className="text-copper-dark underline underline-offset-4">
-                Peptide Library
-              </Link>
-              . This article is general information about cosmetic ingredients, not medical advice.
-            </p>
-          </div>
         </div>
 
-        <aside className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
-          <div className="rounded-2xl bg-espresso p-6 text-cream">
-            <Sparkles className="size-5 text-copper-light" aria-hidden />
-            <p className="mt-3 font-display text-xl leading-snug">Shop the routine</p>
-            <p className="mt-2 text-sm text-cream/70">Find the peptides that match your concerns in under a minute.</p>
-            <ButtonLink href="/routine-builder" variant="copper" size="sm" className="mt-5 w-full">
-              Build my routine
-            </ButtonLink>
-            <Link
-              href="/shop"
-              className="mt-2 inline-flex h-9 w-full items-center justify-center rounded-full text-xs font-medium tracking-wide text-cream transition-colors hover:bg-cream/10"
-            >
-              Browse the shop
+        <div className="min-w-0 lg:col-span-7 lg:col-start-5">
+          {!t.deck ? null : <p className="mb-10 max-w-[60ch] text-lead">{article.excerpt}</p>}
+          <ArticleBody>{article.body}</ArticleBody>
+          <p className="mt-14 max-w-[64ch] bg-surface p-6 text-body sm:p-8">
+            A note on evidence: we cite published research wherever we can and grade every peptide in our{" "}
+            <Link href="/peptides" className="underline underline-offset-4">
+              peptide library
             </Link>
-          </div>
-        </aside>
+            . This article is general information about cosmetic ingredients, not medical advice.
+          </p>
+        </div>
       </div>
 
-      {/* Mobile CTA */}
-      <section className="container-bp mt-12 lg:hidden">
-        <div className="flex flex-col gap-4 rounded-2xl bg-espresso p-6 text-cream sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-display text-xl">Shop the routine</p>
-            <p className="mt-1 text-sm text-cream/70">Match peptides to your concerns in under a minute.</p>
+      {products.length > 0 && (
+        <section aria-labelledby="formulas-title" className="container-bp mt-28 lg:mt-44">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="formulas-title" className="display-type text-head" {...reveal(0)}>
+              The formulas in this guide
+            </h2>
+            <Link href="/routine-builder" className="text-body underline underline-offset-4">
+              Build a routine around them
+            </Link>
           </div>
-          <ButtonLink href="/routine-builder" variant="copper" size="sm">
-            Build my routine <ArrowRight className="size-3.5" />
-          </ButtonLink>
-        </div>
-      </section>
+          <div className="mt-12 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-10 lg:grid-cols-4">
+            {products.map((p, i) => (
+              <div key={p.id} {...reveal(i)}>
+                <ProductCard product={p} index={i} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
-      <section className="container-bp mt-16">
-        <div className="grid gap-8 rounded-2xl border border-stone/70 bg-ivory p-8 md:grid-cols-[1.2fr_1fr] md:items-center md:p-10">
-          <div>
-            <p className="eyebrow mb-2">The Peptide Letter</p>
-            <h2 className="font-display text-2xl text-espresso md:text-3xl">Enjoyed this? Get the next one first.</h2>
-            <p className="mt-2 text-sm text-cocoa">New guides and research breakdowns, twice a month.</p>
+      <section aria-labelledby="letter-title" className="mt-28 bg-field-frost py-20 lg:mt-44 lg:py-28">
+        <div className="container-bp grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-6">
+            <h2 id="letter-title" className="display-type text-head" {...reveal(0)}>
+              Get the next one first
+            </h2>
+            <p className="mt-6 max-w-[44ch] text-body" {...reveal(1)}>
+              The Peptide Letter: new guides and research breakdowns, twice a month.
+            </p>
           </div>
-          <NewsletterForm source="journal" tone="light" />
+          <div className="lg:col-span-5 lg:col-start-8">
+            <NewsletterForm source="journal" tone="light" />
+          </div>
         </div>
       </section>
 
       {related.length > 0 && (
-        <section className="container-bp mt-20">
-          <div className="mb-10 flex items-end justify-between">
-            <h2 className="font-display text-3xl text-espresso">Keep reading</h2>
-            <Link href="/learn" className="text-sm text-copper-dark underline underline-offset-4">
-              All articles
+        <section aria-labelledby="more-title" className="container-bp mt-28 lg:mt-44">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 id="more-title" className="display-type text-head" {...reveal(0)}>
+              Keep reading
+            </h2>
+            <Link href="/learn" className="text-body underline underline-offset-4">
+              Every guide
             </Link>
           </div>
-          <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((a) => (
-              <ArticleCard key={a.id} article={a} />
+          <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((a, i) => (
+              <div key={a.id} {...reveal(i)}>
+                <ArticleCard article={a} />
+              </div>
             ))}
           </div>
         </section>

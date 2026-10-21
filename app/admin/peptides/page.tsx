@@ -51,21 +51,21 @@ export default async function AdminPeptidesPage({ searchParams }: { searchParams
             {rows.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <Link href={`/admin/peptides/${p.id}`} className="font-medium text-espresso hover:text-copper-dark">
+                  <Link href={`/admin/peptides/${p.id}`} className="font-medium text-ink hover:underline">
                     {p.name}
                   </Link>
-                  <p className="text-[13px] text-taupe">{p.inciName}</p>
+                  <p className="text-[13px] text-muted">{p.inciName}</p>
                 </td>
                 <td className="text-muted">{PEPTIDE_CLASSES[p.peptideClass]?.label ?? p.peptideClass}</td>
                 <td>
                   <EvidenceDots level={p.evidenceLevel} />
                 </td>
                 <td className="text-right tabular-nums">
-                  {p.productCount > 0 ? p.productCount : <span className="text-taupe">0</span>}
+                  {p.productCount > 0 ? p.productCount : <span className="text-muted">0</span>}
                 </td>
-                <td>{p.published ? <Badge tone="sage">Published</Badge> : <Badge tone="amber">Hidden</Badge>}</td>
+                <td>{p.published ? <span className="text-muted">Published</span> : <Badge tone="amber">Hidden</Badge>}</td>
                 <td className="text-right">
-                  <Link href={`/admin/peptides/${p.id}`} className="text-[13px] font-medium text-copper-dark hover:underline">
+                  <Link href={`/admin/peptides/${p.id}`} className="text-[13px] font-medium text-ink hover:underline">
                     Edit
                   </Link>
                 </td>

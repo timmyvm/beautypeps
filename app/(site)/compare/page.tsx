@@ -1,25 +1,28 @@
-import { ArrowRight, Check, Clock, Info, Split } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { PageHero } from "@/components/info/page-hero";
+import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-header";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
-import { CLASS_TONES, classShortLabel } from "@/components/peptides/peptide-card";
-import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/misc";
+import { classShortLabel, SpecimenThumb } from "@/components/peptides/peptide-entry";
 import { concernLabel } from "@/lib/constants";
 import { PAIRINGS, PEPTIDE_USAGE } from "@/lib/content/compare";
-import { getPublishedPeptides } from "@/lib/queries/content";
+import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Compare peptides — side-by-side evidence chart",
+  title: "Compare peptides side by side",
   description:
-    "Compare GHK-Cu, Matrixyl, Argireline, SNAP-8, Leuphasyl and more side by side: what each is best for, typical concentration, evidence level, pH, when to use it and what to pair it with.",
+    "Compare GHK-Cu, Matrixyl, Argireline, SNAP-8, Leuphasyl and more side by side: what each is best for, typical concentration, evidence grade, pH, when to use it and what to pair it with.",
 };
 
+const VERDICT = {
+  great: { label: "Good together", className: "text-ink" },
+  ok: { label: "Alternate them", className: "text-ink" },
+  separate: { label: "Keep apart", className: "text-danger" },
+} as const;
+
 export default async function ComparePage() {
-  const peptides = await getPublishedPeptides();
+  const [peptides, specimens] = await Promise.all([getPublishedPeptides(), getPeptideSpecimens()]);
   const rows = peptides.map((p) => {
     const meta = PEPTIDE_USAGE[p.slug];
     return {
@@ -32,181 +35,223 @@ export default async function ComparePage() {
 
   return (
     <>
-      <PageHero
-        eyebrow="Compare"
+      <PageHeader
+        crumbs={[{ href: "/", label: "Home" }, { href: "/peptides", label: "Peptide library" }, { label: "Compare" }]}
         title="Every peptide, side by side"
-        description="What each peptide is best for, the concentrations used in research, how strong the evidence is, and how to fit it into your routine. Tap any name for the full monograph."
+        lead="What each one is for, the concentration studies use, how strong the evidence is, and where it fits in a routine."
+        figure={
+          <Figure ratio="aspect-[4/3]">
+            <Image
+              src="/images/editorial/lab.webp"
+              alt="A formulation bench with beakers, a scale and amber vials in morning light"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </Figure>
+        }
       />
 
-      <section className="container-bp py-14">
+      <section aria-labelledby="chart-title" className="container-bp mt-20 lg:mt-32">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 id="chart-title" className="display-type text-head" {...reveal(0)}>
+            The chart
+          </h2>
+          <p className="max-w-[48ch] text-body text-muted">Choose a name for the full monograph.</p>
+        </div>
+
         {rows.length === 0 ? (
-          <EmptyState title="Comparison coming soon" description="Peptide monographs are being published." />
+          <p className="mt-10 bg-surface px-6 py-14 text-lead">The chart fills in as monographs are published.</p>
         ) : (
           <>
-            {/* Desktop table — header sticks below the site header while scrolling */}
-            <div className="hidden rounded-2xl border border-stone/70 bg-cream xl:block">
-              <table className="w-full border-separate border-spacing-0 text-left text-[13px]">
-                <thead className="text-[11px] tracking-wider text-cocoa uppercase">
-                  <tr className="[&>th]:sticky [&>th]:top-20 [&>th]:z-10 [&>th]:border-b [&>th]:border-stone [&>th]:bg-ivory [&>th]:px-4 [&>th]:py-4 [&>th]:font-semibold">
-                    <th scope="col" className="rounded-tl-2xl !pl-5">Peptide</th>
-                    <th scope="col">Class</th>
+            <div className="mt-10 hidden xl:block">
+              <table className="w-full border-separate border-spacing-0 text-left text-body">
+                <thead>
+                  <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-surface [&>th]:px-4 [&>th]:py-4 [&>th]:font-medium">
+                    <th scope="col">Peptide</th>
                     <th scope="col">Best for</th>
-                    <th scope="col">Typical % · pH</th>
+                    <th scope="col">Typical use</th>
                     <th scope="col">Evidence</th>
-                    <th scope="col">When · results in</th>
-                    <th scope="col" className="rounded-tr-2xl">Pairs well with</th>
+                    <th scope="col">When</th>
+                    <th scope="col">Pairs well with</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((p, i) => (
                     <tr
                       key={p.id}
-                      className={cn(
-                        "align-top hover:bg-ivory/40 [&>*]:px-4 [&>*]:py-4",
-                        i < rows.length - 1 && "[&>*]:border-b [&>*]:border-stone/50",
-                      )}
+                      data-reveal="row"
+                      style={{ ["--reveal-i" as string]: Math.min(i, 8) }}
+                      className="align-top [&>*]:border-b [&>*]:border-surface-2 [&>*]:px-4 [&>*]:py-5"
                     >
-                      <th scope="row" className="w-[210px] !pl-5 font-normal">
-                        <Link href={`/peptides/${p.slug}`} className="group">
-                          <span className="block font-display text-lg leading-tight text-espresso group-hover:text-copper-dark">
-                            {p.name}
+                      <th scope="row" className="w-[300px] font-normal">
+                        <Link href={`/peptides/${p.slug}`} className="group flex items-start gap-4">
+                          <SpecimenThumb specimen={specimens[p.slug]} className="size-16 shrink-0" sizes="64px" />
+                          <span>
+                            <span className="block text-lead font-medium group-hover:underline group-hover:underline-offset-4">
+                              {p.name}
+                            </span>
+                            <span className="block text-small text-muted">
+                              {p.inciName}, {classShortLabel(p.peptideClass).toLowerCase()}
+                            </span>
                           </span>
-                          <span className="mt-0.5 block text-xs text-taupe">{p.inciName}</span>
                         </Link>
                       </th>
-                      <td>
-                        <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"}>{classShortLabel(p.peptideClass)}</Badge>
-                      </td>
-                      <td className="min-w-[150px] text-cocoa">{p.bestFor}</td>
-                      <td className="min-w-[150px]">
-                        <span className="block text-espresso">{p.typicalConcentration ?? "—"}</span>
-                        <span className="mt-1 block text-xs text-taupe">pH {p.phRange ?? "—"}</span>
+                      <td className="min-w-[170px]">{p.bestFor}</td>
+                      <td className="min-w-[170px]">
+                        {p.typicalConcentration ?? "Not published"}
+                        {p.phRange && <span className="block text-small text-muted">pH {p.phRange}</span>}
                       </td>
                       <td className="whitespace-nowrap">
                         <EvidenceMeter level={p.evidenceLevel} />
                       </td>
                       <td className="whitespace-nowrap">
-                        <span className="block text-espresso">{p.when}</span>
-                        <span className="mt-1 block text-xs text-taupe">{p.onset}</span>
+                        {p.when}
+                        <span className="block text-small text-muted">Results in {p.onset}</span>
                       </td>
-                      <td className="min-w-[180px] text-cocoa">{p.pairsWith.slice(0, 3).join(", ") || "—"}</td>
+                      <td className="min-w-[200px]">{p.pairsWith.slice(0, 3).join(", ") || "Most routines"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            {/* Mobile cards */}
-            <ul className="grid gap-4 md:grid-cols-2 xl:hidden">
-              {rows.map((p) => (
-                <li key={p.id} className="rounded-2xl border border-stone/70 bg-cream p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <Link href={`/peptides/${p.slug}`}>
-                      <span className="block font-display text-xl text-espresso">{p.name}</span>
-                      <span className="mt-0.5 block text-xs text-taupe">{p.inciName}</span>
-                    </Link>
-                    <Badge tone={CLASS_TONES[p.peptideClass] ?? "neutral"} className="shrink-0">{classShortLabel(p.peptideClass)}</Badge>
-                  </div>
-                  <p className="mt-3 text-sm text-cocoa">{p.bestFor}</p>
-                  <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-stone/60 pt-4 text-sm">
-                    <MobileFact label="Typical %" value={p.typicalConcentration ?? "—"} />
-                    <MobileFact label="pH" value={p.phRange ?? "—"} />
-                    <MobileFact label="When" value={p.when} />
-                    <MobileFact label="Results in" value={p.onset} />
-                    <div className="col-span-2">
-                      <dt className="text-xs text-taupe">Evidence</dt>
+            <ol className="mt-10 xl:hidden">
+              {rows.map((p, i) => (
+                <li
+                  key={p.id}
+                  data-reveal="row"
+                  style={{ ["--reveal-i" as string]: Math.min(i, 8) }}
+                  className={cn("px-4 py-6 sm:px-6", i % 2 === 0 ? "bg-surface" : "bg-bg")}
+                >
+                  <Link href={`/peptides/${p.slug}`} className="group flex items-start gap-4">
+                    <SpecimenThumb specimen={specimens[p.slug]} className="size-16 shrink-0" sizes="64px" />
+                    <span>
+                      <span className="block text-lead font-medium group-hover:underline group-hover:underline-offset-4">
+                        {p.name}
+                      </span>
+                      <span className="block text-small text-muted">
+                        {p.inciName}, {classShortLabel(p.peptideClass).toLowerCase()}
+                      </span>
+                    </span>
+                  </Link>
+                  <p className="mt-4 text-body">{p.bestFor}</p>
+                  <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-4 text-body md:grid-cols-4">
+                    <Fact label="Typical use" value={p.typicalConcentration ?? "Not published"} />
+                    <Fact label="pH" value={p.phRange ?? "Not published"} />
+                    <Fact label="When" value={p.when} />
+                    <Fact label="Results in" value={p.onset} />
+                    <div className="col-span-2 md:col-span-4">
+                      <dt className="text-small text-muted">Evidence</dt>
                       <dd className="mt-1">
                         <EvidenceMeter level={p.evidenceLevel} />
                       </dd>
                     </div>
                     {p.pairsWith.length > 0 && (
-                      <MobileFact label="Pairs well with" value={p.pairsWith.slice(0, 3).join(", ")} className="col-span-2" />
+                      <Fact label="Pairs well with" value={p.pairsWith.slice(0, 3).join(", ")} className="col-span-2 md:col-span-4" />
                     )}
                   </dl>
                 </li>
               ))}
-            </ul>
+            </ol>
 
-            <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-taupe">
-              <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-              Typical concentrations are those used in published or manufacturer studies. &ldquo;Results in&rdquo; is
-              the time frame in which studies typically measured visible change — individual results vary.
+            <p className="mt-6 max-w-[72ch] text-body text-muted">
+              Typical concentrations are those used in published or manufacturer studies. Results in is the time
+              frame in which studies measured visible change; yours will vary.
             </p>
           </>
         )}
       </section>
 
-      {/* Pairings */}
-      <section className="border-t border-stone/60 bg-ivory/50 py-16 md:py-20">
-        <div className="container-bp">
-          <p className="eyebrow mb-3">Layering</p>
-          <h2 className="font-display text-3xl text-espresso md:text-4xl">Common pairings — and one to keep apart</h2>
-          <p className="mt-4 max-w-2xl text-cocoa">
-            Peptides are among the easiest actives to combine. Stack different mechanisms for a broader effect, and
-            mind a few chemistry rules.
+      <section aria-labelledby="pairings-title" className="container-bp mt-28 lg:mt-44">
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <h2 id="pairings-title" className="display-type text-head lg:col-span-6" {...reveal(0)}>
+            Pairings, and one to keep apart
+          </h2>
+          <p className="max-w-[52ch] text-body lg:col-span-5 lg:col-start-8 lg:self-end" {...reveal(1)}>
+            Peptides are among the easiest actives to combine. Stack different mechanisms for a broader effect and mind
+            a few rules of chemistry.
           </p>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {PAIRINGS.map((pair) => (
-              <div
+        </div>
+        <ul className="mt-12">
+          {PAIRINGS.map((pair, i) => {
+            const v = VERDICT[pair.verdict];
+            return (
+              <li
                 key={pair.title}
+                data-reveal="row"
+                style={{ ["--reveal-i" as string]: i }}
                 className={cn(
-                  "flex flex-col rounded-2xl border bg-cream p-6",
-                  pair.verdict === "separate" ? "border-danger/30" : "border-stone/70",
+                  "grid gap-3 px-4 py-7 sm:px-6 lg:grid-cols-12 lg:gap-[var(--gutter)]",
+                  pair.verdict === "separate" ? "bg-danger-light" : i % 2 === 0 ? "bg-surface" : "bg-bg",
                 )}
               >
-                <div className="flex items-center gap-2">
-                  {pair.verdict === "separate" ? (
-                    <Badge tone="danger">
-                      <Split className="size-3" aria-hidden /> Use separately
-                    </Badge>
-                  ) : pair.verdict === "ok" ? (
-                    <Badge tone="amber">
-                      <Clock className="size-3" aria-hidden /> Alternate
-                    </Badge>
-                  ) : (
-                    <Badge tone="sage">
-                      <Check className="size-3" aria-hidden /> Great together
-                    </Badge>
-                  )}
+                <div className="lg:col-span-4">
+                  <h3 className="text-lead font-medium">{pair.title}</h3>
+                  <p className="mt-1 text-body">
+                    {pair.peptides.map((p, j) => (
+                      <span key={p.label}>
+                        {j > 0 && " + "}
+                        {p.slug ? (
+                          <Link href={`/peptides/${p.slug}`} className="underline underline-offset-4">
+                            {p.label}
+                          </Link>
+                        ) : (
+                          p.label
+                        )}
+                      </span>
+                    ))}
+                  </p>
                 </div>
-                <h3 className="mt-4 font-display text-xl text-espresso">{pair.title}</h3>
-                <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
-                  {pair.peptides.map((p, i) => (
-                    <span key={p.label} className="flex items-center gap-1.5">
-                      {i > 0 && <span className="text-taupe">+</span>}
-                      {p.slug ? (
-                        <Link href={`/peptides/${p.slug}`} className="font-medium text-copper-dark hover:underline">
-                          {p.label}
-                        </Link>
-                      ) : (
-                        <span className="font-medium text-espresso">{p.label}</span>
-                      )}
-                    </span>
-                  ))}
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-cocoa">{pair.text}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-12 flex flex-wrap gap-3">
-            <ButtonLink href="/routine-builder">
-              Build my routine <ArrowRight className="size-4" />
-            </ButtonLink>
-            <ButtonLink href="/learn/how-to-layer-peptides" variant="outline">
-              Read the layering guide
-            </ButtonLink>
-          </div>
+                <p className={cn("text-body font-medium lg:col-span-2", v.className)}>{v.label}</p>
+                <p className="max-w-[60ch] text-body lg:col-span-6">{pair.text}</p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section aria-labelledby="routine-title" className="container-bp mt-28 lg:mt-44">
+        <h2 id="routine-title" className="display-type text-head" {...reveal(0)}>
+          Put it into a routine
+        </h2>
+        <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-12 md:grid-cols-3">
+          <PictureLink
+            href="/routine-builder"
+            src="/images/articles/beginner-peptide-routine.webp"
+            alt="Three peptide serums and a vase on a travertine tray in a bathroom"
+            title="Build a routine"
+            text="Four questions about your skin, and the formulas that answer them."
+            index={1}
+          />
+          <PictureLink
+            href="/learn/how-to-layer-peptides"
+            src="/images/articles/how-to-layer-peptides.webp"
+            alt="Four serums in frosted bottles above swatches of each texture on stone"
+            title="The layering guide"
+            text="Peptides with retinol, vitamin C, acids and niacinamide, step by step."
+            index={2}
+          />
+          <PictureLink
+            href="/science"
+            src="/images/editorial/science.webp"
+            alt="A model of a peptide chain in copper and blue beads beside a single droplet"
+            title="Why they work"
+            text="The biology behind each class of peptide, in plain English."
+            index={3}
+          />
         </div>
       </section>
     </>
   );
 }
 
-function MobileFact({ label, value, className }: { label: string; value: string; className?: string }) {
+function Fact({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
     <div className={className}>
-      <dt className="text-xs text-taupe">{label}</dt>
-      <dd className="mt-0.5 text-espresso">{value}</dd>
+      <dt className="text-small text-muted">{label}</dt>
+      <dd className="mt-1">{value}</dd>
     </div>
   );
 }

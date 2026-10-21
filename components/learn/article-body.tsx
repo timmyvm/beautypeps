@@ -43,12 +43,12 @@ function textOf(node: ReactNode): string {
 
 export function ArticleBody({ children, className }: { children: string; className?: string }) {
   return (
-    <div className={cn("prose-bp prose-lg", className)}>
+    <div className={cn("prose-bp", className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           h2: ({ children: c }) => (
-            <h2 id={slugify(textOf(c))} className="scroll-mt-28">
+            <h2 id={slugify(textOf(c))} className="scroll-mt-8">
               {c}
             </h2>
           ),

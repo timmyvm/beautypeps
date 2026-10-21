@@ -46,26 +46,26 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
       {rows.length === 0 ? (
         <EmptyState title={status === "archived" ? "Nothing archived" : "Inbox zero"} description="New contact form messages will show up here." />
       ) : (
-        <ul className="divide-y divide-stone/50 overflow-hidden rounded-2xl border border-stone/70 bg-cream">
+        <ul className="divide-y divide-surface overflow-hidden rounded-2xl border border-surface-2 bg-white">
           {rows.map((m) => (
             <li key={m.id}>
-              <Link href={`/admin/messages/${m.id}`} className="flex gap-4 px-5 py-4 hover:bg-ivory/50">
+              <Link href={`/admin/messages/${m.id}`} className="flex gap-4 px-5 py-4 hover:bg-surface/50">
                 <span
-                  className={cn("mt-2 size-2 shrink-0 rounded-full", m.status === "new" ? "bg-copper" : "bg-transparent")}
+                  className={cn("mt-2 size-2 shrink-0 rounded-full", m.status === "new" ? "bg-accent" : "bg-transparent")}
                   aria-label={m.status === "new" ? "Unread" : undefined}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-baseline justify-between gap-x-4">
-                    <span className={cn("truncate text-sm", m.status === "new" ? "font-semibold text-espresso" : "text-espresso")}>
-                      {m.name} <span className="font-normal text-taupe">· {m.email}</span>
+                    <span className={cn("truncate text-sm", m.status === "new" ? "font-semibold text-ink" : "text-ink")}>
+                      {m.name} <span className="font-normal text-muted">· {m.email}</span>
                     </span>
-                    <span className="shrink-0 text-[13px] text-taupe">{formatDateTime(m.createdAt)}</span>
+                    <span className="shrink-0 text-[13px] text-muted">{formatDateTime(m.createdAt)}</span>
                   </span>
-                  <span className={cn("mt-0.5 block truncate text-sm", m.status === "new" ? "font-medium text-espresso" : "text-muted")}>
+                  <span className={cn("mt-0.5 block truncate text-sm", m.status === "new" ? "font-medium text-ink" : "text-muted")}>
                     {m.subject}
-                    {m.orderNumber && <span className="ml-2 font-mono text-[13px] text-copper-dark">{m.orderNumber}</span>}
+                    {m.orderNumber && <span className="ml-2 text-[13px] text-ink">{m.orderNumber}</span>}
                   </span>
-                  <span className="mt-0.5 block truncate text-[13px] text-taupe">{m.message}</span>
+                  <span className="mt-0.5 block truncate text-[13px] text-muted">{m.message}</span>
                 </span>
               </Link>
             </li>

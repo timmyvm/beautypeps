@@ -36,7 +36,7 @@ export default async function EditPeptidePage({ params, searchParams }: Props) {
         title={
           <span className="flex flex-wrap items-center gap-3">
             {peptide.name}
-            {peptide.published ? <Badge tone="sage">Published</Badge> : <Badge tone="amber">Hidden</Badge>}
+            {peptide.published ? <Badge tone="neutral">Published</Badge> : <Badge tone="amber">Hidden</Badge>}
           </span>
         }
         description={
@@ -49,7 +49,7 @@ export default async function EditPeptidePage({ params, searchParams }: Props) {
                 {usedBy.map((p, i) => (
                   <span key={p.id}>
                     {i > 0 && ", "}
-                    <Link href={`/admin/products/${p.id}`} className="underline underline-offset-2 hover:text-espresso">
+                    <Link href={`/admin/products/${p.id}`} className="underline underline-offset-2 hover:text-ink">
                       {p.name}
                     </Link>
                   </span>

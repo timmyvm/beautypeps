@@ -1,6 +1,6 @@
 import { CONCERNS } from "@/lib/constants";
 
-/* Pure recommendation logic for the routine builder — no React, easy to test. */
+/* Pure recommendation logic for the routine builder: no React, easy to test. */
 
 export type BuilderProduct = {
   id: string;
@@ -129,7 +129,7 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
     pmSerum = serumA;
   }
 
-  const am: RoutineStep[] = [{ step: "Cleanse", generic: "A gentle, low-foam cleanser — or just water in the morning." }];
+  const am: RoutineStep[] = [{ step: "Cleanse", generic: "A gentle, low-foam cleanser, or just water in the morning." }];
   if (amSerum) am.push({ step: "Peptide serum", product: amSerum, note: "2–3 drops on damp skin; press in." });
   if (eye) am.push({ step: "Eye", product: eye, note: "Tap a rice-grain amount around the orbital bone." });
   am.push({
@@ -174,7 +174,7 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
   if (a.experience === "advanced") {
     notes.push("Using a retinoid? Alternate nights with your PM serum at first, or keep peptides in the morning.");
   }
-  notes.push("Give it 8–12 weeks of consistent use — that's the time frame most peptide studies measure.");
+  notes.push("Give it 8–12 weeks of consistent use: that's the time frame most peptide studies measure.");
 
   const introOrder = [...products].sort((x, y) => (matched[y.id]?.length ?? 0) - (matched[x.id]?.length ?? 0));
 
@@ -184,4 +184,16 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
     .sort((x, y) => y.s - x.s)[0]?.k;
 
   return { am, pm, products, matched, notes, introOrder, kit };
+}
+
+/** The formulas that answer the concerns chosen so far, for the live preview beside the questions. */
+export function previewMatches(all: BuilderProduct[], a: Answers, limit = 4): BuilderProduct[] {
+  const pool = all.filter((p) => p.stock > 0 && p.categorySlug !== "pure-actives" && p.categorySlug !== "kits");
+  if (a.concerns.length === 0) return pool.filter((p) => p.featured).concat(pool.filter((p) => !p.featured)).slice(0, limit);
+  return pool
+    .map((p) => ({ p, s: scoreProduct(p, a) }))
+    .filter((x) => x.p.concerns.some((c) => a.concerns.includes(c)))
+    .sort((x, y) => y.s - x.s)
+    .slice(0, limit)
+    .map((x) => x.p);
 }

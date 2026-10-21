@@ -29,7 +29,7 @@ export default async function AdminEmailPage({ params }: Props) {
       <Panel className="mb-6">
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
           <dt className="text-muted">To</dt>
-          <dd className="text-espresso">{email.to}</dd>
+          <dd className="text-ink">{email.to}</dd>
           <dt className="text-muted">Status</dt>
           <dd>
             <Badge tone={tone} className="capitalize">
@@ -37,7 +37,7 @@ export default async function AdminEmailPage({ params }: Props) {
             </Badge>
           </dd>
           <dt className="text-muted">Created</dt>
-          <dd className="text-espresso">{formatDateTime(email.createdAt)}</dd>
+          <dd className="text-ink">{formatDateTime(email.createdAt)}</dd>
           {email.error && (
             <>
               <dt className="text-muted">Error</dt>
@@ -48,7 +48,7 @@ export default async function AdminEmailPage({ params }: Props) {
       </Panel>
       <Panel title="Preview" bodyClassName="p-0">
         {/* Sandboxed: no scripts, no same-origin access. */}
-        <iframe title={`Preview of ${email.subject}`} srcDoc={email.html} sandbox="" className="h-[720px] w-full rounded-b-2xl bg-ivory" />
+        <iframe title={`Preview of ${email.subject}`} srcDoc={email.html} sandbox="" className="h-[720px] w-full rounded-b-2xl bg-surface" />
       </Panel>
     </>
   );

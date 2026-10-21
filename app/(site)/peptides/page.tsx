@@ -1,21 +1,21 @@
-import { ArrowRight, BookOpen, FlaskConical, Scale } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { PageHero } from "@/components/info/page-hero";
+import type { ReactNode } from "react";
+import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-header";
 import { ClassDiagram } from "@/components/peptides/class-diagram";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
-import { PeptideCard } from "@/components/peptides/peptide-card";
-import { ButtonLink } from "@/components/ui/button";
-import { EmptyState, SectionHeading } from "@/components/ui/misc";
+import { LoopVideo } from "@/components/site/loop-video";
+import { classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
 import { CONCERNS, concernLabel, PEPTIDE_CLASSES } from "@/lib/constants";
 import { EVIDENCE_LEVELS } from "@/lib/content/evidence";
-import { getPublishedPeptides } from "@/lib/queries/content";
+import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Peptide Library",
   description:
-    "An open, evidence-graded reference to every cosmetic peptide we formulate with — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more. Mechanisms, research, concentrations and how to use them.",
+    "An open, evidence-graded reference to every cosmetic peptide we formulate with: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more. Mechanisms, research, concentrations and how to use them.",
 };
 
 type SearchParams = Promise<{ class?: string; concern?: string }>;
@@ -25,7 +25,7 @@ export default async function PeptideLibraryPage({ searchParams }: { searchParam
   const activeClass = classParam && PEPTIDE_CLASSES[classParam] ? classParam : undefined;
   const activeConcern = CONCERNS.some((c) => c.slug === concern) ? concern : undefined;
 
-  const all = await getPublishedPeptides();
+  const [all, specimens] = await Promise.all([getPublishedPeptides(), getPeptideSpecimens()]);
   const peptides = all.filter(
     (p) => (!activeClass || p.peptideClass === activeClass) && (!activeConcern || p.concerns.includes(activeConcern)),
   );
@@ -42,193 +42,242 @@ export default async function PeptideLibraryPage({ searchParams }: { searchParam
     return s ? `/peptides?${s}#library` : "/peptides#library";
   };
 
+  const listTitle = [
+    activeClass ? `${classShortLabel(activeClass)} peptides` : activeConcern ? "Peptides" : `All ${all.length} peptides`,
+    activeConcern ? `for ${concernLabel(activeConcern).toLowerCase()}` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <>
-      <PageHero
-        eyebrow="The Peptide Library"
-        title={
-          <>
-            An open reference to every peptide we <em className="text-copper-dark">formulate with</em>
-          </>
+      <PageHeader
+        crumbs={[{ href: "/", label: "Home" }, { label: "Peptide library" }]}
+        title="The peptide library"
+        lead={`A field guide to the ${all.length} peptides we formulate with: what each one does, how sure the science is, and where to find it.`}
+        figureClassName="hidden lg:block"
+        figure={
+          <Figure ratio="aspect-[4/3]">
+            <Image
+              src="/images/editorial/actives.webp"
+              alt="A row of amber vials of freeze-dried peptide powder on a travertine bench beside a scale"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </Figure>
         }
-        description="Plain-English monographs on each cosmetic peptide: what it is, how it's thought to work, what the published research actually shows, and how to use it well. Every entry is graded for strength of evidence — including the limits of that evidence."
-      >
-        <div className="mt-10 grid max-w-3xl gap-4 sm:grid-cols-3">
-          {[
-            { icon: FlaskConical, label: `${all.length} peptides`, text: "Monographs with mechanisms & sequences" },
-            { icon: Scale, label: "Evidence-graded", text: "From lab-only to clinical trials" },
-            { icon: BookOpen, label: "Fully referenced", text: "Links to the original studies" },
-          ].map((s) => (
-            <div key={s.label} className="flex items-start gap-3 rounded-2xl border border-stone/70 bg-cream p-4">
-              <s.icon className="mt-0.5 size-5 shrink-0 text-copper" aria-hidden />
-              <div>
-                <p className="text-sm font-medium text-espresso">{s.label}</p>
-                <p className="text-xs text-cocoa">{s.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </PageHero>
+      />
 
-      {/* The four classes */}
-      <section className="container-bp py-16 md:py-20">
-        <SectionHeading
-          eyebrow="Start here"
-          title="Four ways a peptide can talk to your skin"
-          description="Cosmetic peptides are usually grouped by what they do once they reach the skin. Tap a class to filter the library."
-          action={
-            <ButtonLink href="/science" variant="outline" size="sm">
-              Read the full science <ArrowRight className="size-3.5" />
-            </ButtonLink>
-          }
-        />
-        <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
-          {Object.entries(PEPTIDE_CLASSES).map(([key, c]) => (
-            <Link
-              key={key}
-              href={href({ class: activeClass === key ? undefined : key, concern: activeConcern })}
-              aria-current={activeClass === key ? "true" : undefined}
-              className={cn(
-                "group flex w-[80%] shrink-0 snap-start flex-col rounded-2xl border p-5 transition-colors sm:w-auto",
-                activeClass === key
-                  ? "border-copper bg-copper-light/30"
-                  : "border-stone/70 bg-cream hover:border-copper/40",
-              )}
-            >
-              <div className="rounded-xl bg-ivory p-2">
-                <ClassDiagram type={key} />
-              </div>
-              <p className="mt-4 font-display text-lg text-espresso">{c.label}</p>
-              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-cocoa">{c.description}</p>
-              <p className="mt-4 text-xs font-medium text-copper-dark">
-                {classCounts[key] ?? 0} in the library {activeClass === key ? "· showing" : "→"}
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Library grid */}
-      <section id="library" className="scroll-mt-24 border-t border-stone/60 bg-ivory/50 py-16 md:py-20">
-        <div className="container-bp">
-          <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="eyebrow mb-3">Monographs</p>
-              <h2 className="font-display text-3xl text-espresso md:text-4xl">
-                {activeClass ? PEPTIDE_CLASSES[activeClass].label + "s" : "All peptides"}
-                {activeConcern ? ` for ${concernLabel(activeConcern).toLowerCase()}` : ""}
-              </h2>
-              <p className="mt-2 text-sm text-cocoa">
-                Showing {peptides.length} of {all.length}
-              </p>
-            </div>
-            {(activeClass || activeConcern) && (
-              <Link href="/peptides#library" className="text-sm text-copper-dark underline underline-offset-4">
-                Clear filters
-              </Link>
+      <section id="library" className="container-bp mt-20 scroll-mt-24 lg:mt-32" aria-labelledby="library-title">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 id="library-title" className="display-type text-head" {...reveal(0)}>
+            {listTitle}
+          </h2>
+          <p className="text-body text-muted">
+            {activeClass || activeConcern ? (
+              <>
+                {peptides.length} of {all.length}.{" "}
+                <Link href="/peptides#library" scroll={false} className="text-ink underline underline-offset-4">
+                  Show all
+                </Link>
+              </>
+            ) : (
+              "Graded from 1 to 5 for strength of evidence"
             )}
-          </div>
+          </p>
+        </div>
 
-          <div className="scrollbar-none -mx-4 mb-10 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
-            <FilterChip href={href({ class: activeClass })} active={!activeConcern}>
+        <div className="mt-10 space-y-3">
+          <ChipRow label="What it does">
+            <Chip href={href({ concern: activeConcern })} active={!activeClass}>
+              Any class
+            </Chip>
+            {Object.keys(PEPTIDE_CLASSES).map((key) => (
+              <Chip
+                key={key}
+                href={href({ class: activeClass === key ? undefined : key, concern: activeConcern })}
+                active={activeClass === key}
+              >
+                {classShortLabel(key)} ({classCounts[key] ?? 0})
+              </Chip>
+            ))}
+          </ChipRow>
+          <ChipRow label="What it treats">
+            <Chip href={href({ class: activeClass })} active={!activeConcern}>
               Any concern
-            </FilterChip>
+            </Chip>
             {concernsInUse.map((c) => (
-              <FilterChip
+              <Chip
                 key={c.slug}
                 href={href({ class: activeClass, concern: activeConcern === c.slug ? undefined : c.slug })}
                 active={activeConcern === c.slug}
               >
                 {c.label}
-              </FilterChip>
+              </Chip>
             ))}
-          </div>
-
-          {peptides.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {peptides.map((p) => (
-                <PeptideCard key={p.id} peptide={p} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={<FlaskConical className="size-8" />}
-              title={all.length === 0 ? "The library is being written" : "No peptides match those filters"}
-              description={
-                all.length === 0
-                  ? "Monographs will appear here as soon as they're published."
-                  : "Try a different class or concern."
-              }
-              action={
-                all.length > 0 ? (
-                  <ButtonLink href="/peptides#library" variant="outline" size="sm">
-                    Show all peptides
-                  </ButtonLink>
-                ) : undefined
-              }
-            />
-          )}
+          </ChipRow>
         </div>
+
+        {peptides.length > 0 ? (
+          <ol className="-mx-3 mt-10 sm:-mx-4">
+            {peptides.map((p, i) => (
+              <PeptideEntry key={p.id} peptide={p} specimen={specimens[p.slug]} index={i} />
+            ))}
+          </ol>
+        ) : (
+          <div className="mt-10 bg-surface px-6 py-14 sm:px-10">
+            <p className="text-lead text-ink">
+              {all.length === 0 ? "The library is being written." : "No peptide in the library matches both of those."}
+            </p>
+            {all.length > 0 && (
+              <Link href="/peptides#library" scroll={false} className="mt-3 inline-block text-body underline underline-offset-4">
+                Show all {all.length} peptides
+              </Link>
+            )}
+          </div>
+        )}
       </section>
 
-      {/* How to read a monograph */}
-      <section className="container-bp py-16 md:py-24">
-        <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
-          <div>
-            <p className="eyebrow mb-3">How to read a monograph</p>
-            <h2 className="font-display text-3xl leading-tight text-espresso md:text-4xl">
-              Not all evidence is created equal
+      <section className="container-bp mt-28 lg:mt-48" aria-labelledby="classes-title">
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <h2 id="classes-title" className="display-type text-head lg:col-span-6" {...reveal(0)}>
+            Four ways a peptide works
+          </h2>
+          <p className="max-w-[52ch] text-body lg:col-span-5 lg:col-start-8 lg:self-end" {...reveal(1)}>
+            Cosmetic peptides are grouped by what they do once they reach the skin. The blue beads in each drawing
+            are the peptide. Choose a class to narrow the library to it.
+          </p>
+        </div>
+        <ul className="mt-14 grid gap-x-[var(--gutter)] gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+          {Object.entries(PEPTIDE_CLASSES).map(([key, c], i) => (
+            <li key={key} {...reveal(i)}>
+              <Link href={href({ class: key })} scroll={false} className="group block">
+                <div className={cn("p-5", activeClass === key && "bg-accent-soft")}>
+                  <ClassDiagram type={key} />
+                </div>
+                <h3 className="mt-4 text-lead font-medium group-hover:underline group-hover:underline-offset-4">
+                  {classShortLabel(key)} peptides
+                </h3>
+                <p className="mt-1 text-body">{c.description}</p>
+                <p className="mt-2 text-small text-muted">
+                  {classCounts[key] === 1 ? "1 peptide" : `${classCounts[key] ?? 0} peptides`} in the library
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="container-bp mt-28 lg:mt-48" aria-labelledby="grades-title">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-5">
+            <h2 id="grades-title" className="display-type text-head" {...reveal(0)}>
+              How we grade evidence
             </h2>
-            <p className="mt-5 leading-relaxed text-cocoa">
-              Most cosmetic peptides are studied first by the companies that make them. That research is useful, but
-              it isn&apos;t the same as independent, placebo-controlled clinical trials. So every monograph carries an
-              evidence grade from 1 to 5, based on the best published data we could find — and we tell you when the
-              data is thin.
-            </p>
-            <p className="mt-4 leading-relaxed text-cocoa">
-              Grades describe the <strong className="text-espresso">quality of the research</strong>, not how much we
-              like an ingredient. A level-3 peptide can still be a great addition to your routine; it just means
-              expectations should be realistic.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/compare">
-                Compare all peptides <ArrowRight className="size-4" />
-              </ButtonLink>
-              <ButtonLink href="/glossary" variant="outline">
-                Glossary of terms
-              </ButtonLink>
+            <div className="mt-8 max-w-[48ch] space-y-4 text-body" {...reveal(1)}>
+              <p>
+                Most cosmetic peptides are studied first by the companies that make them. That research is useful,
+                but it is not the same as independent, placebo-controlled trials, so every monograph carries a grade
+                from 1 to 5 based on the best published data we could find.
+              </p>
+              <p>
+                A grade describes the research, not how much we like an ingredient. A grade 3 peptide can still earn
+                its place in a routine; it means expectations should be modest.
+              </p>
             </div>
+            <Figure
+              ratio="aspect-[4/3]"
+              className="mt-12 hidden lg:block"
+              caption="GHK-Cu, blue from its copper, is one of two peptides in the library graded 4."
+            >
+              <LoopVideo
+                src="/video/copper-drop.mp4"
+                poster="/video/copper-drop-poster.webp"
+                label="Drops of blue copper peptide serum falling onto a brushed copper plate"
+              />
+            </Figure>
           </div>
-          <ol className="divide-y divide-stone/60 rounded-2xl border border-stone/70 bg-cream">
+          <ol className="lg:col-span-6 lg:col-start-7">
             {Object.entries(EVIDENCE_LEVELS)
               .reverse()
-              .map(([level, e]) => (
-                <li key={level} className="flex flex-col gap-2 p-5 sm:flex-row sm:items-start sm:gap-6">
-                  <div className="w-40 shrink-0">
+              .map(([level, e], i) => (
+                <li key={level} data-reveal="row" style={{ ["--reveal-i" as string]: i }} className="py-6 first:pt-0">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <EvidenceMeter level={Number(level)} size="lg" showLabel={false} />
-                    <p className="mt-2 text-sm font-semibold text-espresso">
-                      Level {level} · {e.label}
-                    </p>
+                    <h3 className="text-lead font-medium">
+                      Grade {level}, {e.label.toLowerCase()}
+                    </h3>
                   </div>
-                  <p className="text-sm leading-relaxed text-cocoa">{e.description}</p>
+                  <p className="mt-2 max-w-[56ch] text-body">{e.description}</p>
                 </li>
               ))}
           </ol>
+        </div>
+      </section>
+
+      <section className="container-bp mt-28 lg:mt-48" aria-labelledby="further-title">
+        <h2 id="further-title" className="display-type text-head" {...reveal(0)}>
+          Read further
+        </h2>
+        <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-12 md:grid-cols-12 md:items-end">
+          <PictureLink
+            href="/science"
+            src="/images/editorial/science.webp"
+            alt="A model of a peptide chain in copper and blue beads beside a single droplet"
+            title="The science of peptides"
+            text="What a peptide is, how one gets through the skin, and why size matters."
+            className="md:col-span-6"
+            sizes="(min-width: 768px) 50vw, 100vw"
+            index={1}
+          />
+          <PictureLink
+            href="/compare"
+            src="/images/articles/how-to-layer-peptides.webp"
+            alt="Four serums in frosted bottles above swatches of each texture on stone"
+            title="Compare them side by side"
+            text="Every peptide in one table: class, grade, concentration and what to pair it with."
+            ratio="aspect-[4/5]"
+            className="md:col-span-3"
+            sizes="(min-width: 768px) 25vw, 100vw"
+            index={2}
+          />
+          <PictureLink
+            href="/routine-builder"
+            src="/images/articles/beginner-peptide-routine.webp"
+            alt="Three peptide serums and a vase on a travertine tray in a bathroom"
+            title="Build a routine"
+            text="Four questions about your skin, and the formulas that answer them."
+            ratio="aspect-[4/5]"
+            className="md:col-span-3"
+            sizes="(min-width: 768px) 25vw, 100vw"
+            index={3}
+          />
         </div>
       </section>
     </>
   );
 }
 
-function FilterChip({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+function ChipRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-full text-body text-muted sm:w-36 sm:shrink-0">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function Chip({ href, active, children }: { href: string; active: boolean; children: ReactNode }) {
   return (
     <Link
       href={href}
       scroll={false}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "shrink-0 rounded-full border px-4 py-2 text-xs font-medium whitespace-nowrap transition-colors",
-        active ? "border-espresso bg-espresso text-cream" : "border-stone bg-cream text-cocoa hover:border-taupe",
+        "press inline-flex h-11 items-center px-4 text-body whitespace-nowrap",
+        active ? "bg-ink text-white" : "bg-surface text-ink hover:bg-surface-2",
       )}
     >
       {children}
