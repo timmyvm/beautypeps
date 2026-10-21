@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Panel } from "@/components/admin/ui";
+import { Panel, SheetGrid } from "@/components/admin/ui";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { savePeptideAction } from "@/lib/actions/admin/peptides";
 import { CONCERNS, PEPTIDE_CLASSES } from "@/lib/constants";
@@ -30,8 +30,9 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
       }}
     >
       <input type="hidden" name="id" value={peptide?.id ?? ""} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="space-y-6">
+      <SheetGrid
+        main={
+          <>
           <Panel title="Identity">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Common name" htmlFor="name" error={e.name} hint="e.g. GHK-Cu, Argireline">
@@ -82,11 +83,10 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
               <Field label="Key benefits" htmlFor="benefits" error={e.benefits} hint="One per line.">
                 <Textarea id="benefits" name="benefits" defaultValue={(peptide?.benefits ?? []).join("\n")} rows={5} />
               </Field>
-            </div>
-          </Panel>
-
-          <Panel title="Monograph">
-            <div className="space-y-6">
+              </>
+        }
+        rail={
+          <>
               <MarkdownEditor name="mechanism" label="How it works (mechanism)" defaultValue={peptide?.mechanism} error={e.mechanism} rows={10} />
               <MarkdownEditor name="evidence" label="What the evidence says" defaultValue={peptide?.evidence} error={e.evidence} rows={10} />
               <MarkdownEditor name="usage" label="How to use it" defaultValue={peptide?.usage} error={e.usage} rows={8} />
@@ -198,8 +198,9 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
               error={e.concerns}
             />
           </Panel>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SaveBar state={state} pending={pending} label={peptide ? "Save peptide" : "Create peptide"} />
     </form>

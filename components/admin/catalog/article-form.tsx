@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { Panel } from "@/components/admin/ui";
+import { Panel, SheetGrid } from "@/components/admin/ui";
 import { Field, Input, Select } from "@/components/ui/form";
 import { saveArticleAction } from "@/lib/actions/admin/articles";
 import { ARTICLE_CATEGORIES } from "@/lib/constants";
@@ -41,8 +41,9 @@ export function ArticleForm({ article }: { article: Article | null }) {
       }}
     >
       <input type="hidden" name="id" value={article?.id ?? ""} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="space-y-6">
+      <SheetGrid
+        main={
+          <>
           <Panel title="Article">
             <div className="space-y-4">
               <Field label="Title" htmlFor="title" error={e.title}>
@@ -102,9 +103,10 @@ export function ArticleForm({ article }: { article: Article | null }) {
               hint="Leave blank to use the excerpt."
             />
           </Panel>
-        </div>
-
-        <div className="space-y-6">
+          </>
+        }
+        rail={
+          <>
           <Panel title="Publishing">
             <div className="space-y-4">
               <Toggle
@@ -158,8 +160,9 @@ export function ArticleForm({ article }: { article: Article | null }) {
           <Panel title="Cover image">
             <ImageField name="coverImage" folder="articles" label="Cover" defaultValue={article?.coverImage} error={e.coverImage} aspect="aspect-[3/2]" hint="3:2 landscape works best." />
           </Panel>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SaveBar state={state} pending={pending} label={article ? "Save article" : "Create article"} />
     </form>

@@ -79,6 +79,26 @@ export function Panel({
   );
 }
 
+/**
+ * An editor or record as one sheet: a main column and a rail, divided by a hairline. Panels placed in
+ * either column lose their own frame and are divided by rules instead, so a short rail beside a long
+ * form reads as the margin of one document rather than a card that stopped early.
+ */
+export function SheetGrid({ main, rail, railWidth = "340px" }: { main: ReactNode; rail: ReactNode; railWidth?: string }) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 border border-surface-2 bg-white lg:grid-cols-[minmax(0,1fr)_var(--rail)] lg:divide-x lg:divide-surface-2",
+        "[&>div>section]:border-x-0 [&>div>section]:border-t-0 [&>div>section:last-child]:border-b-0",
+      )}
+      style={{ "--rail": railWidth } as React.CSSProperties}
+    >
+      <div className="min-w-0">{main}</div>
+      <div className="min-w-0 border-t border-surface-2 lg:border-t-0">{rail}</div>
+    </div>
+  );
+}
+
 /** A figure with its label above it. Group several in a KpiStrip rather than giving each a tile. */
 export function StatCard({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode; icon?: ReactNode }) {
   return (

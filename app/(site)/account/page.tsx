@@ -1,15 +1,16 @@
-import { ArrowRight, BookOpen, FlaskConical, Heart, MapPin, Package, Search, Wallet } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AccountHeading, Banner } from "@/components/account/bits";
-import { AddressBlock, OrderStatusBadge } from "@/components/order/order-parts";
+import { AddressBlock, OrderStatusBadge, PaymentInstructions, TrackingLink } from "@/components/order/order-parts";
 import { ButtonLink } from "@/components/ui/button";
-import { Card } from "@/components/ui/misc";
 import { requireUser } from "@/lib/auth/session";
 import { formatDate, formatMoney, pluralize } from "@/lib/format";
 import { getUserAddresses, getUserOrders, getUserStats } from "@/lib/queries/account";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = { title: "Overview" };
+
+const DAY = 86_400_000;
 
 function greeting() {
   const hour = Number(
@@ -29,12 +30,23 @@ export default async function AccountOverviewPage({
 }) {
   const { welcome, reset } = await searchParams;
   const user = await requireUser("/account");
-  const [stats, recent, addresses] = await Promise.all([
+  const [stats, recent, addresses, settings] = await Promise.all([
     getUserStats(user.id),
-    getUserOrders(user.id, 1, 3),
+    getUserOrders(user.id, 1, 4),
     getUserAddresses(user.id),
+    getSettings(),
   ]);
   const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0];
+  const unpaid = stats.pendingPayment;
+  const onTheWay = recent.orders.find((o) => o.status === "shipped");
+  const payBy = (d: Date) => formatDate(new Date(d.getTime() + settings.paymentWindowDays * DAY), { day: "numeric", month: "long" });
+
+  // The screen's one sentence: what, if anything, is waiting on the customer, then where their parcel is.
+  const finding = unpaid.length
+    ? `${pluralize(unpaid.length, "order")} waiting for your payment.`
+    : onTheWay
+      ? `${onTheWay.orderNumber} is on its way with ${onTheWay.trackingCarrier ?? "Australia Post"}.`
+      : "Nothing needs you right now.";
 
   return (
     <div>
@@ -46,42 +58,31 @@ export default async function AccountOverviewPage({
       )}
       {reset && <Banner>Your password has been updated and other devices have been signed out.</Banner>}
 
-      <AccountHeading
-        title={`${greeting()}${user.firstName ? `, ${user.firstName}` : ""}.`}
-        description="Here's what's happening with your orders and saved details."
-      />
+      <AccountHeading title={`${greeting()}${user.firstName ? `, ${user.firstName}` : ""}`} description={finding} />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Stat icon={<Package className="size-4" />} label="Orders" value={String(stats.orderCount)} href="/account/orders" />
-        <Stat icon={<Wallet className="size-4" />} label="Total spent" value={formatMoney(stats.totalSpent)} />
-        <Stat
-          icon={<Heart className="size-4" />}
-          label="Wishlist"
-          value={String(stats.wishlistCount)}
-          href="/account/wishlist"
-        />
-      </div>
-
-      {stats.pendingPayment.length > 0 && (
-        <section className="mt-8 rounded-2xl border border-amber/30 bg-amber-light/50 p-5 sm:p-6" aria-labelledby="attention">
-          <p className="eyebrow mb-1 text-amber!">Needs your attention</p>
-          <h2 id="attention" className="text-lg font-semibold text-ink">
-            {stats.pendingPayment.length === 1
-              ? "1 order is awaiting payment"
-              : `${stats.pendingPayment.length} orders are awaiting payment`}
+      {unpaid.length === 1 && (
+        <section aria-labelledby="waiting" className="mb-6">
+          <h2 id="waiting" className="mb-3 text-[18px] font-semibold text-ink">
+            Pay for {unpaid[0].orderNumber} by {payBy(unpaid[0].createdAt)}
           </h2>
-          <ul className="mt-4 divide-y divide-amber/20">
-            {stats.pendingPayment.map((o) => (
-              <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <div className="text-sm">
+          <PaymentInstructions order={unpaid[0]} settings={settings} />
+        </section>
+      )}
+      {unpaid.length > 1 && (
+        <section aria-labelledby="waiting" className="mb-6 bg-surface p-5">
+          <h2 id="waiting" className="text-[18px] font-semibold text-ink">
+            {unpaid.length} orders to pay
+          </h2>
+          <p className="mt-1 text-[14px] text-muted">Pay each one separately, with its own order number as the reference.</p>
+          <ul className="mt-4 divide-y divide-surface-2 border-t border-surface-2">
+            {unpaid.map((o) => (
+              <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-[15px]">
+                <span>
                   <span className="font-medium text-ink">{o.orderNumber}</span>
-                  <span className="text-muted"> · placed {formatDate(o.createdAt)} · {formatMoney(o.total)}</span>
-                </div>
-                <Link
-                  href={`/account/orders/${o.orderNumber}`}
-                  className="flex items-center gap-1 text-sm font-medium text-copper-dark hover:underline"
-                >
-                  View payment details <ArrowRight className="size-3.5" aria-hidden />
+                  <span className="text-muted"> · {formatMoney(o.total)} · pay by {payBy(o.createdAt)}</span>
+                </span>
+                <Link href={`/account/orders/${o.orderNumber}`} className="text-ink underline underline-offset-4">
+                  Payment details
                 </Link>
               </li>
             ))}
@@ -89,118 +90,91 @@ export default async function AccountOverviewPage({
         </section>
       )}
 
-      <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <Card className="p-0">
-          <div className="flex items-center justify-between border-b border-surface-2 px-6 py-4">
-            <h2 className="text-lg font-semibold text-ink">Recent orders</h2>
-            {recent.total > 0 && (
-              <Link href="/account/orders" className="text-sm text-copper-dark hover:underline">
-                View all
+      {/* Recent orders and the saved address share one sheet, so the two read as one block */}
+      <div className="grid grid-cols-1 bg-surface lg:grid-cols-[minmax(0,1fr)_20rem] lg:divide-x lg:divide-white">
+        <section aria-labelledby="recent" className="min-w-0 p-5 sm:p-6">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="recent" className="text-[18px] font-semibold text-ink">
+              Recent orders
+            </h2>
+            {recent.total > recent.orders.length && (
+              <Link href="/account/orders" className="text-[14px] text-ink underline-offset-4 hover:underline">
+                All {recent.total} orders
               </Link>
             )}
           </div>
           {recent.orders.length === 0 ? (
-            <div className="px-6 py-10 text-center">
-              <p className="text-sm text-muted">You haven&apos;t placed an order yet.</p>
+            <div className="mt-4">
+              <p className="text-[15px] text-muted">You haven&apos;t placed an order yet.</p>
               <ButtonLink href="/shop" size="sm" className="mt-4">
-                Explore the collection
+                Shop serums
               </ButtonLink>
             </div>
           ) : (
-            <ul className="divide-y divide-surface">
+            <ul className="mt-3 divide-y divide-white">
               {recent.orders.map((o) => (
-                <li key={o.id}>
-                  <Link
-                    href={`/account/orders/${o.orderNumber}`}
-                    className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 transition-colors hover:bg-surface/60"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-ink">{o.orderNumber}</p>
-                      <p className="mt-0.5 text-[13px] text-muted">
-                        {formatDate(o.createdAt)} · {pluralize(o.itemCount, "item")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <OrderStatusBadge status={o.status} />
-                      <span className="text-sm font-medium text-ink">{formatMoney(o.total)}</span>
-                    </div>
-                  </Link>
+                <li key={o.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-3.5">
+                  <div className="min-w-0">
+                    <Link href={`/account/orders/${o.orderNumber}`} className="text-[15px] font-medium text-ink hover:underline">
+                      {o.orderNumber}
+                    </Link>
+                    <p className="text-[14px] text-muted">
+                      {formatDate(o.createdAt)} · {pluralize(o.itemCount, "item")} · {formatMoney(o.total)}
+                    </p>
+                    {o.status === "shipped" && o.trackingNumber && (
+                      <div className="mt-1">
+                        <TrackingLink order={o} />
+                      </div>
+                    )}
+                  </div>
+                  <OrderStatusBadge status={o.status} />
                 </li>
               ))}
             </ul>
           )}
-        </Card>
+        </section>
 
-        <div className="space-y-6">
-          <Card>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-                <MapPin className="size-4 text-copper" aria-hidden /> Default address
-              </h2>
-              <Link href="/account/addresses" className="text-[13px] text-copper-dark hover:underline">
-                Manage
-              </Link>
-            </div>
+        <section aria-labelledby="address" className="min-w-0 border-t border-white p-5 sm:p-6 lg:border-t-0">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="address" className="text-[18px] font-semibold text-ink">
+              Delivery address
+            </h2>
+            <Link href="/account/addresses" className="text-[14px] text-ink underline-offset-4 hover:underline">
+              Manage
+            </Link>
+          </div>
+          <div className="mt-3">
             {defaultAddress ? (
               <AddressBlock address={defaultAddress} />
             ) : (
-              <p className="text-sm text-muted">
+              <p className="text-[15px] text-muted">
                 No saved addresses yet.{" "}
-                <Link href="/account/addresses/new" className="text-copper-dark underline">
+                <Link href="/account/addresses/new" className="text-ink underline underline-offset-4">
                   Add one
                 </Link>{" "}
-                for faster checkout.
+                for a faster checkout.
               </p>
             )}
-          </Card>
-
-          <Card>
-            <h2 className="mb-3 text-sm font-semibold text-ink">Explore</h2>
-            <ul className="space-y-1">
-              <QuickLink href="/peptides" icon={<FlaskConical className="size-4" />} label="Peptide Library" />
-              <QuickLink href="/routine-builder" icon={<BookOpen className="size-4" />} label="Routine builder" />
-              <QuickLink href="/track" icon={<Search className="size-4" />} label="Track an order" />
-            </ul>
-          </Card>
-        </div>
+          </div>
+          <ul className="mt-6 space-y-2 border-t border-white pt-4 text-[15px]">
+            <li>
+              <Link href="/account/wishlist" className="text-ink underline-offset-4 hover:underline">
+                Wishlist →
+              </Link>
+            </li>
+            <li>
+              <Link href="/routine-builder" className="text-ink underline-offset-4 hover:underline">
+                Build a routine →
+              </Link>
+            </li>
+            <li>
+              <Link href="/peptides" className="text-ink underline-offset-4 hover:underline">
+                Peptide library →
+              </Link>
+            </li>
+          </ul>
+        </section>
       </div>
     </div>
-  );
-}
-
-function Stat({ icon, label, value, href }: { icon: React.ReactNode; label: string; value: string; href?: string }) {
-  const body = (
-    <>
-      <div className="flex items-center justify-between text-muted">
-        <span className="text-[13px] font-medium">{label}</span>
-        <span className="text-copper">{icon}</span>
-      </div>
-      <p className="mt-3 text-2xl font-semibold text-ink">{value}</p>
-    </>
-  );
-  const cls = "block rounded-2xl border border-surface-2 bg-white p-5";
-  return href ? (
-    <Link href={href} className={`${cls} transition-colors hover:border-taupe`}>
-      {body}
-    </Link>
-  ) : (
-    <div className={cls}>{body}</div>
-  );
-}
-
-function QuickLink({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
-  return (
-    <li>
-      <Link
-        href={href}
-        className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-ink"
-      >
-        <span className="flex items-center gap-2.5">
-          <span className="text-copper">{icon}</span>
-          {label}
-        </span>
-        <ArrowRight className="size-3.5" aria-hidden />
-      </Link>
-    </li>
   );
 }

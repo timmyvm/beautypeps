@@ -17,7 +17,7 @@ FAIL — fix every one of these
 WARN — fix, or be able to defend
   [no-footage] @1440px  No video anywhere on the page.
       → Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject.
-  [still-page] @1440px  Little motion: 10 element(s) moved while the page loaded and scrolled.
+  [still-page] @1440px  Little motion: 13 element(s) moved while the page loaded and scrolled.
       → Give every section an entrance for its parts (not one fade of the whole block) and add one moving picture: a looping clip or a slow move on a photograph.
 
 LOOK AT THE RENDER — open these with your image viewer / Read tool before saying anything about quality:

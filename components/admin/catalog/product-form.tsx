@@ -2,7 +2,7 @@
 
 import { Minus, Plus } from "lucide-react";
 import { startTransition, useActionState, useState, useTransition } from "react";
-import { Panel } from "@/components/admin/ui";
+import { Panel, SheetGrid } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
 import { adjustStockAction, saveProductAction } from "@/lib/actions/admin/products";
@@ -54,9 +54,9 @@ export function ProductForm({
     >
       <input type="hidden" name="id" value={product?.id ?? ""} />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        {/* ---------------- Main column ---------------- */}
-        <div className="space-y-6">
+      <SheetGrid
+        main={
+          <>
           <Panel title="Basics">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Product name" htmlFor="name" error={e.name} className="sm:col-span-2">
@@ -105,11 +105,10 @@ export function ProductForm({
               <Field label="Size" htmlFor="size" error={e.size} hint="e.g. 30 mL, 1 g">
                 <Input id="size" name="size" defaultValue={product?.size ?? ""} />
               </Field>
-            </div>
-          </Panel>
-
-          <Panel title="Media">
-            <div className="space-y-6">
+              </>
+        }
+        rail={
+          <>
               <ImageField name="image" folder="products" label="Main image" defaultValue={product?.image} error={e.image} hint="4:5 portrait works best." />
               <GalleryField name="gallery" folder="products" defaultValue={product?.gallery ?? []} error={e.gallery} />
             </div>
@@ -289,8 +288,9 @@ export function ProductForm({
               error={e.skinTypes}
             />
           </Panel>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <SaveBar state={state} pending={pending} label={product ? "Save product" : "Create product"} />
     </form>
