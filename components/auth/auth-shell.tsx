@@ -29,10 +29,10 @@ export function AuthShell({
         <div className="flex flex-col justify-center px-5 py-10 sm:px-12 lg:px-16">
           <div className="mx-auto w-full max-w-md animate-fade-up">
             <p className="eyebrow mb-3">{eyebrow}</p>
-            <h1 className="font-display text-4xl leading-tight text-espresso">{title}</h1>
-            {description && <p className="mt-3 text-sm leading-relaxed text-cocoa">{description}</p>}
+            <h1 className="text-2xl font-semibold leading-tight text-espresso">{title}</h1>
+            {description && <p className="mt-3 text-sm leading-relaxed text-muted">{description}</p>}
             <div className="mt-8">{children}</div>
-            {footer && <div className="mt-8 border-t border-stone/60 pt-6 text-sm text-cocoa">{footer}</div>}
+            {footer && <div className="mt-8 border-t border-stone/60 pt-6 text-sm text-muted">{footer}</div>}
           </div>
         </div>
 
@@ -47,10 +47,10 @@ export function AuthShell({
           />
           <div className="absolute inset-0 bg-linear-to-t from-ink/80 via-ink/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-10 xl:p-14">
-            <p className="text-[0.7rem] font-semibold tracking-[0.22em] text-copper-light uppercase">
+            <p className="text-[0.7rem] font-semibold text-copper-light">
               Your Beauty Peps account
             </p>
-            <p className="mt-3 max-w-sm font-display text-3xl leading-tight text-cream">
+            <p className="mt-3 max-w-sm text-2xl font-semibold leading-tight text-cream">
               Peptide care, tracked and tailored to you.
             </p>
             <ul className="mt-6 space-y-2.5">

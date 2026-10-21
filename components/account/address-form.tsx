@@ -77,12 +77,12 @@ export function AddressForm({ address, isFirst }: { address?: Address; isFirst?:
         <Input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={v("phone")} aria-invalid={!!e.phone} />
       </Field>
 
-      <p className="text-xs text-taupe">We currently ship within Australia only.</p>
+      <p className="text-[13px] text-taupe">We currently ship within Australia only.</p>
 
       {isFirst ? (
-        <p className="text-sm text-cocoa">This will be your default address.</p>
+        <p className="text-sm text-muted">This will be your default address.</p>
       ) : (
-        <label className="flex items-center gap-3 text-sm text-cocoa">
+        <label className="flex items-center gap-3 text-sm text-muted">
           <Checkbox
             name="isDefault"
             defaultChecked={state.values ? state.values.isDefault === "on" : !!address?.isDefault}

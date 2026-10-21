@@ -28,20 +28,20 @@ export default async function AdminEmailPage({ params }: Props) {
       <AdminPageHeader back={{ href: "/admin/emails", label: "Email log" }} title={email.subject} />
       <Panel className="mb-6">
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
-          <dt className="text-cocoa">To</dt>
+          <dt className="text-muted">To</dt>
           <dd className="text-espresso">{email.to}</dd>
-          <dt className="text-cocoa">Status</dt>
+          <dt className="text-muted">Status</dt>
           <dd>
             <Badge tone={tone} className="capitalize">
               {email.status}
             </Badge>
           </dd>
-          <dt className="text-cocoa">Created</dt>
+          <dt className="text-muted">Created</dt>
           <dd className="text-espresso">{formatDateTime(email.createdAt)}</dd>
           {email.error && (
             <>
-              <dt className="text-cocoa">Error</dt>
-              <dd className="font-mono text-xs break-all text-danger">{email.error}</dd>
+              <dt className="text-muted">Error</dt>
+              <dd className="font-mono text-[13px] break-all text-danger">{email.error}</dd>
             </>
           )}
         </dl>

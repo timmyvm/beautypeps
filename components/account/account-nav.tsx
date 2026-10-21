@@ -34,7 +34,7 @@ export function AccountNav({ isAdmin, signOut }: { isAdmin: boolean; signOut: Re
                   "flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm transition-colors",
                   isActive(item.href)
                     ? "border-espresso bg-espresso text-cream"
-                    : "border-stone bg-cream text-cocoa hover:border-taupe",
+                    : "border-stone bg-cream text-muted hover:border-taupe",
                 )}
               >
                 <item.icon className="size-3.5" aria-hidden />
@@ -67,7 +67,7 @@ export function AccountNav({ isAdmin, signOut }: { isAdmin: boolean; signOut: Re
                   "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm transition-colors",
                   isActive(item.href)
                     ? "bg-espresso text-cream"
-                    : "text-cocoa hover:bg-ivory hover:text-espresso",
+                    : "text-muted hover:bg-ivory hover:text-espresso",
                 )}
               >
                 <item.icon className="size-4" aria-hidden />

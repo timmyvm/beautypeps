@@ -40,7 +40,7 @@ export function RevenueChart({ data }: { data: Point[] }) {
     <figure>
       <div className="flex gap-3">
         {/* Y axis */}
-        <div className="relative h-56 w-12 shrink-0 text-right text-[11px] text-taupe tabular-nums" aria-hidden>
+        <div className="relative h-56 w-12 shrink-0 text-right text-[13px] text-taupe tabular-nums" aria-hidden>
           {ticks.map((t) => (
             <span key={t} className="absolute right-0 -translate-y-1/2" style={{ bottom: `${(t / max) * 100}%` }}>
               {compactDollars(t)}
@@ -82,7 +82,7 @@ export function RevenueChart({ data }: { data: Point[] }) {
                     )}
                   >
                     <span className="block text-sm font-semibold text-cream tabular-nums">{formatMoney(d.revenue)}</span>
-                    <span className="block text-[11px] text-cream/70">
+                    <span className="block text-[13px] text-cream/70">
                       {fullDayLabel.format(asDate(d.day))} · {d.orders} {d.orders === 1 ? "order" : "orders"}
                     </span>
                   </span>
@@ -96,7 +96,7 @@ export function RevenueChart({ data }: { data: Point[] }) {
       {/* X axis */}
       <div className="mt-2 flex gap-3" aria-hidden>
         <div className="w-12 shrink-0" />
-        <div className="flex flex-1 gap-[2px] text-[11px] text-taupe">
+        <div className="flex flex-1 gap-[2px] text-[13px] text-taupe">
           {data.map((d, i) => {
             // Fewer ticks on narrow screens; never crowd the right-aligned last label.
             const last = i === n - 1;
@@ -126,14 +126,14 @@ export function RevenueChart({ data }: { data: Point[] }) {
       </figcaption>
 
       <details className="mt-8 text-sm">
-        <summary className="cursor-pointer text-xs font-medium text-cocoa hover:text-espresso">View as table</summary>
+        <summary className="cursor-pointer text-[13px] font-medium text-muted hover:text-espresso">View as table</summary>
         <div className="mt-3 max-h-72 overflow-y-auto rounded-xl border border-stone/60">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-[13px]">
             <thead className="sticky top-0 bg-ivory">
               <tr>
-                <th className="px-3 py-2 font-semibold text-cocoa">Day</th>
-                <th className="px-3 py-2 text-right font-semibold text-cocoa">Paid orders</th>
-                <th className="px-3 py-2 text-right font-semibold text-cocoa">Revenue</th>
+                <th className="px-3 py-2 font-semibold text-muted">Day</th>
+                <th className="px-3 py-2 text-right font-semibold text-muted">Paid orders</th>
+                <th className="px-3 py-2 text-right font-semibold text-muted">Revenue</th>
               </tr>
             </thead>
             <tbody className="tabular-nums">
@@ -168,9 +168,9 @@ export function KpiTile({
 }) {
   const body = (
     <>
-      <p className="text-xs font-medium text-cocoa">{label}</p>
+      <p className="text-[13px] font-medium text-muted">{label}</p>
       <p className="mt-2 text-[28px] leading-tight font-semibold tracking-tight text-espresso">{value}</p>
-      {hint && <p className={cn("mt-1 text-xs", tone === "attention" ? "text-copper-dark" : "text-taupe")}>{hint}</p>}
+      {hint && <p className={cn("mt-1 text-[13px]", tone === "attention" ? "text-copper-dark" : "text-taupe")}>{hint}</p>}
     </>
   );
   const cls = "block rounded-2xl border border-stone/70 bg-cream p-5";

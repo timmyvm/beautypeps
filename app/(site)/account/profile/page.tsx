@@ -17,13 +17,13 @@ export default async function ProfilePage() {
       />
       <div className="space-y-6">
         <Card>
-          <h2 className="mb-1 font-display text-xl text-espresso">Your details</h2>
-          <p className="mb-6 text-sm text-cocoa">Used for order confirmations and delivery.</p>
+          <h2 className="mb-1 text-lg font-semibold text-espresso">Your details</h2>
+          <p className="mb-6 text-sm text-muted">Used for order confirmations and delivery.</p>
           <ProfileForm user={user} />
         </Card>
         <Card>
-          <h2 className="mb-1 font-display text-xl text-espresso">Email address</h2>
-          <p className="mb-6 text-sm text-cocoa">
+          <h2 className="mb-1 text-lg font-semibold text-espresso">Email address</h2>
+          <p className="mb-6 text-sm text-muted">
             This is where we send receipts and shipping updates, and what you use to sign in.
           </p>
           <EmailForm email={user.email} />

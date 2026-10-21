@@ -37,7 +37,7 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
         description={`${inCategory.length} product${inCategory.length === 1 ? "" : "s"} in this category`}
         actions={
           <>
-            <Link href={`/shop?category=${category.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm" })}>
+            <Link href={`/shop?category=${category.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
               <ExternalLink className="size-3.5" /> View in shop
             </Link>
             <ConfirmButton
@@ -71,7 +71,7 @@ export default async function EditCategoryPage({ params, searchParams }: Props) 
                   <Link href={`/admin/products/${p.id}`} className="truncate text-espresso hover:text-copper-dark">
                     {p.name}
                   </Link>
-                  {p.status !== "active" && <span className="text-[11px] text-taupe capitalize">{p.status}</span>}
+                  {p.status !== "active" && <span className="text-[13px] text-taupe capitalize">{p.status}</span>}
                 </li>
               ))}
             </ul>

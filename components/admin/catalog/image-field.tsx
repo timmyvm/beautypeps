@@ -89,7 +89,7 @@ export function ImageField({
           />
           <label
             className={cn(
-              "inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-xs font-medium text-espresso hover:bg-espresso/5",
+              "inline-flex w-fit cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[13px] font-medium text-espresso hover:bg-espresso/5",
               uploading && "pointer-events-none opacity-60",
             )}
           >
@@ -104,7 +104,7 @@ export function ImageField({
               onChange={onFile}
             />
           </label>
-          <p className="text-[11px] text-taupe">JPG, PNG, WebP or AVIF · max 8 MB</p>
+          <p className="text-[13px] text-taupe">JPG, PNG, WebP or AVIF · max 8 MB</p>
         </div>
       </div>
     </Field>
@@ -171,7 +171,7 @@ export function GalleryField({
               {previewable(src) ? (
                 <img src={src} alt="" className="absolute inset-0 size-full object-cover" />
               ) : (
-                <span className="absolute inset-0 grid place-items-center p-2 text-center text-[10px] break-all text-danger">
+                <span className="absolute inset-0 grid place-items-center p-2 text-center text-[13px] break-all text-danger">
                   {src}
                 </span>
               )}
@@ -193,7 +193,7 @@ export function GalleryField({
       <div className="flex flex-wrap items-center gap-2">
         <label
           className={cn(
-            "inline-flex cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-xs font-medium text-espresso hover:bg-espresso/5",
+            "inline-flex cursor-pointer items-center gap-2 rounded-full border border-espresso/25 px-4 py-2 text-[13px] font-medium text-espresso hover:bg-espresso/5",
             uploading && "pointer-events-none opacity-60",
           )}
         >

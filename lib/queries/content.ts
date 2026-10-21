@@ -110,3 +110,15 @@ export async function getRelatedArticles(article: Article, limit = 3) {
   const rest = rows.filter((a) => a.category !== article.category);
   return [...same, ...rest].slice(0, limit);
 }
+
+/** For each peptide, the first active formula that contains it (its specimen in the field guide). */
+export async function getPeptideSpecimens(): Promise<Record<string, { slug: string; name: string; image: string }>> {
+  const all = await getActiveProducts();
+  const map: Record<string, { slug: string; name: string; image: string }> = {};
+  for (const p of all) {
+    for (const s of p.peptideSlugs) {
+      if (!map[s]) map[s] = { slug: p.slug, name: p.name, image: p.image };
+    }
+  }
+  return map;
+}

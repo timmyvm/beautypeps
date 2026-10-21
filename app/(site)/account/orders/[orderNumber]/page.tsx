@@ -48,7 +48,7 @@ export default async function AccountOrderPage({ params }: Props) {
         back={{ href: "/account/orders", label: "All orders" }}
         title={
           <span className="flex flex-wrap items-center gap-3">
-            Order <span className="font-mono text-2xl tracking-wide md:text-3xl">{order.orderNumber}</span>
+            Order <span className="font-mono text-2xl md:text-3xl">{order.orderNumber}</span>
           </span>
         }
         description={`Placed ${formatDateTime(order.createdAt)}`}
@@ -57,12 +57,12 @@ export default async function AccountOrderPage({ params }: Props) {
 
       <Card className="mb-6">
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-          <p className="font-display text-xl text-espresso">{status.label}</p>
-          <p className="text-xs text-taupe">Updated {formatDate(latestDate)}</p>
+          <p className="text-lg font-semibold text-espresso">{status.label}</p>
+          <p className="text-[13px] text-taupe">Updated {formatDate(latestDate)}</p>
         </div>
         <OrderProgress status={order.status} />
         {order.status !== "cancelled" && order.status !== "refunded" && (
-          <p className="mt-5 text-sm text-cocoa">{status.description}</p>
+          <p className="mt-5 text-sm text-muted">{status.description}</p>
         )}
         {order.status === "shipped" || order.status === "delivered" ? (
           <div className="mt-3 flex items-center gap-2">
@@ -70,7 +70,7 @@ export default async function AccountOrderPage({ params }: Props) {
             {order.trackingNumber ? (
               <TrackingLink order={order} />
             ) : (
-              <span className="text-sm text-cocoa">Tracking details will appear here shortly.</span>
+              <span className="text-sm text-muted">Tracking details will appear here shortly.</span>
             )}
           </div>
         ) : null}
@@ -86,7 +86,7 @@ export default async function AccountOrderPage({ params }: Props) {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-6">
           <Card>
-            <h2 className="font-display text-xl text-espresso">Items</h2>
+            <h2 className="text-lg font-semibold text-espresso">Items</h2>
             <OrderItemsList items={order.items} />
             <div className="mt-2 border-t border-stone/60 pt-5">
               <OrderTotals order={order} />
@@ -105,8 +105,8 @@ export default async function AccountOrderPage({ params }: Props) {
 
           {reviewable.length > 0 && (
             <Card>
-              <h2 className="font-display text-xl text-espresso">How are you finding them?</h2>
-              <p className="mt-1 text-sm text-cocoa">
+              <h2 className="text-lg font-semibold text-espresso">How are you finding them?</h2>
+              <p className="mt-1 text-sm text-muted">
                 Your review helps others choose the right peptide — it takes a minute.
               </p>
               <ul className="mt-4 flex flex-wrap gap-2">
@@ -133,11 +133,11 @@ export default async function AccountOrderPage({ params }: Props) {
           <Card>
             <dl className="space-y-3 text-sm">
               <div>
-                <dt className="text-xs text-taupe">Delivery</dt>
+                <dt className="text-[13px] text-taupe">Delivery</dt>
                 <dd className="text-espresso">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</dd>
               </div>
               <div>
-                <dt className="text-xs text-taupe">Payment</dt>
+                <dt className="text-[13px] text-taupe">Payment</dt>
                 <dd className="text-espresso">
                   {PAYMENT_METHODS[order.paymentMethod].label} ·{" "}
                   {order.paymentStatus === "paid"
@@ -150,12 +150,12 @@ export default async function AccountOrderPage({ params }: Props) {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-taupe">Confirmation sent to</dt>
+                <dt className="text-[13px] text-taupe">Confirmation sent to</dt>
                 <dd className="break-all text-espresso">{order.email}</dd>
               </div>
               {order.customerNote && (
                 <div>
-                  <dt className="text-xs text-taupe">Your note</dt>
+                  <dt className="text-[13px] text-taupe">Your note</dt>
                   <dd className="text-espresso">{order.customerNote}</dd>
                 </div>
               )}

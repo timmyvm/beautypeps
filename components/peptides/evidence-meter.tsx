@@ -1,39 +1,41 @@
 import { evidenceLevel } from "@/lib/content/evidence";
 import { cn } from "@/lib/utils";
 
-/** Five-dot evidence rating with an optional label. */
+/*
+ * The evidence grade, the site's one recurring mark: five square segments, the filled ones in the accent,
+ * always paired with the grade in words.
+ */
 export function EvidenceMeter({
   level,
   showLabel = true,
   size = "sm",
+  tone = "light",
   className,
 }: {
   level: number;
   showLabel?: boolean;
   size?: "sm" | "lg";
+  tone?: "light" | "dark";
   className?: string;
 }) {
   const e = evidenceLevel(level);
   return (
-    <span
-      className={cn("inline-flex items-center gap-2", className)}
-      title={`Evidence: ${e.label} — ${e.description}`}
-      aria-label={`Evidence level ${e.level} of 5: ${e.label}`}
-    >
+    <span className={cn("inline-flex items-center gap-3", className)} aria-label={`Evidence grade ${e.level} of 5: ${e.label}`}>
       <span className="flex items-center gap-1" aria-hidden>
         {[1, 2, 3, 4, 5].map((i) => (
           <span
             key={i}
             className={cn(
-              "rounded-full",
-              size === "lg" ? "size-2.5" : "size-1.5",
-              i <= e.level ? "bg-copper" : "bg-stone",
+              size === "lg" ? "h-3 w-7" : "h-2 w-4",
+              i <= e.level ? (tone === "dark" ? "bg-white" : "bg-accent") : tone === "dark" ? "bg-white/25" : "bg-surface-2",
             )}
           />
         ))}
       </span>
       {showLabel && (
-        <span className={cn("text-cocoa", size === "lg" ? "text-sm font-medium" : "text-[11px]")}>{e.label}</span>
+        <span className="text-small" aria-hidden>
+          Grade {e.level} of 5, {e.label.toLowerCase()}
+        </span>
       )}
     </span>
   );

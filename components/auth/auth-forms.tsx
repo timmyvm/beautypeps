@@ -102,7 +102,7 @@ export function RegisterForm({ next, defaultEmail }: { next?: string; defaultEma
         />
       </Field>
       {e.email?.includes("already exists") && (
-        <p className="-mt-3 text-xs text-cocoa">
+        <p className="-mt-3 text-[13px] text-muted">
           <Link href={`/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="text-copper-dark underline">
             Sign in to your account
           </Link>{" "}
@@ -127,20 +127,20 @@ export function RegisterForm({ next, defaultEmail }: { next?: string; defaultEma
       <Field label="Confirm password" htmlFor="confirm" error={e.confirm}>
         <PasswordInput id="confirm" name="confirm" autoComplete="new-password" required aria-invalid={!!e.confirm} />
       </Field>
-      <label className="flex items-start gap-3 text-sm text-cocoa">
+      <label className="flex items-start gap-3 text-sm text-muted">
         <Checkbox name="marketing" defaultChecked={v.marketing === "on"} className="mt-0.5" />
         <span>Send me The Peptide Letter — new research, formulation notes and early access. Unsubscribe anytime.</span>
       </label>
       <SubmitButton className="w-full" size="lg" pendingText="Creating account…">
         Create account
       </SubmitButton>
-      <p className="text-center text-xs leading-relaxed text-taupe">
+      <p className="text-center text-[13px] leading-relaxed text-taupe">
         By creating an account you agree to our{" "}
-        <Link href="/policies/terms" className="underline hover:text-cocoa">
+        <Link href="/policies/terms" className="underline hover:text-muted">
           Terms of sale
         </Link>{" "}
         and{" "}
-        <Link href="/policies/privacy" className="underline hover:text-cocoa">
+        <Link href="/policies/privacy" className="underline hover:text-muted">
           Privacy policy
         </Link>
         .
@@ -157,9 +157,9 @@ export function ForgotPasswordForm({ defaultEmail }: { defaultEmail?: string }) 
     return (
       <div className="rounded-2xl border border-sage/30 bg-sage-light/60 p-6 text-center" role="status">
         <MailCheck className="mx-auto size-8 text-sage" aria-hidden />
-        <p className="mt-3 font-display text-xl text-espresso">Check your inbox</p>
-        <p className="mt-2 text-sm leading-relaxed text-cocoa">{state.message}</p>
-        <p className="mt-4 text-xs text-taupe">Don&apos;t see it? Check your spam folder or try again in a few minutes.</p>
+        <p className="mt-3 text-lg font-semibold text-espresso">Check your inbox</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{state.message}</p>
+        <p className="mt-4 text-[13px] text-taupe">Don&apos;t see it? Check your spam folder or try again in a few minutes.</p>
       </div>
     );
   }

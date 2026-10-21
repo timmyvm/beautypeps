@@ -18,26 +18,26 @@ export default async function SecurityPage() {
       />
       <div className="space-y-6">
         <Card>
-          <h2 className="mb-1 font-display text-xl text-espresso">Change password</h2>
-          <p className="mb-6 text-sm text-cocoa">
+          <h2 className="mb-1 text-lg font-semibold text-espresso">Change password</h2>
+          <p className="mb-6 text-sm text-muted">
             Changing your password signs you out on every other device.
           </p>
           <ChangePasswordForm />
         </Card>
 
         <Card>
-          <h2 className="mb-1 font-display text-xl text-espresso">Active sessions</h2>
-          <p className="mb-6 text-sm text-cocoa">
+          <h2 className="mb-1 text-lg font-semibold text-espresso">Active sessions</h2>
+          <p className="mb-6 text-sm text-muted">
             Signed in on a shared or lost device? Sign out everywhere except here.
           </p>
           <SignOutOthersForm />
         </Card>
 
         <Card className="border-danger/30">
-          <h2 className="mb-1 flex items-center gap-2 font-display text-xl text-espresso">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-espresso">
             <ShieldAlert className="size-5 text-danger" aria-hidden /> Delete account
           </h2>
-          <p className="mb-6 text-sm leading-relaxed text-cocoa">
+          <p className="mb-6 text-sm leading-relaxed text-muted">
             This permanently removes your profile, saved addresses and wishlist. Order records are kept (without a
             link to your account) as required for tax purposes. This can&apos;t be undone.
           </p>

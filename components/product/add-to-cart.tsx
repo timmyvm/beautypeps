@@ -1,7 +1,6 @@
 "use client";
 
-import { Check, Loader2, Minus, Plus } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { buttonClasses } from "@/components/ui/button";
@@ -45,11 +44,7 @@ export function QuantityStepper({
 }) {
   return (
     <div
-      className={cn(
-        "inline-flex items-center rounded-full border border-stone bg-cream",
-        size === "sm" ? "h-9" : "h-12",
-        disabled && "opacity-50",
-      )}
+      className={cn("inline-flex items-center bg-surface", size === "sm" ? "h-10" : "h-14", disabled && "opacity-50")}
       role="group"
       aria-label={label}
     >
@@ -58,11 +53,11 @@ export function QuantityStepper({
         onClick={() => onChange(Math.max(1, value - 1))}
         disabled={disabled || value <= 1}
         aria-label="Decrease quantity"
-        className={cn("grid place-items-center text-espresso disabled:opacity-30", size === "sm" ? "w-8" : "w-11")}
+        className={cn("press grid h-full place-items-center text-ink hover:bg-surface-2 disabled:opacity-30", size === "sm" ? "w-10" : "w-12")}
       >
-        <Minus className="size-3.5" aria-hidden />
+        <Minus className="size-4" aria-hidden />
       </button>
-      <span className={cn("text-center text-sm font-medium tabular-nums", size === "sm" ? "w-6" : "w-8")} aria-live="polite">
+      <span className="tabular w-8 text-center text-body font-medium" aria-live="polite">
         {value}
       </span>
       <button
@@ -70,9 +65,9 @@ export function QuantityStepper({
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={disabled || value >= max}
         aria-label="Increase quantity"
-        className={cn("grid place-items-center text-espresso disabled:opacity-30", size === "sm" ? "w-8" : "w-11")}
+        className={cn("press grid h-full place-items-center text-ink hover:bg-surface-2 disabled:opacity-30", size === "sm" ? "w-10" : "w-12")}
       >
-        <Plus className="size-3.5" aria-hidden />
+        <Plus className="size-4" aria-hidden />
       </button>
     </div>
   );
@@ -86,37 +81,25 @@ export function AddToCart({ productId, productName, price, maxQuantity }: Props)
 
   return (
     <div>
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <QuantityStepper value={qty} onChange={setQty} max={Math.max(1, maxQuantity)} disabled={soldOut || pending} />
         <button
           type="button"
           onClick={() => add(qty)}
           disabled={soldOut || pending}
-          className={buttonClasses({ size: "lg", className: "h-12 min-w-0 flex-1 px-5" })}
+          className={buttonClasses({ size: "lg", className: "min-w-0 flex-1 px-5" })}
           aria-label={soldOut ? `${productName} is sold out` : `Add ${qty} ${productName} to bag`}
         >
           {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
-          {soldOut ? (
-            "Sold out"
-          ) : (
-            <>
-              Add to bag<span className="hidden sm:inline"> · {formatMoney(price * qty)}</span>
-            </>
-          )}
+          {soldOut ? "Sold out" : <>Add to bag · {formatMoney(price * qty)}</>}
         </button>
       </div>
-      <div aria-live="polite" className="min-h-0">
+      <div aria-live="polite">
         {result && (
-          <p
-            className={cn(
-              "mt-3 flex items-center gap-2 rounded-xl px-4 py-3 text-sm",
-              result.ok ? "bg-sage-light text-sage" : "bg-danger-light text-danger",
-            )}
-          >
-            {result.ok && <Check className="size-4 shrink-0" aria-hidden />}
-            <span className="flex-1">{result.message}</span>
+          <p className={cn("mt-3 flex flex-wrap items-center gap-x-4 px-4 py-3 text-body", result.ok ? "bg-sage-light text-sage" : "bg-danger-light text-danger")}>
+            <span>{result.message}</span>
             {result.ok && (
-              <Link href="/cart" className="font-semibold underline underline-offset-4">
+              <Link href="/cart" className="font-medium underline underline-offset-4">
                 View bag
               </Link>
             )}
@@ -127,35 +110,27 @@ export function AddToCart({ productId, productName, price, maxQuantity }: Props)
   );
 }
 
-/** Fixed bottom bar on mobile so "Add to bag" is always reachable. */
-export function StickyAddToCart({ productId, productName, price, maxQuantity, image }: Props) {
+/** Fixed bottom bar on phones so "Add to bag" is always reachable. A solid bar, one tone step from the page. */
+export function StickyAddToCart({ productId, productName, price, maxQuantity }: Props) {
   const { pending, result, add } = useAddToCart(productId);
   const soldOut = maxQuantity <= 0;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-stone/70 bg-cream/95 px-4 py-3 backdrop-blur-md lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 bg-surface px-[var(--margin)] py-3 lg:hidden">
       <div className="flex items-center gap-3">
-        {image && (
-          <Image src={image} alt="" width={44} height={55} className="h-12 w-10 shrink-0 rounded-lg bg-ivory object-cover" />
-        )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-espresso">{productName}</p>
-          <p className="text-xs text-cocoa">
+          <p className="truncate text-body font-medium text-ink">{productName}</p>
+          <p className="text-small">
             {result?.ok ? (
-              <Link href="/cart" className="font-semibold text-sage underline underline-offset-2">
-                Added · View bag
+              <Link href="/cart" className="font-medium text-sage underline underline-offset-2">
+                Added. View bag
               </Link>
             ) : (
               formatMoney(price)
             )}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => add(1)}
-          disabled={soldOut || pending}
-          className={buttonClasses({ size: "sm", className: "h-10 px-5" })}
-        >
-          {pending && <Loader2 className="size-3.5 animate-spin" aria-hidden />}
+        <button type="button" onClick={() => add(1)} disabled={soldOut || pending} className={buttonClasses({ size: "md" })}>
+          {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
           {soldOut ? "Sold out" : "Add to bag"}
         </button>
       </div>
@@ -178,25 +153,14 @@ export function QuickAdd({
   const { pending, result, add } = useAddToCart(productId);
   return (
     <div className="flex flex-col items-start gap-2">
-      <button
-        type="button"
-        onClick={() => add(1)}
-        disabled={pending}
-        className={buttonClasses({ variant, className })}
-      >
+      <button type="button" onClick={() => add(1)} disabled={pending} className={buttonClasses({ variant, className })}>
         {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
-        {result?.ok ? (
-          <>
-            <Check className="size-4" aria-hidden /> Added
-          </>
-        ) : (
-          label
-        )}
+        {result?.ok ? "Added" : label}
       </button>
-      <span aria-live="polite" className="text-xs">
+      <span aria-live="polite" className="text-small">
         {result && !result.ok && <span className="text-danger">{result.message}</span>}
         {result?.ok && (
-          <Link href="/cart" className="underline underline-offset-4 opacity-80">
+          <Link href="/cart" className="underline underline-offset-4">
             View bag
           </Link>
         )}

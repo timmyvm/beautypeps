@@ -69,7 +69,7 @@ export default async function AdminOrderPage({ params }: Props) {
                 <Mail className="size-4" /> Resend confirmation
               </OpsSubmit>
             </ActionForm>
-            <Link href={`/admin/orders/${order.id}/packing-slip`} className={buttonClasses({ variant: "outline", size: "sm" })}>
+            <Link href={`/admin/orders/${order.id}/packing-slip`} className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
               <Printer className="size-4" /> Packing slip
             </Link>
           </>
@@ -96,7 +96,7 @@ export default async function AdminOrderPage({ params }: Props) {
                 <Textarea id="message" name="message" rows={2} placeholder="e.g. Customer called to confirm the address." required className="min-h-16" />
               </ActionField>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-xs text-cocoa">
+                <label className="flex items-center gap-2 text-[13px] text-muted">
                   <Checkbox name="visibleToCustomer" /> Visible to the customer
                 </label>
                 <OpsSubmit>Add note</OpsSubmit>
@@ -114,16 +114,16 @@ export default async function AdminOrderPage({ params }: Props) {
             <a href={`mailto:${order.email}`} className="block truncate text-sm text-copper-dark hover:underline">
               {order.email}
             </a>
-            {a.phone && <p className="text-sm text-cocoa">{a.phone}</p>}
+            {a.phone && <p className="text-sm text-muted">{a.phone}</p>}
             <div className="mt-4 flex items-center justify-between border-t border-stone/50 pt-4 text-sm">
               {order.user ? (
                 <Link href={`/admin/customers/${order.user.id}`} className="text-copper-dark hover:underline">
                   View customer profile
                 </Link>
               ) : (
-                <span className="text-cocoa">Guest checkout</span>
+                <span className="text-muted">Guest checkout</span>
               )}
-              <span className="text-xs text-taupe">
+              <span className="text-[13px] text-taupe">
                 {customerOrderCount} {customerOrderCount === 1 ? "order" : "orders"}
               </span>
             </div>
@@ -131,7 +131,7 @@ export default async function AdminOrderPage({ params }: Props) {
 
           <Panel title="Shipping">
             <AddressBlock address={a} />
-            <p className="mt-3 text-xs text-cocoa">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
+            <p className="mt-3 text-[13px] text-muted">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
             {order.trackingNumber && (
               <div className="mt-3">
                 <TrackingLink order={order} />
@@ -139,7 +139,7 @@ export default async function AdminOrderPage({ params }: Props) {
             )}
             {(order.status === "shipped" || order.status === "delivered") && (
               <details className="mt-4 border-t border-stone/50 pt-4">
-                <summary className="cursor-pointer text-xs font-medium text-cocoa hover:text-espresso">Edit tracking</summary>
+                <summary className="cursor-pointer text-[13px] font-medium text-muted hover:text-espresso">Edit tracking</summary>
                 <ActionForm action={updateTrackingAction} className="mt-3 grid gap-3">
                   <input type="hidden" name="orderId" value={order.id} />
                   <ActionField name="trackingCarrier" htmlFor="trk-carrier" label="Carrier">
@@ -155,7 +155,7 @@ export default async function AdminOrderPage({ params }: Props) {
               </details>
             )}
             <details className="mt-4 border-t border-stone/50 pt-4">
-              <summary className="cursor-pointer text-xs font-medium text-cocoa hover:text-espresso">Edit address</summary>
+              <summary className="cursor-pointer text-[13px] font-medium text-muted hover:text-espresso">Edit address</summary>
               <ActionForm action={updateShippingAddressAction} className="mt-3 grid grid-cols-2 gap-3">
                 <input type="hidden" name="orderId" value={order.id} />
                 <ActionField name="firstName" label="First name">
@@ -198,23 +198,23 @@ export default async function AdminOrderPage({ params }: Props) {
 
           <Panel title="Payment">
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="text-cocoa">Method</dt>
+              <dt className="text-muted">Method</dt>
               <dd className="text-espresso">{PAYMENT_METHODS[order.paymentMethod].label}</dd>
-              <dt className="text-cocoa">Reference</dt>
+              <dt className="text-muted">Reference</dt>
               <dd className="font-mono text-espresso">{order.orderNumber}</dd>
-              <dt className="text-cocoa">Amount</dt>
+              <dt className="text-muted">Amount</dt>
               <dd className="text-espresso">{formatMoney(order.total)}</dd>
-              <dt className="text-cocoa">Status</dt>
+              <dt className="text-muted">Status</dt>
               <dd className="text-espresso capitalize">{order.paymentStatus}</dd>
               {order.paidAt && (
                 <>
-                  <dt className="text-cocoa">Paid</dt>
+                  <dt className="text-muted">Paid</dt>
                   <dd className="text-espresso">{formatDateTime(order.paidAt)}</dd>
                 </>
               )}
               {order.discountCode && (
                 <>
-                  <dt className="text-cocoa">Discount</dt>
+                  <dt className="text-muted">Discount</dt>
                   <dd className="text-espresso">
                     {order.discountCode} (−{formatMoney(order.discountTotal)})
                   </dd>
@@ -225,7 +225,7 @@ export default async function AdminOrderPage({ params }: Props) {
 
           {order.customerNote && (
             <Panel title="Customer note">
-              <p className="text-sm whitespace-pre-line text-cocoa">{order.customerNote}</p>
+              <p className="text-sm whitespace-pre-line text-muted">{order.customerNote}</p>
             </Panel>
           )}
 

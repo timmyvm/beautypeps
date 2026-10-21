@@ -66,3 +66,40 @@ Footer: "Cosmetic peptides, dosed in full and graded honestly. Made in Melbourne
 
 Sample content to confirm before launch: "made in Melbourne / small batch" claims, reviews (seeded demo),
 bank details, ABN.
+
+## Gate + look (home)
+Before (old build, inspect.mjs): 16 FAIL, 9 WARN — 3-line headlines, 13 eyebrows, 01–04 numbering,
+22 micro-labels, gradients, 18 hairlines, 22 outlined boxes, icon cards, 2.2:1 text, 14px body, still page,
+reduced-motion hidden text; WARN cream palette, glass, 11 sizes, grey body, no footage.
+After: 0 FAIL, 2 WARN (both defended below), at 1440 / 768 / 390.
+- empty-middle "Blue by copper": measured in the frames that bleed off the right edge (the probe clamps
+  boxes to the viewport); on screen the run is continuous, as the blueprint asks.
+- card-rows: the catalogue is the direction's archive of specimens (an index is where a repeated module belongs).
+
+Redraws: none. Palette colours taken from the product (see Palette above); proportions kept.
+Imagery: project's own (Higgsfield product shots → Higgsfield background-removed specimens; editorial
+photos; one Kling clip of the copper serum, /video/copper-drop.mp4). No open-collection pictures used.
+
+ROUND 1
+Seen in one second: the blue GHK-Cu bottle on its stone tile, "Peptide serums, graded".
+Scores: design 7.5 · usability 8 · creativity 7.5 · content 8 → 7.7
+1. Hero statement undersized for its half (68px) → 5.9vw (85px).
+2. Catalogue ended on a ragged row (3 double tiles = 27 cells) → 2 doubles.
+3. Cropped last mosaic column read as a black bar → 112% width, quieter tones.
+
+ROUND 2
+Scores: design 8 · usability 8 · creativity 8 · content 8 → 8.0
+1. Footer nav labels wrapping mid-phrase, email breaking inside the domain → wider tiles, break at @.
+2. Void beside the lifted frame in "Blue by copper" → the two notes moved into it, above the row.
+3. Display headings with leading 1 overhung their section tops → 12px top padding.
+
+ROUND 3 (final)
+Seen in one second: the sapphire GHK-Cu specimen beside "Peptide serums, graded".
+Idea: the evidence grade we publish for every peptide becomes the field-guide entry under each specimen.
+Live thing: "What are you treating?" chips narrow the catalogue (no-JS fallback: /shop?concern=…).
+Layout words: hero=split mosaic / catalogue=grid / copper=strip / library=table / powder=growing tiles /
+reviews=slips / faq=stacked cards / footer=board.
+Scores: design 8 · usability 8 · creativity 8 · content 8 → 8.0
+Caps applied: none.
+Still short: 1. the hero's left-half rest is long on very tall screens; 2. catalogue fact lines (14px,
+muted) are the smallest text on the page; 3. the reviews section shows seeded demo reviews until real ones exist.

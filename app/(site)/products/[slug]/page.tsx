@@ -1,15 +1,15 @@
-import { ChevronRight, CreditCard, Package, RotateCcw, Truck } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/markdown";
 import { AddToCart, StickyAddToCart } from "@/components/product/add-to-cart";
-import { PeptideCard } from "@/components/product/peptide-chip-card";
-import { ProductCard } from "@/components/product/product-card";
-import { ProductGallery } from "@/components/product/product-gallery";
+import { PeptideRows } from "@/components/product/peptide-chip-card";
+import { SpecimenTile, toneFor } from "@/components/product/product-card";
 import { ReviewsSection } from "@/components/product/reviews-section";
 import { WishlistButton } from "@/components/product/wishlist-button";
-import { Price, SectionHeading, Stars } from "@/components/ui/misc";
+import { SpecimenGrid } from "@/components/shop/specimen-grid";
+import { Price, Stars } from "@/components/ui/misc";
 import { getCurrentUser } from "@/lib/auth/session";
 import { MAX_QTY_PER_LINE } from "@/lib/cart";
 import { concernLabel } from "@/lib/constants";
@@ -26,12 +26,15 @@ import { getSettings } from "@/lib/settings";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// One heading size for this page: the product name and every section heading.
+const HEAD = "display-type text-[clamp(1.75rem,1rem+2.6vw,3.5rem)]";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Product not found" };
   return {
-    title: product.seoTitle || `${product.name}${product.subtitle ? ` — ${product.subtitle}` : ""}`,
+    title: product.seoTitle || `${product.name}${product.subtitle ? `: ${product.subtitle}` : ""}`,
     description: product.seoDescription || product.shortDescription,
     alternates: { canonical: `/products/${product.slug}` },
     openGraph: {
@@ -58,11 +61,13 @@ export default async function ProductPage({ params }: Props) {
     ? await Promise.all([isInWishlist(user.id, product.id), getUserReviewForProduct(user.id, product.id)])
     : [false, null];
 
-  const images = [product.image, ...product.gallery.filter((g) => g && g !== product.image)];
+  const photos = [product.image, ...product.gallery.filter((g) => g && g !== product.image)];
   const maxQuantity = Math.min(product.stock, MAX_QTY_PER_LINE);
   const reviewCount = reviews.length;
   const average = reviewCount ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0;
   const lowStock = product.stock > 0 && product.stock <= product.lowStockThreshold;
+  const lead = product.keyActives[0];
+  const leadPeptide = peptides[0];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const jsonLd = {
@@ -70,7 +75,7 @@ export default async function ProductPage({ params }: Props) {
     "@type": "Product",
     name: product.name,
     description: product.shortDescription,
-    image: images.map((i) => (i.startsWith("http") ? i : `${siteUrl}${i}`)),
+    image: photos.map((i) => (i.startsWith("http") ? i : `${siteUrl}${i}`)),
     sku: product.sku,
     brand: { "@type": "Brand", name: "Beauty Peps" },
     category: product.category?.name,
@@ -83,105 +88,25 @@ export default async function ProductPage({ params }: Props) {
       itemCondition: "https://schema.org/NewCondition",
     },
     ...(reviewCount > 0 && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: average.toFixed(1),
-        reviewCount,
-      },
+      aggregateRating: { "@type": "AggregateRating", ratingValue: average.toFixed(1), reviewCount },
     }),
   };
 
-  const details: { id: string; title: string; content: React.ReactNode; open?: boolean }[] = [
-    { id: "description", title: "Description", content: <Markdown>{product.description}</Markdown>, open: true },
-  ];
-  if (product.keyActives.length > 0) {
-    details.push({
-      id: "actives",
-      title: "Key actives",
-      content: (
-        <div className="overflow-hidden rounded-xl border border-stone/70">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-ivory text-[11px] tracking-wider text-cocoa uppercase">
-              <tr>
-                <th className="px-4 py-2.5 font-semibold">Active</th>
-                <th className="px-4 py-2.5 font-semibold">Amount</th>
-                <th className="hidden px-4 py-2.5 font-semibold sm:table-cell">Why it&apos;s there</th>
-              </tr>
-            </thead>
-            <tbody>
-              {product.keyActives.map((a) => (
-                <tr key={a.name} className="border-t border-stone/50 align-top">
-                  <td className="px-4 py-3 font-medium text-espresso">
-                    {a.name}
-                    {a.note && <span className="mt-1 block text-xs font-normal text-cocoa sm:hidden">{a.note}</span>}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-copper-dark">{a.amount}</td>
-                  <td className="hidden px-4 py-3 text-cocoa sm:table-cell">{a.note ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ),
-    });
-  }
-  if (product.howToUse) {
-    details.push({ id: "how-to-use", title: "How to use", content: <Markdown>{product.howToUse}</Markdown> });
-  }
-  if (product.ingredients) {
-    details.push({
-      id: "ingredients",
-      title: "Full ingredients (INCI)",
-      content: (
-        <>
-          <p className="text-sm leading-relaxed text-cocoa">{product.ingredients}</p>
-          <p className="mt-3 text-xs text-taupe">
-            Ingredient lists can change between batches. Always refer to the pack you receive.
-          </p>
-        </>
-      ),
-    });
-  }
   const specs = [
     ["Size", product.size],
     ["Texture", product.texture],
     ["pH", product.phRange],
-    ["Routine step", product.routineStep],
+    ["When to use it", product.routineStep],
     ["Skin types", product.skinTypes.join(", ")],
-    ["Targets", product.concerns.map(concernLabel).join(", ")],
+    ["What it targets", product.concerns.map(concernLabel).join(", ")],
   ].filter(([, v]) => !!v) as [string, string][];
-  if (specs.length > 0) {
-    details.push({
-      id: "specs",
-      title: "Texture, pH & routine",
-      content: (
-        <dl className="grid gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
-          {specs.map(([k, v]) => (
-            <div key={k} className="border-b border-stone/50 pb-3">
-              <dt className="text-xs tracking-wide text-taupe uppercase">{k}</dt>
-              <dd className="mt-1 text-espresso">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    });
-  }
-  if (product.faqs.length > 0) {
-    details.push({
-      id: "faqs",
-      title: "FAQs",
-      content: (
-        <dl className="space-y-5">
-          {product.faqs.map((f) => (
-            <div key={f.q}>
-              <dt className="font-medium text-espresso">{f.q}</dt>
-              <dd className="mt-1.5 text-sm leading-relaxed text-cocoa">{f.a}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    });
-  }
+
+  const stock =
+    product.stock <= 0
+      ? { text: "Sold out for now. We restock small batches every few weeks.", cls: "text-danger" }
+      : lowStock
+        ? { text: `Only ${product.stock} left in this batch.`, cls: "text-amber" }
+        : { text: "In stock and ready to ship from Melbourne.", cls: "text-sage" };
 
   return (
     <>
@@ -190,200 +115,268 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      <div className="container-bp pt-6 pb-24 lg:pb-0">
-        <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-1 text-xs text-cocoa">
-          <Link href="/" className="hover:text-espresso">
-            Home
-          </Link>
-          <ChevronRight className="size-3" aria-hidden />
-          <Link href="/shop" className="hover:text-espresso">
-            Shop
-          </Link>
-          {product.category && (
-            <>
-              <ChevronRight className="size-3" aria-hidden />
-              <Link href={`/shop?category=${product.category.slug}`} className="hover:text-espresso">
-                {product.category.name}
-              </Link>
-            </>
-          )}
-          <ChevronRight className="size-3" aria-hidden />
-          <span className="text-espresso" aria-current="page">
-            {product.name}
-          </span>
-        </nav>
-
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 [&>*]:min-w-0">
-          <ProductGallery images={images} name={product.name} badge={product.stock > 0 ? product.badge : "Sold out"} />
-
-          <div className="lg:py-4">
-            {product.category && <p className="eyebrow mb-3">{product.category.name}</p>}
-            <h1 className="font-display text-4xl leading-tight text-espresso md:text-5xl">{product.name}</h1>
-            {product.subtitle && <p className="mt-2 text-lg text-cocoa">{product.subtitle}</p>}
-
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-              {reviewCount > 0 ? (
-                <a href="#reviews" className="flex items-center gap-2 text-sm text-cocoa hover:text-espresso">
-                  <Stars rating={average} size={14} />
-                  <span>
-                    {average.toFixed(1)} · {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
-                  </span>
-                </a>
-              ) : (
-                <a href="#reviews" className="text-sm text-cocoa underline-offset-4 hover:underline">
-                  Be the first to review
-                </a>
-              )}
+      <div className="container-bp pt-6 pb-28 md:pt-10 lg:pb-0">
+        {/* The specimen, and everything needed to buy it */}
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-6">
+            <div className="shutter">
+              <SpecimenTile
+                product={product}
+                tone={toneFor(product.slug)}
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="aspect-[4/5] w-full lg:aspect-auto lg:h-[min(80vh,860px)]"
+              />
             </div>
-
-            <div className="mt-6 flex items-baseline gap-3">
-              <Price cents={product.price} compareAt={product.compareAtPrice} className="text-2xl text-espresso" />
-              {product.size && <span className="text-sm text-taupe">/ {product.size}</span>}
-            </div>
-            <p className="mt-1 text-xs text-taupe">Includes GST</p>
-
-            <p className="mt-6 text-base leading-relaxed text-cocoa">{product.shortDescription}</p>
-
-            {product.keyActives.length > 0 && (
-              <ul className="mt-6 flex flex-wrap gap-2" aria-label="Key actives">
-                {product.keyActives.map((a) => (
-                  <li
-                    key={a.name}
-                    className="rounded-full border border-copper/30 bg-copper-light/30 px-3 py-1 text-xs text-copper-dark"
-                  >
-                    {a.name} <span className="opacity-70">· {a.amount}</span>
+            {photos.length > 0 && (
+              <ul className="mt-2 grid grid-cols-3 gap-2" aria-label="Photographs">
+                {photos.slice(0, 3).map((src, i) => (
+                  <li key={src + i} className="relative aspect-square overflow-hidden bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
+                    <Image
+                      src={src}
+                      alt={i === 0 ? `${product.name}, photographed on its stone plinth` : `${product.name}: detail`}
+                      fill
+                      sizes="(min-width: 1024px) 16vw, 33vw"
+                      className="object-cover"
+                    />
                   </li>
                 ))}
               </ul>
             )}
+          </div>
 
-            <p className="mt-6 flex items-center gap-2 text-sm" aria-live="polite">
-              <span
-                className={
-                  product.stock <= 0
-                    ? "size-2 rounded-full bg-danger"
-                    : lowStock
-                      ? "size-2 rounded-full bg-amber"
-                      : "size-2 rounded-full bg-sage"
-                }
-                aria-hidden
-              />
-              {product.stock <= 0 ? (
-                <span className="text-danger">Sold out — check back soon</span>
-              ) : lowStock ? (
-                <span className="text-amber">Only {product.stock} left</span>
-              ) : (
-                <span className="text-sage">In stock · ready to ship</span>
+          <div className="lg:col-span-6 lg:col-start-7 lg:pl-[4%]">
+            <div className="lg:sticky lg:top-8">
+              {product.category && (
+                <Link href={`/shop?category=${product.category.slug}`} className="text-small underline-offset-4 hover:underline">
+                  Back to {product.category.name.toLowerCase()}
+                </Link>
               )}
-            </p>
+              <h1 className={`${HEAD} mt-4`}>{product.name}</h1>
+              {product.subtitle && <p className="mt-4 max-w-[40ch] text-lead">{product.subtitle}</p>}
 
-            <div className="mt-5 flex items-start gap-3">
-              <div className="min-w-0 flex-1">
-                <AddToCart
-                  productId={product.id}
-                  productName={product.name}
-                  price={product.price}
-                  maxQuantity={maxQuantity}
-                />
-              </div>
-              <WishlistButton productId={product.id} productSlug={product.slug} initial={wishlisted} />
-            </div>
-
-            <ul className="mt-8 grid gap-3 rounded-2xl bg-ivory p-5 text-sm text-cocoa sm:grid-cols-2">
-              <li className="flex gap-3">
-                <Truck className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                <span>
-                  {settings.freeShippingThreshold > 0
-                    ? `Free standard shipping over ${formatMoney(settings.freeShippingThreshold).replace(/\.00$/, "")}`
-                    : `Standard shipping ${formatMoney(settings.standardShipping)}`}
+              <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
+                <Price cents={product.price} compareAt={product.compareAtPrice} className="text-lead font-medium" />
+                <span className="text-small text-muted">
+                  {product.size ? `${product.size}, ` : ""}includes GST
                 </span>
-              </li>
-              <li className="flex gap-3">
-                <Package className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                <span>{settings.dispatchTime}</span>
-              </li>
-              <li className="flex gap-3">
-                <CreditCard className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                <span>Pay securely by bank transfer or PayID</span>
-              </li>
-              <li className="flex gap-3">
-                <RotateCcw className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
-                <span>
+              </p>
+
+              <dl className="mt-6 space-y-2 text-body">
+                {lead && (
+                  <div>
+                    <dt className="sr-only">Lead active</dt>
+                    <dd>
+                      <span className="font-medium">{lead.amount}</span> {lead.name}
+                    </dd>
+                  </div>
+                )}
+                {leadPeptide?.evidenceLevel && (
+                  <div>
+                    <dt className="sr-only">Evidence</dt>
+                    <dd>
+                      Evidence grade {leadPeptide.evidenceLevel} of 5 for {leadPeptide.name}.{" "}
+                      <Link href={`/peptides/${leadPeptide.slug}`} className="text-accent underline underline-offset-4">
+                        Read the monograph
+                      </Link>
+                    </dd>
+                  </div>
+                )}
+                <div>
+                  <dt className="sr-only">Reviews</dt>
+                  <dd>
+                    {reviewCount > 0 ? (
+                      <a href="#reviews" className="inline-flex items-center gap-2 underline-offset-4 hover:underline">
+                        <Stars rating={average} size={16} />
+                        {average.toFixed(1)} from {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+                      </a>
+                    ) : (
+                      <a href="#reviews" className="underline underline-offset-4">
+                        No reviews yet
+                      </a>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+
+              <p className="mt-6 max-w-[52ch] text-body">{product.shortDescription}</p>
+              <p className={`mt-6 text-body font-medium ${stock.cls}`} aria-live="polite">
+                {stock.text}
+              </p>
+
+              <div className="mt-4">
+                <AddToCart productId={product.id} productName={product.name} price={product.price} maxQuantity={maxQuantity} />
+              </div>
+              <WishlistButton productId={product.id} productSlug={product.slug} initial={wishlisted} className="mt-4" />
+
+              <ul className="mt-8 space-y-1 bg-surface px-5 py-4 text-small">
+                <li>
+                  {settings.freeShippingThreshold > 0
+                    ? `Free standard shipping over ${formatMoney(settings.freeShippingThreshold).replace(/\.00$/, "")}; express ${formatMoney(settings.expressShipping)}.`
+                    : `Standard shipping ${formatMoney(settings.standardShipping)}.`}
+                </li>
+                <li>{settings.dispatchTime}</li>
+                <li>Pay by bank transfer or PayID; no card details needed.</li>
+                <li>
                   Unopened returns within 30 days.{" "}
                   <Link href="/policies/shipping" className="underline underline-offset-2">
-                    Details
+                    Shipping and returns
                   </Link>
-                </span>
-              </li>
-            </ul>
-
-            <div className="mt-10 divide-y divide-stone/70 border-y border-stone/70">
-              {details.map((d) => (
-                <details key={d.id} open={d.open} className="group py-1" id={d.id}>
-                  <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-medium tracking-wide text-espresso [&::-webkit-details-marker]:hidden">
-                    {d.title}
-                    <span
-                      className="grid size-6 place-items-center rounded-full border border-stone text-cocoa transition-transform group-open:rotate-45"
-                      aria-hidden
-                    >
-                      +
-                    </span>
-                  </summary>
-                  <div className="pb-6">{d.content}</div>
-                </details>
-              ))}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
+        {/* The formula: heading in the left third, the text in the right two thirds */}
+        <section className="mt-32 grid gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="formula-heading">
+          <h2 id="formula-heading" className={`${HEAD} lg:col-span-4`} data-reveal="">
+            The formula
+          </h2>
+          <div className="lg:col-span-7 lg:col-start-6" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+            <Markdown>{product.description}</Markdown>
+          </div>
+        </section>
+
+        {/* What's in it: the actives as a real table, the specifics on a stone field */}
+        {(product.keyActives.length > 0 || specs.length > 0 || product.ingredients) && (
+          <section className="mt-32 lg:mt-48" aria-labelledby="inside-heading">
+            <h2 id="inside-heading" className={HEAD} data-reveal="">
+              What&apos;s in it
+            </h2>
+            <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+              <div className="lg:col-span-7" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+                {product.keyActives.length > 0 && (
+                  <table className="tabular w-full text-left text-body">
+                    <caption className="sr-only">Key actives and their amounts</caption>
+                    <thead>
+                      <tr className="bg-surface">
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Active
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Amount
+                        </th>
+                        <th scope="col" className="hidden px-4 py-3 font-medium sm:table-cell">
+                          Why it&apos;s there
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.keyActives.map((a) => (
+                        <tr key={a.name} className="border-b border-stone align-top">
+                          <td className="px-4 py-4 font-medium">
+                            {a.name}
+                            {a.note && <span className="mt-1 block text-small font-normal sm:hidden">{a.note}</span>}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">{a.amount}</td>
+                          <td className="hidden px-4 py-4 sm:table-cell">{a.note ?? ""}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                {product.ingredients && (
+                  <div className="mt-10">
+                    <h3 className="text-lead font-medium">Full ingredients (INCI)</h3>
+                    <p className="mt-3 max-w-[70ch] text-body">{product.ingredients}</p>
+                    <p className="mt-3 text-small text-muted">
+                      Ingredient lists can change between batches. The pack you receive is always the reference.
+                    </p>
+                  </div>
+                )}
+              </div>
+              {specs.length > 0 && (
+                <dl className="h-fit space-y-5 bg-field-stone p-6 md:p-8 lg:col-span-4 lg:col-start-9" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+                  {specs.map(([k, v]) => (
+                    <div key={k}>
+                      <dt className="text-small">{k}</dt>
+                      <dd className="mt-0.5 text-body font-medium">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* How to use: the steps on the left, a photograph closing the right */}
+        {product.howToUse && (
+          <section className="mt-32 grid gap-10 lg:mt-48 lg:grid-cols-12 lg:items-start lg:gap-[var(--gutter)]" aria-labelledby="use-heading">
+            <div className="lg:col-span-6" data-reveal="">
+              <h2 id="use-heading" className={HEAD}>
+                How to use it
+              </h2>
+              <Markdown className="mt-8">{product.howToUse}</Markdown>
+            </div>
+            <div className="relative aspect-[4/5] overflow-hidden bg-surface lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+              <Image
+                src={photos[1] ?? "/images/editorial/ritual.webp"}
+                alt={photos[1] ? `${product.name}: texture and detail` : "Serum pressed onto the cheekbone from a glass dropper"}
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="drift object-cover"
+              />
+            </div>
+          </section>
+        )}
+
         {peptides.length > 0 && (
-          <section className="mt-20 md:mt-28" aria-labelledby="peptides-heading">
-            <SectionHeading
-              eyebrow="Inside the formula"
-              title={<span id="peptides-heading">The peptides in {product.name}</span>}
-              description="Every peptide we use has its own monograph in the Peptide Library — what it is, how it works and what the research actually shows."
-              action={
-                <Link href="/peptides" className="text-sm font-medium text-copper-dark underline underline-offset-4">
-                  Explore the library
-                </Link>
-              }
-            />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {peptides.map((p) => (
-                <PeptideCard key={p.slug} peptide={p} />
+          <section className="mt-32 lg:mt-48" aria-labelledby="peptides-heading">
+            <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between" data-reveal="">
+              <h2 id="peptides-heading" className={HEAD}>
+                The peptides inside
+              </h2>
+              <Link href="/peptides" className="text-body underline underline-offset-4">
+                The whole peptide library
+              </Link>
+            </div>
+            <PeptideRows peptides={peptides} />
+          </section>
+        )}
+
+        {product.faqs.length > 0 && (
+          <section className="mt-32 grid gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className={`${HEAD} lg:col-span-4`} data-reveal="">
+              Questions people ask
+            </h2>
+            <div className="space-y-2 lg:col-span-7 lg:col-start-6">
+              {product.faqs.map((f, i) => (
+                <details key={f.q} name="product-faq" open={i === 0} className="group bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: Math.min(i, 3) }}>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 px-6 py-5 text-lead font-medium [&::-webkit-details-marker]:hidden">
+                    {f.q}
+                    <span aria-hidden className="transition-transform duration-300 group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <p className="max-w-[60ch] px-6 pb-6 text-body">{f.a}</p>
+                </details>
               ))}
             </div>
           </section>
         )}
 
-        <div className="mt-20 md:mt-28">
+        <div className="mt-32 lg:mt-48">
           <ReviewsSection
             product={{ id: product.id, name: product.name, slug: product.slug }}
             reviews={reviews}
             signedIn={!!user}
             alreadyReviewed={!!myReview}
+            headingClass={HEAD}
           />
         </div>
 
         {related.length > 0 && (
-          <section className="border-t border-stone/70 pt-16 md:pt-20" aria-labelledby="related-heading">
-            <SectionHeading eyebrow="Pairs well with" title={<span id="related-heading">Complete the ritual</span>} />
-            <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
-              {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+          <section className="mt-32 lg:mt-48" aria-labelledby="related-heading">
+            <h2 id="related-heading" className={`${HEAD} mb-10`} data-reveal="">
+              Pairs well with
+            </h2>
+            <SpecimenGrid products={related} doubles={false} />
           </section>
         )}
       </div>
 
-      <StickyAddToCart
-        productId={product.id}
-        productName={product.name}
-        price={product.price}
-        maxQuantity={maxQuantity}
-        image={product.image}
-      />
+      <StickyAddToCart productId={product.id} productName={product.name} price={product.price} maxQuantity={maxQuantity} />
     </>
   );
 }

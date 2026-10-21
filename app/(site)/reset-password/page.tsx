@@ -24,13 +24,13 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
       >
         <div className="rounded-2xl border border-stone bg-ivory/60 p-6 text-center">
           <LinkIcon className="mx-auto size-7 text-taupe" aria-hidden />
-          <p className="mt-3 text-sm text-cocoa">The link may have been used already or copied incompletely.</p>
+          <p className="mt-3 text-sm text-muted">The link may have been used already or copied incompletely.</p>
           <ButtonLink href="/forgot-password" className="mt-5">
             Request a new link
           </ButtonLink>
-          <p className="mt-4 text-xs text-taupe">
+          <p className="mt-4 text-[13px] text-taupe">
             or{" "}
-            <Link href="/login" className="underline hover:text-cocoa">
+            <Link href="/login" className="underline hover:text-muted">
               return to sign in
             </Link>
           </p>

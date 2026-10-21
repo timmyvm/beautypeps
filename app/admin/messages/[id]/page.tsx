@@ -103,7 +103,7 @@ export default async function AdminMessagePage({ params }: Props) {
                 />
               </ActionField>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-xs text-cocoa">
+                <label className="flex items-center gap-2 text-[13px] text-muted">
                   <Checkbox name="archive" defaultChecked /> Archive after sending
                 </label>
                 <OpsSubmit size="md">Send reply</OpsSubmit>
@@ -114,28 +114,28 @@ export default async function AdminMessagePage({ params }: Props) {
 
         <Panel title="Sender">
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-cocoa">Name</dt>
+            <dt className="text-muted">Name</dt>
             <dd className="text-espresso">{message.name}</dd>
-            <dt className="text-cocoa">Email</dt>
+            <dt className="text-muted">Email</dt>
             <dd className="truncate">
               <a href={`mailto:${message.email}`} className="text-copper-dark hover:underline">
                 {message.email}
               </a>
             </dd>
-            <dt className="text-cocoa">Status</dt>
+            <dt className="text-muted">Status</dt>
             <dd>
               <Badge tone={archived ? "neutral" : "sage"}>{archived ? "Archived" : "Read"}</Badge>
             </dd>
             {message.orderNumber && (
               <>
-                <dt className="text-cocoa">Order</dt>
+                <dt className="text-muted">Order</dt>
                 <dd>
                   {order ? (
                     <Link href={`/admin/orders/${order.id}`} className="font-mono text-copper-dark hover:underline">
                       {order.orderNumber}
                     </Link>
                   ) : (
-                    <span className="font-mono text-cocoa">{message.orderNumber} (not found)</span>
+                    <span className="font-mono text-muted">{message.orderNumber} (not found)</span>
                   )}
                 </dd>
               </>

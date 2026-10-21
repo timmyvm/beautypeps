@@ -20,7 +20,7 @@ export function OrderStatusBadge({ status }: { status: OrderStatus }) {
 export function OrderProgress({ status }: { status: OrderStatus }) {
   if (status === "cancelled" || status === "refunded") {
     return (
-      <div className="rounded-xl bg-sand px-4 py-3 text-sm text-cocoa">{ORDER_STATUSES[status].description}</div>
+      <div className="rounded-xl bg-sand px-4 py-3 text-sm text-muted">{ORDER_STATUSES[status].description}</div>
     );
   }
   const current = ORDER_FLOW.indexOf(status);
@@ -34,7 +34,7 @@ export function OrderProgress({ status }: { status: OrderStatus }) {
               <span className={cn("h-px flex-1", i === 0 ? "bg-transparent" : done ? "bg-copper" : "bg-stone")} />
               <span
                 className={cn(
-                  "grid size-7 shrink-0 place-items-center rounded-full border text-[11px] font-semibold",
+                  "grid size-7 shrink-0 place-items-center rounded-full border text-[13px] font-semibold",
                   done ? "border-copper bg-copper text-cream" : "border-stone bg-cream text-taupe",
                 )}
                 aria-current={i === current ? "step" : undefined}
@@ -48,7 +48,7 @@ export function OrderProgress({ status }: { status: OrderStatus }) {
                 )}
               />
             </div>
-            <span className={cn("text-[11px] leading-tight", done ? "text-espresso" : "text-taupe")}>
+            <span className={cn("text-[13px] leading-tight", done ? "text-espresso" : "text-taupe")}>
               {ORDER_STATUSES[step].label}
             </span>
           </li>
@@ -68,7 +68,7 @@ export function OrderItemsList({ items }: { items: OrderItem[] }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-espresso">{item.name}</p>
-            <p className="text-xs text-cocoa">
+            <p className="text-[13px] text-muted">
               {item.size ? `${item.size} · ` : ""}Qty {item.quantity} × {formatMoney(item.unitPrice)}
             </p>
           </div>
@@ -96,7 +96,7 @@ export function OrderTotals({ order }: { order: Order }) {
       />
       <div className="border-t border-stone pt-3">
         <Row label="Total" value={formatMoney(order.total)} className="text-base font-semibold text-espresso" />
-        <p className="mt-1 text-right text-xs text-taupe">Includes {formatMoney(order.gstTotal)} GST</p>
+        <p className="mt-1 text-right text-[13px] text-taupe">Includes {formatMoney(order.gstTotal)} GST</p>
       </div>
     </dl>
   );
@@ -104,7 +104,7 @@ export function OrderTotals({ order }: { order: Order }) {
 
 function Row({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
-    <div className={cn("flex justify-between gap-4 text-cocoa", className)}>
+    <div className={cn("flex justify-between gap-4 text-muted", className)}>
       <dt>{label}</dt>
       <dd>{value}</dd>
     </div>
@@ -113,7 +113,7 @@ function Row({ label, value, className }: { label: string; value: string; classN
 
 export function AddressBlock({ address }: { address: Order["shippingAddress"] }) {
   return (
-    <address className="text-sm leading-relaxed text-cocoa not-italic">
+    <address className="text-sm leading-relaxed text-muted not-italic">
       <span className="font-medium text-espresso">
         {address.firstName} {address.lastName}
       </span>
@@ -164,16 +164,16 @@ export function PaymentInstructions({ order, settings }: { order: Order; setting
   return (
     <div className="rounded-2xl border border-copper/30 bg-copper-light/30 p-5">
       <p className="eyebrow mb-1">Payment required</p>
-      <p className="font-display text-xl text-espresso">Pay by {PAYMENT_METHODS[order.paymentMethod].label}</p>
-      <p className="mt-1 text-sm text-cocoa">
+      <p className="text-lg font-semibold text-espresso">Pay by {PAYMENT_METHODS[order.paymentMethod].label}</p>
+      <p className="mt-1 text-sm text-muted">
         Please pay within {settings.paymentWindowDays} days using your order number as the reference. We&apos;ll
         email you as soon as payment clears.
       </p>
       <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
         {rows.map(([k, v]) => (
           <div key={k} className="contents">
-            <dt className="text-cocoa">{k}</dt>
-            <dd className={cn("font-medium text-espresso", k === "Reference" && "font-mono tracking-wide")}>{v}</dd>
+            <dt className="text-muted">{k}</dt>
+            <dd className={cn("font-medium text-espresso", k === "Reference" && "font-mono")}>{v}</dd>
           </div>
         ))}
       </dl>
@@ -197,7 +197,7 @@ export function OrderTimeline({ events, showInternal = false }: { events: OrderE
             )}
           />
           <p className="text-sm text-espresso">{e.message}</p>
-          <p className="mt-0.5 text-xs text-taupe">
+          <p className="mt-0.5 text-[13px] text-taupe">
             {formatDateTime(e.createdAt)}
             {showInternal && e.actor ? ` · ${e.actor}` : ""}
             {showInternal && !e.visibleToCustomer ? " · internal" : ""}

@@ -29,7 +29,7 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
         actions={
           <a
             href={`/admin/customers/export${qs.size ? `?${qs}` : ""}`}
-            className={buttonClasses({ variant: "outline", size: "sm" })}
+            className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}
           >
             <Download className="size-4" /> Export CSV
           </a>
@@ -56,7 +56,7 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
           <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
           <Input name="q" defaultValue={sp.q} placeholder="Name, email or phone…" className="pl-10" />
         </label>
-        <label className="text-xs text-cocoa">
+        <label className="text-[13px] text-muted">
           <span className="sr-only">Sort</span>
           <Select name="sort" defaultValue={sp.sort ?? ""} className="w-44">
             <option value="">Newest first</option>
@@ -90,12 +90,12 @@ export default async function AdminCustomersPage({ searchParams }: { searchParam
                   <Link href={`/admin/customers/${c.id}`} className="block truncate font-medium text-espresso hover:text-copper-dark">
                     {[c.firstName, c.lastName].filter(Boolean).join(" ") || "—"}
                   </Link>
-                  <span className="block truncate text-xs text-taupe">{c.email}</span>
+                  <span className="block truncate text-[13px] text-taupe">{c.email}</span>
                 </td>
                 <td className="text-right tabular-nums">{c.orderCount}</td>
                 <td className="text-right font-medium tabular-nums">{formatMoney(c.spent)}</td>
-                <td className="whitespace-nowrap text-cocoa">{c.lastOrder ? formatDate(c.lastOrder) : "—"}</td>
-                <td className="whitespace-nowrap text-cocoa">{formatDate(c.createdAt)}</td>
+                <td className="whitespace-nowrap text-muted">{c.lastOrder ? formatDate(c.lastOrder) : "—"}</td>
+                <td className="whitespace-nowrap text-muted">{formatDate(c.createdAt)}</td>
                 <td>
                   <span className="flex flex-wrap gap-1">
                     {c.role === "admin" && <Badge tone="copper">Admin</Badge>}

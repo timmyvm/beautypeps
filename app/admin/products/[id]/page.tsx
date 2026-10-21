@@ -51,12 +51,12 @@ export default async function EditProductPage({ params, searchParams }: Props) {
         actions={
           <>
             {product.status === "active" && (
-              <Link href={`/products/${product.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm" })}>
+              <Link href={`/products/${product.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
                 <ExternalLink className="size-3.5" /> View on store
               </Link>
             )}
             <form action={duplicateProductAction.bind(null, product.id)}>
-              <button type="submit" className={buttonClasses({ variant: "outline", size: "sm" })}>
+              <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
                 <Copy className="size-3.5" /> Duplicate
               </button>
             </form>

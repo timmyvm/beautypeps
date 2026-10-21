@@ -28,8 +28,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                 href={r === 30 ? "/admin" : `/admin?range=${r}`}
                 aria-current={r === range ? "true" : undefined}
                 className={cn(
-                  "rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-                  r === range ? "bg-espresso text-cream" : "text-cocoa hover:text-espresso",
+                  "rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+                  r === range ? "bg-espresso text-cream" : "text-muted hover:text-espresso",
                 )}
               >
                 Last {r} days
@@ -68,14 +68,14 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
         <Panel
           title="Recent orders"
           actions={
-            <Link href="/admin/orders" className="flex items-center gap-1 text-xs text-copper-dark hover:underline">
+            <Link href="/admin/orders" className="flex items-center gap-1 text-[13px] text-copper-dark hover:underline">
               All orders <ArrowRight className="size-3.5" />
             </Link>
           }
           bodyClassName="p-0"
         >
           {data.recentOrders.length === 0 ? (
-            <p className="p-5 text-sm text-cocoa">No orders yet.</p>
+            <p className="p-5 text-sm text-muted">No orders yet.</p>
           ) : (
             <DataTable className="rounded-none border-0">
               <thead>
@@ -95,10 +95,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                         {o.orderNumber}
                       </Link>
                     </td>
-                    <td className="max-w-48 truncate text-cocoa">
+                    <td className="max-w-48 truncate text-muted">
                       {o.shippingAddress.firstName} {o.shippingAddress.lastName}
                     </td>
-                    <td className="whitespace-nowrap text-cocoa">{formatDate(o.createdAt)}</td>
+                    <td className="whitespace-nowrap text-muted">{formatDate(o.createdAt)}</td>
                     <td className="text-right tabular-nums">{formatMoney(o.total)}</td>
                     <td>
                       <OrderStatusBadge status={o.status} />
@@ -137,7 +137,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
           <Panel title="Low stock" bodyClassName="p-0">
             {data.lowStock.length === 0 ? (
-              <p className="p-5 text-sm text-cocoa">All active products are above their stock threshold.</p>
+              <p className="p-5 text-sm text-muted">All active products are above their stock threshold.</p>
             ) : (
               <ul className="divide-y divide-stone/50">
                 {data.lowStock.map((p) => (
@@ -148,7 +148,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm text-espresso">{p.name}</span>
-                        <span className="block text-xs text-taupe">{p.sku}</span>
+                        <span className="block text-[13px] text-taupe">{p.sku}</span>
                       </span>
                       <span
                         className={cn(
@@ -170,7 +170,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
       <Panel title={`Top products — last ${range} days`} className="mt-6" bodyClassName="p-0">
         {data.topProducts.length === 0 ? (
-          <p className="p-5 text-sm text-cocoa">No paid sales in this period.</p>
+          <p className="p-5 text-sm text-muted">No paid sales in this period.</p>
         ) : (
           <DataTable className="rounded-none border-0">
             <thead>
@@ -241,7 +241,7 @@ function AttentionRow({
         <span className="flex-1 text-espresso">{label}</span>
         <span
           className={cn(
-            "rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums",
+            "rounded-full px-2 py-0.5 text-[13px] font-semibold tabular-nums",
             count > 0 ? "bg-copper-light text-copper-dark" : "bg-sand text-taupe",
           )}
         >

@@ -91,7 +91,7 @@ export function OpsSubmit({
 
 export function PrintButton({ className }: { className?: string }) {
   return (
-    <button type="button" onClick={() => window.print()} className={cn(buttonClasses({ size: "sm" }), className)}>
+    <button type="button" onClick={() => window.print()} className={cn(buttonClasses({ variant: "dark", size: "sm" }), className)}>
       <Printer className="size-4" aria-hidden /> Print
     </button>
   );

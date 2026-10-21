@@ -21,7 +21,7 @@ export function AddToBagButton({ productId, soldOut, className }: { productId: s
           })
         }
         className={cn(
-          "flex h-10 w-full items-center justify-center gap-2 rounded-full text-xs font-medium tracking-wide transition-colors",
+          "flex h-10 w-full items-center justify-center gap-2 rounded-full text-[13px] font-medium transition-colors",
           "bg-espresso text-cream hover:bg-ink disabled:pointer-events-none disabled:opacity-50",
         )}
       >
@@ -37,7 +37,7 @@ export function AddToBagButton({ productId, soldOut, className }: { productId: s
       <p className="sr-only" aria-live="polite">
         {result?.message}
       </p>
-      {result && !result.ok && <p className="mt-1.5 text-xs text-danger">{result.message}</p>}
+      {result && !result.ok && <p className="mt-1.5 text-[13px] text-danger">{result.message}</p>}
     </div>
   );
 }

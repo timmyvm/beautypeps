@@ -67,7 +67,7 @@ export default async function AdminCustomerPage({ params }: Props) {
         <div className="flex min-w-0 flex-col gap-6">
           <Panel title={`Orders (${orders.length})`} bodyClassName="p-0">
             {orders.length === 0 ? (
-              <p className="p-5 text-sm text-cocoa">No orders yet.</p>
+              <p className="p-5 text-sm text-muted">No orders yet.</p>
             ) : (
               <DataTable className="rounded-none border-0">
                 <thead>
@@ -87,7 +87,7 @@ export default async function AdminCustomerPage({ params }: Props) {
                           {o.orderNumber}
                         </Link>
                       </td>
-                      <td className="whitespace-nowrap text-cocoa">{formatDate(o.createdAt)}</td>
+                      <td className="whitespace-nowrap text-muted">{formatDate(o.createdAt)}</td>
                       <td className="text-right tabular-nums">{o.items.reduce((s, i) => s + i.quantity, 0)}</td>
                       <td className="text-right tabular-nums">{formatMoney(o.total)}</td>
                       <td>
@@ -102,7 +102,7 @@ export default async function AdminCustomerPage({ params }: Props) {
 
           <Panel title={`Reviews (${reviews.length})`}>
             {reviews.length === 0 ? (
-              <p className="text-sm text-cocoa">No reviews written.</p>
+              <p className="text-sm text-muted">No reviews written.</p>
             ) : (
               <ul className="divide-y divide-stone/50">
                 {reviews.map((r) => (
@@ -112,8 +112,8 @@ export default async function AdminCustomerPage({ params }: Props) {
                       <span className="text-sm font-medium text-espresso">{r.title}</span>
                       <Badge tone={REVIEW_STATUSES[r.status].tone}>{REVIEW_STATUSES[r.status].label}</Badge>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-sm text-cocoa">{r.body}</p>
-                    <p className="mt-1 text-xs text-taupe">
+                    <p className="mt-1 line-clamp-2 text-sm text-muted">{r.body}</p>
+                    <p className="mt-1 text-[13px] text-taupe">
                       {r.product ? (
                         <Link href={`/products/${r.product.slug}`} className="hover:underline">
                           {r.product.name}
@@ -131,11 +131,11 @@ export default async function AdminCustomerPage({ params }: Props) {
 
           <Panel title={`Saved addresses (${addresses.length})`}>
             {addresses.length === 0 ? (
-              <p className="text-sm text-cocoa">No saved addresses.</p>
+              <p className="text-sm text-muted">No saved addresses.</p>
             ) : (
               <ul className="grid gap-4 sm:grid-cols-2">
                 {addresses.map((ad) => (
-                  <li key={ad.id} className="rounded-xl border border-stone/60 p-4 text-sm text-cocoa">
+                  <li key={ad.id} className="rounded-xl border border-stone/60 p-4 text-sm text-muted">
                     <p className="mb-1 flex items-center gap-2 font-medium text-espresso">
                       {ad.label}
                       {ad.isDefault && <Badge tone="sage">Default</Badge>}
@@ -162,21 +162,21 @@ export default async function AdminCustomerPage({ params }: Props) {
         <div className="flex min-w-0 flex-col gap-6">
           <Panel title="Profile">
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="text-cocoa">Email</dt>
+              <dt className="text-muted">Email</dt>
               <dd className="truncate">
                 <a href={`mailto:${user.email}`} className="text-copper-dark hover:underline">
                   {user.email}
                 </a>
               </dd>
-              <dt className="text-cocoa">Phone</dt>
+              <dt className="text-muted">Phone</dt>
               <dd className="text-espresso">{user.phone || "—"}</dd>
-              <dt className="text-cocoa">Role</dt>
+              <dt className="text-muted">Role</dt>
               <dd className="text-espresso capitalize">{user.role}</dd>
-              <dt className="text-cocoa">Marketing</dt>
+              <dt className="text-muted">Marketing</dt>
               <dd className="text-espresso">{user.marketingOptIn ? "Subscribed" : "Not subscribed"}</dd>
-              <dt className="text-cocoa">Joined</dt>
+              <dt className="text-muted">Joined</dt>
               <dd className="text-espresso">{formatDateTime(user.createdAt)}</dd>
-              <dt className="text-cocoa">Last login</dt>
+              <dt className="text-muted">Last login</dt>
               <dd className="text-espresso">{user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Never"}</dd>
             </dl>
           </Panel>
@@ -226,7 +226,7 @@ export default async function AdminCustomerPage({ params }: Props) {
                   </ActionForm>
                 </>
               )}
-              {isSelf && <p className="text-xs text-taupe">This is your account — role and status can&apos;t be changed here.</p>}
+              {isSelf && <p className="text-[13px] text-taupe">This is your account — role and status can&apos;t be changed here.</p>}
             </div>
           </Panel>
 

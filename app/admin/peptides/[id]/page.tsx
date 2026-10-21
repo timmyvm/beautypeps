@@ -61,7 +61,7 @@ export default async function EditPeptidePage({ params, searchParams }: Props) {
         actions={
           <>
             {peptide.published && (
-              <Link href={`/peptides/${peptide.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm" })}>
+              <Link href={`/peptides/${peptide.slug}`} target="_blank" className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
                 <ExternalLink className="size-3.5" /> View on site
               </Link>
             )}

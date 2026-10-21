@@ -31,7 +31,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
           required
           minLength={3}
           maxLength={32}
-          className="font-mono uppercase"
+          className="font-mono"
           placeholder="GLOW15"
         />
       </ActionField>
@@ -70,7 +70,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
           </div>
         </ActionField>
       ) : (
-        <div className="self-end rounded-xl bg-ivory px-4 py-3 text-xs text-cocoa">
+        <div className="self-end rounded-xl bg-ivory px-4 py-3 text-[13px] text-muted">
           Standard shipping becomes free; express is discounted by the standard rate.
         </div>
       )}
@@ -114,7 +114,7 @@ export function DiscountForm({ discount }: { discount?: Discount }) {
         />
       </ActionField>
 
-      <label className="flex items-center gap-2 text-sm text-cocoa sm:col-span-2">
+      <label className="flex items-center gap-2 text-sm text-muted sm:col-span-2">
         <Checkbox name="active" defaultChecked={discount?.active ?? true} /> Active
       </label>
 

@@ -42,7 +42,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
         title="Subscribers"
         description={`${total} ${total === 1 ? "person" : "people"} on The Peptide Letter${q ? ` matching “${q}”` : ""}.`}
         actions={
-          <a href={`/admin/subscribers/export${q ? `?q=${encodeURIComponent(q)}` : ""}`} className={buttonClasses({ variant: "outline", size: "sm" })}>
+          <a href={`/admin/subscribers/export${q ? `?q=${encodeURIComponent(q)}` : ""}`} className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
             <Download className="size-4" /> Export CSV
           </a>
         }
@@ -77,8 +77,8 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
             {rows.map((s) => (
               <tr key={s.id}>
                 <td className="font-medium text-espresso">{s.email}</td>
-                <td className="text-cocoa capitalize">{s.source}</td>
-                <td className="whitespace-nowrap text-cocoa">{formatDateTime(s.createdAt)}</td>
+                <td className="text-muted capitalize">{s.source}</td>
+                <td className="whitespace-nowrap text-muted">{formatDateTime(s.createdAt)}</td>
                 <td>
                   <ActionForm action={deleteSubscriberAction} className="flex justify-end">
                     <input type="hidden" name="id" value={s.id} />

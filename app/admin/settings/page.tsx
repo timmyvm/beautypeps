@@ -27,7 +27,7 @@ function Section({ title, description, children }: { title: string; description:
     <div className="grid gap-6 border-b border-stone/60 py-8 first:pt-0 last:border-0 last:pb-0 lg:grid-cols-[240px_1fr]">
       <div>
         <h2 className="text-sm font-semibold text-espresso">{title}</h2>
-        <p className="mt-1 text-xs leading-relaxed text-cocoa">{description}</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">{children}</div>
     </div>
@@ -44,7 +44,7 @@ function EnvRow({ label, ok, detail }: { label: string; ok: boolean; detail: str
       )}
       <div>
         <p className="text-sm text-espresso">{label}</p>
-        <p className="text-xs text-cocoa">{detail}</p>
+        <p className="text-[13px] text-muted">{detail}</p>
       </div>
     </li>
   );
@@ -139,7 +139,7 @@ export default async function AdminSettingsPage() {
             </Section>
 
             <div className="sticky bottom-4 mt-8 flex justify-end">
-              <OpsSubmit size="md" className="shadow-lg shadow-espresso/10">
+              <OpsSubmit size="md">
                 Save settings
               </OpsSubmit>
             </div>
@@ -147,7 +147,7 @@ export default async function AdminSettingsPage() {
         </Panel>
 
         <Panel title="Environment" className="self-start">
-          <p className="mb-2 text-xs text-cocoa">Read-only. Configure these as environment variables on your host.</p>
+          <p className="mb-2 text-[13px] text-muted">Read-only. Configure these as environment variables on your host.</p>
           <ul className="divide-y divide-stone/50">
             <EnvRow
               label="Session secret"

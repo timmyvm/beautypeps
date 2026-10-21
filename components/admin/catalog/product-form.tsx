@@ -176,9 +176,9 @@ export function ProductForm({
           <Panel title="Search engine listing">
             <div className="space-y-4">
               <div className="rounded-xl border border-stone/70 bg-white/60 p-4">
-                <p className="truncate text-xs text-sage">beautypeps.com.au › products › {slug || "…"}</p>
+                <p className="truncate text-[13px] text-sage">beautypeps.com.au › products › {slug || "…"}</p>
                 <p className="mt-1 truncate text-[17px] text-[#1a0dab]">{previewTitle}</p>
-                <p className="mt-1 line-clamp-2 text-[13px] text-cocoa">{previewDescription}</p>
+                <p className="mt-1 line-clamp-2 text-[13px] text-muted">{previewDescription}</p>
               </div>
               <CountedField name="seoTitle" label="SEO title" defaultValue={seoTitle} max={70} error={e.seoTitle} onValueChange={setSeoTitle} hint="Leave blank to use the product name." />
               <CountedField
@@ -237,7 +237,7 @@ export function ProductForm({
                 <MoneyInput id="compareAtPrice" name="compareAtPrice" defaultValue={centsToInput(product?.compareAtPrice)} invalid={!!e.compareAtPrice} />
               </Field>
               {!Number.isNaN(priceCents) && priceCents > 0 && (
-                <p className="rounded-lg bg-ivory px-3 py-2 text-xs text-cocoa">
+                <p className="rounded-lg bg-ivory px-3 py-2 text-[13px] text-muted">
                   Includes {formatMoney(Math.round(priceCents / 11))} GST · ex-GST {formatMoney(priceCents - Math.round(priceCents / 11))}
                 </p>
               )}
@@ -352,10 +352,10 @@ function StockAdjuster({ productId, initialStock, threshold }: { productId: stri
 
   return (
     <div>
-      <p className="text-xs font-medium tracking-wide text-cocoa">Stock on hand</p>
+      <p className="text-[13px] font-medium text-muted">Stock on hand</p>
       <div className="mt-1 flex items-center gap-3">
-        <span className={cn("font-display text-4xl tabular-nums", tone)}>{stock}</span>
-        <span className="text-xs text-taupe">{stock <= 0 ? "Sold out" : stock <= threshold ? "Low stock" : "In stock"}</span>
+        <span className={cn("text-2xl font-semibold tabular-nums", tone)}>{stock}</span>
+        <span className="text-[13px] text-taupe">{stock <= 0 ? "Sold out" : stock <= threshold ? "Low stock" : "In stock"}</span>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <Button size="sm" variant="outline" disabled={pending || stock <= 0} onClick={() => run("delta", -1)} aria-label="Decrease stock by 1">
@@ -388,8 +388,8 @@ function StockAdjuster({ productId, initialStock, threshold }: { productId: stri
           Set
         </Button>
       </div>
-      {message && <p className={cn("mt-2 text-xs", message.ok ? "text-sage" : "text-danger")}>{message.text}</p>}
-      <p className="mt-2 text-[11px] text-taupe">Stock changes save instantly.</p>
+      {message && <p className={cn("mt-2 text-[13px]", message.ok ? "text-sage" : "text-danger")}>{message.text}</p>}
+      <p className="mt-2 text-[13px] text-taupe">Stock changes save instantly.</p>
     </div>
   );
 }

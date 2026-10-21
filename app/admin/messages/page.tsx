@@ -59,13 +59,13 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
                     <span className={cn("truncate text-sm", m.status === "new" ? "font-semibold text-espresso" : "text-espresso")}>
                       {m.name} <span className="font-normal text-taupe">· {m.email}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-taupe">{formatDateTime(m.createdAt)}</span>
+                    <span className="shrink-0 text-[13px] text-taupe">{formatDateTime(m.createdAt)}</span>
                   </span>
-                  <span className={cn("mt-0.5 block truncate text-sm", m.status === "new" ? "font-medium text-espresso" : "text-cocoa")}>
+                  <span className={cn("mt-0.5 block truncate text-sm", m.status === "new" ? "font-medium text-espresso" : "text-muted")}>
                     {m.subject}
-                    {m.orderNumber && <span className="ml-2 font-mono text-xs text-copper-dark">{m.orderNumber}</span>}
+                    {m.orderNumber && <span className="ml-2 font-mono text-[13px] text-copper-dark">{m.orderNumber}</span>}
                   </span>
-                  <span className="mt-0.5 block truncate text-xs text-taupe">{m.message}</span>
+                  <span className="mt-0.5 block truncate text-[13px] text-taupe">{m.message}</span>
                 </span>
               </Link>
             </li>

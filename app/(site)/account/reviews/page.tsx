@@ -56,32 +56,32 @@ export default async function MyReviewsPage() {
                       </Link>
                       <Badge tone={status.tone}>{status.label}</Badge>
                     </div>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-taupe">
+                    <div className="mt-1 flex items-center gap-2 text-[13px] text-taupe">
                       <Stars rating={r.rating} size={12} />
                       <span>{formatDate(r.createdAt)}</span>
                       {r.verifiedPurchase && <span>· Verified purchase</span>}
                     </div>
                   </div>
                 </div>
-                <p className="mt-4 font-display text-lg text-espresso">{r.title}</p>
-                <p className="mt-1 text-sm leading-relaxed whitespace-pre-line text-cocoa">{r.body}</p>
+                <p className="mt-4 text-base font-semibold text-espresso">{r.title}</p>
+                <p className="mt-1 text-sm leading-relaxed whitespace-pre-line text-muted">{r.body}</p>
                 {r.adminReply && (
                   <div className="mt-4 flex gap-3 rounded-xl bg-ivory p-4">
                     <MessageSquareQuote className="size-4 shrink-0 text-copper" aria-hidden />
                     <div>
-                      <p className="text-xs font-semibold text-espresso">Reply from Beauty Peps</p>
-                      <p className="mt-1 text-sm text-cocoa">{r.adminReply}</p>
+                      <p className="text-[13px] font-semibold text-espresso">Reply from Beauty Peps</p>
+                      <p className="mt-1 text-sm text-muted">{r.adminReply}</p>
                     </div>
                   </div>
                 )}
                 {r.status === "rejected" && (
-                  <p className="mt-3 text-xs text-taupe">
+                  <p className="mt-3 text-[13px] text-taupe">
                     This review wasn&apos;t published — usually because it mentioned medical claims or another brand.
                   </p>
                 )}
                 <form action={deleteReviewAction} className="mt-4 text-right">
                   <input type="hidden" name="id" value={r.id} />
-                  <ConfirmSubmit confirmMessage="Delete this review?" className="text-xs text-cocoa hover:text-danger">
+                  <ConfirmSubmit confirmMessage="Delete this review?" className="text-[13px] text-muted hover:text-danger">
                     Delete review
                   </ConfirmSubmit>
                 </form>

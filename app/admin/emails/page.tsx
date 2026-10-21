@@ -49,15 +49,15 @@ export default async function AdminEmailsPage({
     <>
       <AdminPageHeader title="Email log" description="Every email the store has generated — order updates, password resets, replies." />
 
-      <div className="mb-6 flex gap-3 rounded-xl border border-stone/70 bg-cream px-4 py-3 text-sm text-cocoa">
+      <div className="mb-6 flex gap-3 rounded-xl border border-stone/70 bg-cream px-4 py-3 text-sm text-muted">
         <Info className="mt-0.5 size-4 shrink-0 text-copper" aria-hidden />
         <p>
           {delivering ? (
             <>Emails are being delivered through Resend from <strong>{process.env.EMAIL_FROM}</strong>.</>
           ) : (
             <>
-              Emails are only <strong>logged</strong>, not delivered. Set <code className="font-mono text-xs">RESEND_API_KEY</code> and{" "}
-              <code className="font-mono text-xs">EMAIL_FROM</code> in your environment to send them for real.
+              Emails are only <strong>logged</strong>, not delivered. Set <code className="font-mono text-[13px]">RESEND_API_KEY</code> and{" "}
+              <code className="font-mono text-[13px]">EMAIL_FROM</code> in your environment to send them for real.
             </>
           )}
         </p>
@@ -108,13 +108,13 @@ export default async function AdminEmailsPage({
                     {e.subject}
                   </Link>
                 </td>
-                <td className="max-w-64 truncate text-cocoa">{e.to}</td>
+                <td className="max-w-64 truncate text-muted">{e.to}</td>
                 <td>
                   <Badge tone={emailStatusTone(e.status)} className="capitalize">
                     {e.status}
                   </Badge>
                 </td>
-                <td className="whitespace-nowrap text-cocoa">{formatDateTime(e.createdAt)}</td>
+                <td className="whitespace-nowrap text-muted">{formatDateTime(e.createdAt)}</td>
               </tr>
             ))}
           </tbody>

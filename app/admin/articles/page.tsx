@@ -25,7 +25,7 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
         title="Journal"
         description="Guides, science explainers and routines published at /learn."
         actions={
-          <ButtonLink href="/admin/articles/new" size="sm">
+          <ButtonLink href="/admin/articles/new" variant="dark" size="sm">
             <Plus className="size-4" /> New article
           </ButtonLink>
         }
@@ -61,7 +61,7 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
         <EmptyState
           title={sp.q || sp.status ? "No articles match" : "No articles yet"}
           description={sp.q || sp.status ? "Try a different search." : "Write your first guide for the Journal."}
-          action={<ButtonLink href="/admin/articles/new">New article</ButtonLink>}
+          action={<ButtonLink href="/admin/articles/new" variant="dark" size="sm">New article</ButtonLink>}
         />
       ) : (
         <DataTable>
@@ -93,14 +93,14 @@ export default async function AdminArticlesPage({ searchParams }: { searchParams
                     <span className="line-clamp-2">{a.title}</span>
                     {a.featured && <Star className="size-3.5 shrink-0 fill-copper text-copper" aria-label="Featured" />}
                   </Link>
-                  <p className="text-xs text-taupe">/learn/{a.slug}</p>
+                  <p className="text-[13px] text-taupe">/learn/{a.slug}</p>
                 </td>
-                <td className="text-cocoa">{a.category}</td>
+                <td className="text-muted">{a.category}</td>
                 <td>{a.published ? <Badge tone="sage">Published</Badge> : <Badge tone="amber">Draft</Badge>}</td>
-                <td className="whitespace-nowrap text-cocoa">{a.published ? formatDate(a.publishedAt) : "—"}</td>
-                <td className="text-right whitespace-nowrap text-cocoa">{a.readMinutes} min</td>
+                <td className="whitespace-nowrap text-muted">{a.published ? formatDate(a.publishedAt) : "—"}</td>
+                <td className="text-right whitespace-nowrap text-muted">{a.readMinutes} min</td>
                 <td className="text-right">
-                  <Link href={`/admin/articles/${a.id}`} className="text-xs font-medium text-copper-dark hover:underline">
+                  <Link href={`/admin/articles/${a.id}`} className="text-[13px] font-medium text-copper-dark hover:underline">
                     Edit
                   </Link>
                 </td>

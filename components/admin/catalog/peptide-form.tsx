@@ -138,7 +138,7 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
               </Field>
 
               <fieldset>
-                <legend className="mb-2 text-xs font-medium tracking-wide text-cocoa">Evidence level</legend>
+                <legend className="mb-2 text-[13px] font-medium text-muted">Evidence level</legend>
                 <div className="space-y-1.5">
                   {Object.entries(EVIDENCE_LEVELS).map(([value, l]) => {
                     const n = Number(value);
@@ -162,13 +162,13 @@ export function PeptideForm({ peptide }: { peptide: Peptide | null }) {
                           <span className="block text-sm font-medium text-espresso">
                             {n} · {l.label}
                           </span>
-                          <span className="block text-xs text-cocoa">{l.description}</span>
+                          <span className="block text-[13px] text-muted">{l.description}</span>
                         </span>
                       </label>
                     );
                   })}
                 </div>
-                {e.evidenceLevel && <p className="mt-1.5 text-xs text-danger">{e.evidenceLevel}</p>}
+                {e.evidenceLevel && <p className="mt-1.5 text-[13px] text-danger">{e.evidenceLevel}</p>}
               </fieldset>
             </div>
           </Panel>

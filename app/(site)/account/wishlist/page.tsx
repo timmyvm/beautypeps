@@ -42,7 +42,7 @@ export default async function WishlistPage() {
               <AddToBagButton productId={p.id} soldOut={p.stock <= 0} className="mt-4" />
               <form action={removeFromWishlistAction} className="mt-2 text-center">
                 <input type="hidden" name="productId" value={p.id} />
-                <button type="submit" className="text-xs text-cocoa underline-offset-4 hover:text-danger hover:underline">
+                <button type="submit" className="text-[13px] text-muted underline-offset-4 hover:text-danger hover:underline">
                   Remove
                 </button>
               </form>

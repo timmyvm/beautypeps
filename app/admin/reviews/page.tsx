@@ -83,11 +83,11 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
             </option>
           ))}
         </select>
-        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10" })}>
+        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10 bg-surface-2 hover:bg-stone" })}>
           Filter
         </button>
         {(sp.rating || sp.product) && (
-          <Link href={`/admin/reviews?status=${status}`} className="px-2 text-xs text-cocoa underline underline-offset-4">
+          <Link href={`/admin/reviews?status=${status}`} className="px-2 text-[13px] text-muted underline underline-offset-4">
             Clear
           </Link>
         )}
@@ -102,8 +102,8 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
         <form action={bulkApproveReviewsAction}>
           {pendingOnPage.length > 1 && (
             <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-stone/70 bg-cream px-4 py-3">
-              <p className="text-sm text-cocoa">Tick reviews to approve several at once.</p>
-              <button type="submit" className={buttonClasses({ size: "sm" })}>
+              <p className="text-sm text-muted">Tick reviews to approve several at once.</p>
+              <button type="submit" className={buttonClasses({ variant: "dark", size: "sm" })}>
                 Approve selected
               </button>
             </div>
@@ -127,7 +127,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                   </Link>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <Link href={`/admin/products/${r.productId}`} className="text-xs font-medium text-copper-dark hover:underline">
+                      <Link href={`/admin/products/${r.productId}`} className="text-[13px] font-medium text-copper-dark hover:underline">
                         {r.productName}
                       </Link>
                       <Badge tone={REVIEW_STATUSES[r.status].tone}>{REVIEW_STATUSES[r.status].label}</Badge>
@@ -136,9 +136,9 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                       <Stars rating={r.rating} />
                       <h2 className="font-medium text-espresso">{r.title}</h2>
                     </div>
-                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-cocoa">{r.body}</p>
-                    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-taupe">
-                      <span className="font-medium text-cocoa">{r.authorName}</span>
+                    <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-muted">{r.body}</p>
+                    <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-taupe">
+                      <span className="font-medium text-muted">{r.authorName}</span>
                       {r.verifiedPurchase && (
                         <span className="inline-flex items-center gap-1 text-sage">
                           <BadgeCheck className="size-3.5" aria-hidden /> Verified purchase
@@ -149,8 +149,8 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                     </p>
 
                     {r.adminReply && (
-                      <div className="mt-3 rounded-xl border-l-2 border-copper bg-ivory px-4 py-2.5 text-sm text-cocoa">
-                        <p className="mb-0.5 text-[11px] font-semibold tracking-wider text-copper-dark uppercase">Beauty Peps replied</p>
+                      <div className="mt-3 rounded-xl border-l-2 border-copper bg-ivory px-4 py-2.5 text-sm text-muted">
+                        <p className="mb-0.5 text-[13px] font-semibold text-copper-dark">Beauty Peps replied</p>
                         {r.adminReply}
                       </div>
                     )}
@@ -176,7 +176,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                     </div>
 
                     <details className="group mt-3">
-                      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs font-medium text-cocoa hover:text-espresso">
+                      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-[13px] font-medium text-muted hover:text-espresso">
                         <MessageSquareReply className="size-3.5" aria-hidden />
                         {r.adminReply ? "Edit reply" : "Reply publicly"}
                       </summary>
@@ -194,11 +194,11 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                           <button
                             type="submit"
                             formAction={replyToReviewAction.bind(null, r.id)}
-                            className={buttonClasses({ variant: "outline", size: "sm" })}
+                            className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}
                           >
                             Save reply
                           </button>
-                          <span className="text-[11px] text-taupe">Shown under the review on the product page. Leave empty to remove.</span>
+                          <span className="text-[13px] text-taupe">Shown under the review on the product page. Leave empty to remove.</span>
                         </div>
                       </div>
                     </details>
@@ -210,7 +210,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
         </form>
       )}
 
-      <p className="mt-4 text-xs text-taupe">{total} review{total === 1 ? "" : "s"}</p>
+      <p className="mt-4 text-[13px] text-taupe">{total} review{total === 1 ? "" : "s"}</p>
       <Pagination page={page} pageCount={pageCount} basePath="/admin/reviews" searchParams={{ ...sp, status }} />
     </>
   );

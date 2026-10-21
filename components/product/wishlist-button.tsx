@@ -1,11 +1,11 @@
 "use client";
 
-import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toggleWishlistAction } from "@/lib/actions/wishlist";
 import { cn } from "@/lib/utils";
 
+/** Save / unsave as a plain text action (the page has one primary button: Add to bag). */
 export function WishlistButton({
   productId,
   productSlug,
@@ -40,13 +40,9 @@ export function WishlistButton({
       onClick={toggle}
       disabled={pending}
       aria-pressed={wishlisted}
-      aria-label={wishlisted ? "Remove from wishlist" : "Save to wishlist"}
-      className={cn(
-        "grid size-12 shrink-0 place-items-center rounded-full border border-stone bg-cream text-espresso transition-colors hover:border-copper hover:text-copper-dark",
-        className,
-      )}
+      className={cn("press text-body text-ink underline underline-offset-4 disabled:opacity-60", className)}
     >
-      <Heart className={cn("size-5 transition-colors", wishlisted && "fill-copper text-copper")} aria-hidden />
+      {wishlisted ? "Saved to your wishlist (remove)" : "Save to wishlist"}
     </button>
   );
 }

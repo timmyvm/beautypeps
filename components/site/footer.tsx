@@ -17,7 +17,7 @@ export async function Footer() {
       <h2 className="sr-only">About Beauty Peps</h2>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-12">
         {/* Statement + newsletter + legal */}
-        <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-4 md:min-h-[300px]">
+        <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-6 md:min-h-[300px] lg:col-span-4">
           <div>
             <p className="max-w-[26ch] text-lead font-medium">
               Cosmetic peptides, dosed in full and graded honestly. Made in Melbourne.
@@ -34,7 +34,7 @@ export async function Footer() {
         </div>
 
         {/* Navigation */}
-        <nav aria-label="Footer" className="col-span-2 bg-field-frost p-6 md:col-span-4 lg:col-span-3">
+        <nav aria-label="Footer" className="col-span-2 bg-field-frost p-6 md:col-span-6 lg:col-span-4">
           <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-body">
             {FOOTER_LINKS.map((l) => (
               <li key={l.href}>
@@ -47,7 +47,7 @@ export async function Footer() {
         </nav>
 
         {/* Local time */}
-        <div className="flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-2">
+        <div className="col-span-2 flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-6 lg:col-span-2">
           <p className="text-body">Melbourne</p>
           <p className="text-lead font-medium">
             <MelbourneTime initial={timeFmt.format(new Date())} />
@@ -56,10 +56,12 @@ export async function Footer() {
         </div>
 
         {/* Email */}
-        <div className="flex flex-col justify-between gap-6 bg-field-stone p-6 md:col-span-2 lg:col-span-3">
+        <div className="col-span-2 flex flex-col justify-between gap-6 bg-field-stone p-6 md:col-span-6 lg:col-span-2">
           <p className="text-body">Questions about a formula or an order</p>
-          <a href={`mailto:${settings.supportEmail}`} className="link-quiet text-lead font-medium break-all">
-            {settings.supportEmail}
+          <a href={`mailto:${settings.supportEmail}`} className="link-quiet text-body font-medium">
+            {settings.supportEmail.split("@")[0]}@
+            <wbr />
+            {settings.supportEmail.split("@")[1]}
           </a>
         </div>
 

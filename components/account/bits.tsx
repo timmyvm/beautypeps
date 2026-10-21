@@ -18,14 +18,14 @@ export function AccountHeading({
   return (
     <div className="mb-8">
       {back && (
-        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-xs text-cocoa hover:text-espresso">
+        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-[13px] text-muted hover:text-espresso">
           <ChevronLeft className="size-3.5" aria-hidden /> {back.label}
         </Link>
       )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl leading-tight text-espresso md:text-4xl">{title}</h1>
-          {description && <p className="mt-2 text-sm leading-relaxed text-cocoa">{description}</p>}
+          <h1 className="text-2xl font-semibold leading-tight text-espresso md:text-4xl">{title}</h1>
+          {description && <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p>}
         </div>
         {action && <div className="flex flex-wrap gap-2">{action}</div>}
       </div>
@@ -53,7 +53,7 @@ export function Pager({ page, pageCount, basePath }: { page: number; pageCount: 
   if (pageCount <= 1) return null;
   const href = (p: number) => (p > 1 ? `${basePath}?page=${p}` : basePath);
   return (
-    <nav aria-label="Pagination" className="mt-8 flex items-center justify-between text-sm text-cocoa">
+    <nav aria-label="Pagination" className="mt-8 flex items-center justify-between text-sm text-muted">
       <span>
         Page {page} of {pageCount}
       </span>

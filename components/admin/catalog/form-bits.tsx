@@ -36,7 +36,7 @@ export function SaveBar({
         </div>
         <div className="flex items-center gap-2">
           {extra}
-          <Button type="submit" disabled={pending} aria-busy={pending}>
+          <Button type="submit" variant="dark" size="sm" disabled={pending} aria-busy={pending}>
             {pending && <Loader2 className="size-4 animate-spin" aria-hidden />}
             {pending ? "Saving…" : label}
           </Button>
@@ -70,7 +70,7 @@ export function Toggle({
     <label htmlFor={id} className="flex cursor-pointer items-start justify-between gap-4">
       <span>
         <span className="block text-sm font-medium text-espresso">{label}</span>
-        {description && <span className="mt-0.5 block text-xs text-cocoa">{description}</span>}
+        {description && <span className="mt-0.5 block text-[13px] text-muted">{description}</span>}
       </span>
       <span className="relative mt-0.5 inline-flex shrink-0">
         <input
@@ -110,19 +110,19 @@ export function CheckboxGroup({
 }) {
   return (
     <fieldset>
-      {label && <legend className="mb-2 text-xs font-medium tracking-wide text-cocoa">{label}</legend>}
+      {label && <legend className="mb-2 text-[13px] font-medium text-muted">{label}</legend>}
       <div className={cn("grid gap-2", columns === 2 && "sm:grid-cols-2")}>
         {options.map((o) => (
           <label key={o.value} className="flex cursor-pointer items-start gap-2.5 text-sm text-espresso">
             <Checkbox name={name} value={o.value} defaultChecked={defaultValue.includes(o.value)} className="mt-0.5" />
             <span>
               {o.label}
-              {o.description && <span className="block text-xs text-taupe">{o.description}</span>}
+              {o.description && <span className="block text-[13px] text-taupe">{o.description}</span>}
             </span>
           </label>
         ))}
       </div>
-      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1.5 text-[13px] text-danger">{error}</p>}
     </fieldset>
   );
 }
@@ -167,15 +167,15 @@ export function CountedField({
     <div>
       <div className="flex items-end justify-between">
         <Label htmlFor={id}>{label}</Label>
-        <span className={cn("mb-1.5 text-[11px] tabular-nums", over ? "text-danger" : "text-taupe")}>
+        <span className={cn("mb-1.5 text-[13px] tabular-nums", over ? "text-danger" : "text-taupe")}>
           {value.length}/{max}
         </span>
       </div>
       {multiline ? <Textarea {...props} rows={3} className="min-h-20" /> : <Input {...props} />}
       {error ? (
-        <p className="mt-1.5 text-xs text-danger">{error}</p>
+        <p className="mt-1.5 text-[13px] text-danger">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-xs text-taupe">{hint}</p>
+        <p className="mt-1.5 text-[13px] text-taupe">{hint}</p>
       ) : null}
     </div>
   );
@@ -236,7 +236,7 @@ export function RepeatableRows({
   return (
     <div>
       <input type="hidden" name={name} value={JSON.stringify(serialised)} />
-      <p className="mb-2 text-xs font-medium tracking-wide text-cocoa">{label}</p>
+      <p className="mb-2 text-[13px] font-medium text-muted">{label}</p>
       {rows.length === 0 && <p className="mb-3 text-sm text-taupe">None yet.</p>}
       <ul className="space-y-3">
         {rows.map((row, index) => (
@@ -269,7 +269,7 @@ export function RepeatableRows({
               type="button"
               onClick={() => setRows((prev) => prev.filter((r) => r._id !== row._id))}
               aria-label="Remove row"
-              className="absolute top-3 right-3 grid size-8 place-items-center rounded-full text-cocoa hover:bg-danger-light hover:text-danger"
+              className="absolute top-3 right-3 grid size-8 place-items-center rounded-full text-muted hover:bg-danger-light hover:text-danger"
             >
               <Trash2 className="size-4" />
             </button>
@@ -279,14 +279,14 @@ export function RepeatableRows({
       <button
         type="button"
         onClick={() => setRows((prev) => [...prev, { ...blank(), _id: newRowId() }])}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-taupe px-4 py-2 text-xs font-medium text-cocoa hover:border-espresso hover:text-espresso"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-taupe px-4 py-2 text-[13px] font-medium text-muted hover:border-espresso hover:text-espresso"
       >
         <Plus className="size-3.5" /> {addLabel}
       </button>
       {error ? (
-        <p className="mt-1.5 text-xs text-danger">{error}</p>
+        <p className="mt-1.5 text-[13px] text-danger">{error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-xs text-taupe">{hint}</p>
+        <p className="mt-1.5 text-[13px] text-taupe">{hint}</p>
       ) : null}
     </div>
   );

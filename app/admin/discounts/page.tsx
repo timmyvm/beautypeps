@@ -43,7 +43,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
         title="Discounts"
         description="Codes customers can apply in their bag or at checkout."
         actions={
-          <ButtonLink href="/admin/discounts/new" size="sm">
+          <ButtonLink href="/admin/discounts/new" variant="dark" size="sm">
             <Plus className="size-4" /> New discount
           </ButtonLink>
         }
@@ -59,7 +59,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
         <EmptyState
           title="No discount codes yet"
           description="Create a code for a launch, a loyal customer or an influencer campaign."
-          action={<ButtonLink href="/admin/discounts/new">Create a discount</ButtonLink>}
+          action={<ButtonLink href="/admin/discounts/new" variant="dark" size="sm">Create a discount</ButtonLink>}
         />
       ) : (
         <DataTable>
@@ -85,7 +85,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
                     <Link href={`/admin/discounts/${d.id}`} className="font-mono font-medium text-espresso hover:text-copper-dark">
                       {d.code}
                     </Link>
-                    {d.description && <span className="block max-w-56 truncate text-xs text-taupe">{d.description}</span>}
+                    {d.description && <span className="block max-w-56 truncate text-[13px] text-taupe">{d.description}</span>}
                   </td>
                   <td className="whitespace-nowrap">{describeValue(d)}</td>
                   <td className="text-right tabular-nums">{d.minSubtotal ? formatMoney(d.minSubtotal) : "—"}</td>
@@ -93,7 +93,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
                     {d.usedCount}
                     {d.maxUses !== null ? ` / ${d.maxUses}` : ""}
                   </td>
-                  <td className="text-xs whitespace-nowrap text-cocoa">
+                  <td className="text-[13px] whitespace-nowrap text-muted">
                     {d.startsAt || d.endsAt ? `${d.startsAt ? formatDate(d.startsAt) : "Now"} → ${d.endsAt ? formatDate(d.endsAt) : "No end"}` : "Always"}
                   </td>
                   <td>
@@ -101,7 +101,7 @@ export default async function AdminDiscountsPage({ searchParams }: { searchParam
                   </td>
                   <td>
                     <div className="flex justify-end gap-2">
-                      <Link href={`/admin/discounts/${d.id}`} className="rounded-full px-3 py-1.5 text-xs text-cocoa hover:bg-espresso/5">
+                      <Link href={`/admin/discounts/${d.id}`} className="rounded-full px-3 py-1.5 text-[13px] text-muted hover:bg-espresso/5">
                         Edit
                       </Link>
                       <ActionForm action={toggleDiscountAction}>

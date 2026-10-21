@@ -19,14 +19,14 @@ export function AdminPageHeader({
   return (
     <div className="mb-8">
       {back && (
-        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-xs text-cocoa hover:text-espresso">
+        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-[13px] text-muted hover:text-espresso">
           <ChevronLeft className="size-3.5" /> {back.label}
         </Link>
       )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl text-espresso">{title}</h1>
-          {description && <p className="mt-1.5 text-sm text-cocoa">{description}</p>}
+          <h1 className="text-2xl font-semibold text-espresso">{title}</h1>
+          {description && <p className="mt-1.5 text-sm text-muted">{description}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>
@@ -74,11 +74,11 @@ export function StatCard({
   return (
     <div className="rounded-2xl border border-stone/70 bg-cream p-5">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium tracking-wide text-cocoa">{label}</p>
+        <p className="text-[13px] font-medium text-muted">{label}</p>
         {icon && <span className="text-copper">{icon}</span>}
       </div>
-      <p className="mt-3 font-display text-3xl text-espresso">{value}</p>
-      {hint && <p className="mt-1 text-xs text-taupe">{hint}</p>}
+      <p className="mt-3 text-2xl font-semibold text-espresso">{value}</p>
+      {hint && <p className="mt-1 text-[13px] text-taupe">{hint}</p>}
     </div>
   );
 }
@@ -90,7 +90,7 @@ export function DataTable({ children, className }: { children: ReactNode; classN
       <table
         className={cn(
           "w-full min-w-[640px] text-left text-sm",
-          "[&_th]:border-b [&_th]:border-stone/60 [&_th]:bg-ivory/60 [&_th]:px-4 [&_th]:py-3 [&_th]:text-[11px] [&_th]:font-semibold [&_th]:tracking-wider [&_th]:text-cocoa [&_th]:uppercase",
+          "[&_th]:border-b [&_th]:border-stone/60 [&_th]:bg-ivory/60 [&_th]:px-4 [&_th]:py-3 [&_th]:text-[13px] [&_th]:font-semibold [&_th]:tracking-wider [&_th]:text-muted [&_th]:uppercase",
           "[&_td]:border-b [&_td]:border-stone/40 [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle",
           "[&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-ivory/40",
         )}
@@ -122,7 +122,7 @@ export function Pagination({
     return s ? `${basePath}?${s}` : basePath;
   };
   return (
-    <div className="mt-6 flex items-center justify-between text-sm text-cocoa">
+    <div className="mt-6 flex items-center justify-between text-sm text-muted">
       <span>
         Page {page} of {pageCount}
       </span>
@@ -168,8 +168,8 @@ export function FilterTabs({
             key={o.value || "all"}
             href={qs.toString() ? `${basePath}?${qs}` : basePath}
             className={cn(
-              "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
-              active ? "border-espresso bg-espresso text-cream" : "border-stone bg-cream text-cocoa hover:border-taupe",
+              "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+              active ? "border-espresso bg-espresso text-cream" : "border-stone bg-cream text-muted hover:border-taupe",
             )}
           >
             {o.label}

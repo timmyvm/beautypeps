@@ -72,7 +72,7 @@ function StrengthMeter({ value }: { value: string }) {
           />
         ))}
       </div>
-      <p className="mt-1.5 text-xs text-taupe">
+      <p className="mt-1.5 text-[13px] text-taupe">
         {value ? `${level.label} · ` : ""}At least 8 characters. Longer, with a mix of cases, numbers and symbols, is
         stronger.
       </p>

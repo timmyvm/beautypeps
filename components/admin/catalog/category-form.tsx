@@ -61,7 +61,7 @@ export function CategoryForm({ category }: { category: Category | null }) {
       <Field label="Sort order" htmlFor="cat-sort" error={e.sortOrder} hint="Lower numbers appear first.">
         <Input id="cat-sort" name="sortOrder" type="number" defaultValue={category?.sortOrder ?? 0} className="max-w-32" />
       </Field>
-      <Button type="submit" disabled={pending} aria-busy={pending}>
+      <Button type="submit" variant="dark" size="sm" disabled={pending} aria-busy={pending}>
         {pending ? "Saving…" : category ? "Save category" : "Create category"}
       </Button>
     </form>

@@ -18,7 +18,7 @@ function Hidden({ orderId, to }: { orderId: string; to: string }) {
 
 function NotifyToggle({ defaultChecked = true }: { defaultChecked?: boolean }) {
   return (
-    <label className="flex items-center gap-2 text-xs text-cocoa">
+    <label className="flex items-center gap-2 text-[13px] text-muted">
       <Checkbox name="notify" defaultChecked={defaultChecked} /> Email the customer
     </label>
   );
@@ -31,7 +31,7 @@ function Row({ icon, title, description, children }: { icon: React.ReactNode; ti
         <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-ivory text-copper-dark">{icon}</span>
         <div>
           <p className="text-sm font-medium text-espresso">{title}</p>
-          <p className="text-xs text-cocoa">{description}</p>
+          <p className="text-[13px] text-muted">{description}</p>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-3 sm:justify-end">{children}</div>
@@ -43,7 +43,7 @@ function Row({ icon, title, description, children }: { icon: React.ReactNode; ti
 export function OrderActions({ order, restocked }: { order: Order; restocked: boolean }) {
   const moves = allowedTransitions(order);
   if (moves.length === 0) {
-    return <p className="text-sm text-cocoa">This order is closed — no further status changes are available.</p>;
+    return <p className="text-sm text-muted">This order is closed — no further status changes are available.</p>;
   }
 
   return (
@@ -57,7 +57,7 @@ export function OrderActions({ order, restocked }: { order: Order; restocked: bo
             description={`Confirm ${formatMoney(order.total)} received with reference ${order.orderNumber}.`}
           >
             <NotifyToggle />
-            <OpsSubmit variant="copper">Mark as paid</OpsSubmit>
+            <OpsSubmit variant="dark">Mark as paid</OpsSubmit>
           </Row>
         </ActionForm>
       )}
@@ -67,7 +67,7 @@ export function OrderActions({ order, restocked }: { order: Order; restocked: bo
           <Hidden orderId={order.id} to="processing" />
           <Row icon={<PackageOpen className="size-4" />} title="Start packing" description="Moves the order to “Packing”.">
             <NotifyToggle defaultChecked={false} />
-            <OpsSubmit variant={moves.includes("paid") ? "outline" : "primary"}>Mark as packing</OpsSubmit>
+            <OpsSubmit variant={moves.includes("paid") ? "outline" : "dark"}>Mark as packing</OpsSubmit>
           </Row>
         </ActionForm>
       )}
@@ -81,7 +81,7 @@ export function OrderActions({ order, restocked }: { order: Order; restocked: bo
             </span>
             <div className="flex-1">
               <p className="text-sm font-medium text-espresso">Mark as shipped</p>
-              <p className="text-xs text-cocoa">Adds tracking to the order and the customer&apos;s account.</p>
+              <p className="text-[13px] text-muted">Adds tracking to the order and the customer&apos;s account.</p>
               <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1.4fr]">
                 <ActionField name="trackingCarrier" label="Carrier">
                   <Input id="trackingCarrier" name="trackingCarrier" defaultValue={order.trackingCarrier ?? "Australia Post"} />
@@ -123,7 +123,7 @@ export function OrderActions({ order, restocked }: { order: Order; restocked: bo
             title="Cancel order"
             description={order.paymentStatus === "paid" ? "Payment was received — refund it separately after cancelling." : "Releases the order without payment."}
           >
-            <label className="flex items-center gap-2 text-xs text-cocoa">
+            <label className="flex items-center gap-2 text-[13px] text-muted">
               <Checkbox name="restock" defaultChecked /> Restock items
             </label>
             <NotifyToggle />
@@ -141,7 +141,7 @@ export function OrderActions({ order, restocked }: { order: Order; restocked: bo
             description={`Record a full refund of ${formatMoney(order.total)}. Send the money back via your bank first.`}
           >
             {!restocked && (
-              <label className="flex items-center gap-2 text-xs text-cocoa">
+              <label className="flex items-center gap-2 text-[13px] text-muted">
                 <Checkbox name="restock" defaultChecked={order.status !== "shipped" && order.status !== "delivered"} /> Restock items
               </label>
             )}

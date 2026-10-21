@@ -45,7 +45,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
       <section className="self-start rounded-2xl border border-stone/70 bg-cream">
         <div className="flex items-center justify-between gap-4 border-b border-stone/60 px-5 py-4">
           <h2 className="text-sm font-semibold text-espresso">Orders ready to ship ({orders.length})</h2>
-          <label className="flex items-center gap-2 text-xs text-cocoa">
+          <label className="flex items-center gap-2 text-[13px] text-muted">
             <Checkbox
               checked={allChecked}
               onChange={() => setSelected(allChecked ? new Set() : new Set(orders.map((o) => o.id)))}
@@ -54,7 +54,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
           </label>
         </div>
         {orders.length === 0 ? (
-          <p className="p-5 text-sm text-cocoa">No paid or packing orders right now.</p>
+          <p className="p-5 text-sm text-muted">No paid or packing orders right now.</p>
         ) : (
           <ul className="max-h-[560px] divide-y divide-stone/50 overflow-y-auto">
             {orders.map((o) => (
@@ -65,15 +65,15 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
                     <span className="block text-sm font-medium text-espresso">
                       {o.orderNumber} · {o.name}
                     </span>
-                    <span className="block text-xs text-taupe">
+                    <span className="block text-[13px] text-taupe">
                       {o.suburb} {o.state} {o.postcode} · {o.units} {o.units === 1 ? "item" : "items"} · {o.placed}
                     </span>
                   </span>
-                  <span className="flex flex-col items-end gap-1 text-[11px]">
+                  <span className="flex flex-col items-end gap-1 text-[13px]">
                     <span
                       className={cn(
                         "rounded-full px-2 py-0.5 font-semibold",
-                        o.method === "express" ? "bg-copper-light text-copper-dark" : "bg-sand text-cocoa",
+                        o.method === "express" ? "bg-copper-light text-copper-dark" : "bg-sand text-muted",
                       )}
                     >
                       {o.method === "express" ? "EXP" : "PP"}
@@ -135,7 +135,7 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
               <Input id="s_email" name="s_email" type="email" defaultValue={sender.email} maxLength={50} />
             </Field>
           </div>
-          <p className="mt-3 text-xs text-taupe">Remembered on this browser after your first export.</p>
+          <p className="mt-3 text-[13px] text-taupe">Remembered on this browser after your first export.</p>
         </section>
 
         {/* Parcel */}
@@ -185,32 +185,32 @@ export function AuspostForm({ orders, sender }: { orders: AuspostOrderRow[]; sen
                 ))}
               </div>
             )}
-            <label className="col-span-2 flex items-center gap-2 text-sm text-cocoa">
+            <label className="col-span-2 flex items-center gap-2 text-sm text-muted">
               <Checkbox name="notify" defaultChecked /> Send tracking notifications to the customer
             </label>
-            <label className="col-span-2 flex items-center gap-2 text-sm text-cocoa">
+            <label className="col-span-2 flex items-center gap-2 text-sm text-muted">
               <Checkbox name="signature" /> Signature on delivery
             </label>
           </div>
-          <p className="mt-3 text-xs text-taupe">
+          <p className="mt-3 text-[13px] text-taupe">
             Standard orders export as <strong>PP</strong> (Parcel Post), express as <strong>EXP</strong> (Express Post).
           </p>
         </section>
 
         <div className="flex flex-wrap gap-3">
-          <button type="submit" disabled={selected.size === 0} className={buttonClasses({ variant: "copper" })}>
+          <button type="submit" disabled={selected.size === 0} className={buttonClasses({ variant: "dark", size: "sm" })}>
             <Download className="size-4" /> Download CSV ({selected.size})
           </button>
           <button
             type="submit"
             formAction={markOrdersPackingAction}
             disabled={paidSelected === 0}
-            className={buttonClasses({ variant: "outline" })}
+            className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}
           >
             <PackageCheck className="size-4" /> Mark {paidSelected} paid as packing
           </button>
         </div>
-        <p className="text-xs leading-relaxed text-taupe">
+        <p className="text-[13px] leading-relaxed text-taupe">
           Upload the file at MyPost Business → Send a parcel → Import. Don&apos;t open it in Excel first — Excel strips
           leading zeros from phone numbers and postcodes.
         </p>

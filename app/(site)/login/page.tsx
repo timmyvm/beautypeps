@@ -33,9 +33,9 @@ export default async function LoginPage({
           <Link href={registerHref} className="font-medium text-copper-dark hover:underline">
             Create an account
           </Link>
-          <span className="mt-2 block text-xs text-taupe">
+          <span className="mt-2 block text-[13px] text-taupe">
             Checked out as a guest?{" "}
-            <Link href="/track" className="underline hover:text-cocoa">
+            <Link href="/track" className="underline hover:text-muted">
               Track your order
             </Link>{" "}
             with your order number and email.

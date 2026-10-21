@@ -21,7 +21,7 @@ export default async function AdminCategoriesPage({
       <AdminPageHeader title="Categories" description="Group products in the shop navigation and filters." />
       <Notice value={sp.notice} />
       {sp.moved && (
-        <p className="-mt-3 mb-6 text-xs text-cocoa">
+        <p className="-mt-3 mb-6 text-[13px] text-muted">
           {sp.moved} product{sp.moved === "1" ? " is" : "s are"} now uncategorised —{" "}
           <Link href="/admin/products?category=none" className="underline underline-offset-4">
             review them
@@ -59,7 +59,7 @@ export default async function AdminCategoriesPage({
                       <Link href={`/admin/categories/${c.id}`} className="font-medium text-espresso hover:text-copper-dark">
                         {c.name}
                       </Link>
-                      <p className="text-xs text-taupe">
+                      <p className="text-[13px] text-taupe">
                         /{c.slug}
                         {c.tagline ? ` · ${c.tagline}` : ""}
                       </p>
@@ -69,9 +69,9 @@ export default async function AdminCategoriesPage({
                         {c.productCount}
                       </Link>
                     </td>
-                    <td className="text-right text-cocoa tabular-nums">{c.sortOrder}</td>
+                    <td className="text-right text-muted tabular-nums">{c.sortOrder}</td>
                     <td className="text-right">
-                      <Link href={`/admin/categories/${c.id}`} className="text-xs font-medium text-copper-dark hover:underline">
+                      <Link href={`/admin/categories/${c.id}`} className="text-[13px] font-medium text-copper-dark hover:underline">
                         Edit
                       </Link>
                     </td>

@@ -11,8 +11,8 @@ export function SortSelect({ options, value }: { options: { value: string; label
   const [pending, startTransition] = useTransition();
 
   return (
-    <label className={cn("flex items-center gap-2 text-sm text-cocoa", pending && "opacity-60")}>
-      <span className="whitespace-nowrap">Sort by</span>
+    <label className={cn("flex items-center gap-3 text-body", pending && "opacity-60")}>
+      <span className="whitespace-nowrap">Sort</span>
       <select
         value={value}
         onChange={(e) => {
@@ -21,7 +21,7 @@ export function SortSelect({ options, value }: { options: { value: string; label
           else qs.set("sort", e.target.value);
           startTransition(() => router.push(qs.toString() ? `${pathname}?${qs}` : pathname, { scroll: false }));
         }}
-        className="select-chevron h-10 appearance-none rounded-full border border-stone bg-cream pr-9 pl-4 text-sm text-espresso focus:border-copper focus:outline-none"
+        className="select-chevron h-11 appearance-none bg-white pr-10 pl-4 text-body text-ink focus:outline-2 focus:outline-accent"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>

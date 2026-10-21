@@ -65,7 +65,7 @@ export default async function AccountOverviewPage({
       {stats.pendingPayment.length > 0 && (
         <section className="mt-8 rounded-2xl border border-amber/30 bg-amber-light/50 p-5 sm:p-6" aria-labelledby="attention">
           <p className="eyebrow mb-1 text-amber!">Needs your attention</p>
-          <h2 id="attention" className="font-display text-xl text-espresso">
+          <h2 id="attention" className="text-lg font-semibold text-espresso">
             {stats.pendingPayment.length === 1
               ? "1 order is awaiting payment"
               : `${stats.pendingPayment.length} orders are awaiting payment`}
@@ -74,8 +74,8 @@ export default async function AccountOverviewPage({
             {stats.pendingPayment.map((o) => (
               <li key={o.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                 <div className="text-sm">
-                  <span className="font-mono font-medium tracking-wide text-espresso">{o.orderNumber}</span>
-                  <span className="text-cocoa"> · placed {formatDate(o.createdAt)} · {formatMoney(o.total)}</span>
+                  <span className="font-mono font-medium text-espresso">{o.orderNumber}</span>
+                  <span className="text-muted"> · placed {formatDate(o.createdAt)} · {formatMoney(o.total)}</span>
                 </div>
                 <Link
                   href={`/account/orders/${o.orderNumber}`}
@@ -92,7 +92,7 @@ export default async function AccountOverviewPage({
       <div className="mt-8 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="p-0">
           <div className="flex items-center justify-between border-b border-stone/60 px-6 py-4">
-            <h2 className="font-display text-xl text-espresso">Recent orders</h2>
+            <h2 className="text-lg font-semibold text-espresso">Recent orders</h2>
             {recent.total > 0 && (
               <Link href="/account/orders" className="text-sm text-copper-dark hover:underline">
                 View all
@@ -101,7 +101,7 @@ export default async function AccountOverviewPage({
           </div>
           {recent.orders.length === 0 ? (
             <div className="px-6 py-10 text-center">
-              <p className="text-sm text-cocoa">You haven&apos;t placed an order yet.</p>
+              <p className="text-sm text-muted">You haven&apos;t placed an order yet.</p>
               <ButtonLink href="/shop" size="sm" className="mt-4">
                 Explore the collection
               </ButtonLink>
@@ -115,8 +115,8 @@ export default async function AccountOverviewPage({
                     className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 transition-colors hover:bg-ivory/60"
                   >
                     <div>
-                      <p className="font-mono text-sm font-medium tracking-wide text-espresso">{o.orderNumber}</p>
-                      <p className="mt-0.5 text-xs text-cocoa">
+                      <p className="font-mono text-sm font-medium text-espresso">{o.orderNumber}</p>
+                      <p className="mt-0.5 text-[13px] text-muted">
                         {formatDate(o.createdAt)} · {pluralize(o.itemCount, "item")}
                       </p>
                     </div>
@@ -137,14 +137,14 @@ export default async function AccountOverviewPage({
               <h2 className="flex items-center gap-2 text-sm font-semibold text-espresso">
                 <MapPin className="size-4 text-copper" aria-hidden /> Default address
               </h2>
-              <Link href="/account/addresses" className="text-xs text-copper-dark hover:underline">
+              <Link href="/account/addresses" className="text-[13px] text-copper-dark hover:underline">
                 Manage
               </Link>
             </div>
             {defaultAddress ? (
               <AddressBlock address={defaultAddress} />
             ) : (
-              <p className="text-sm text-cocoa">
+              <p className="text-sm text-muted">
                 No saved addresses yet.{" "}
                 <Link href="/account/addresses/new" className="text-copper-dark underline">
                   Add one
@@ -171,11 +171,11 @@ export default async function AccountOverviewPage({
 function Stat({ icon, label, value, href }: { icon: React.ReactNode; label: string; value: string; href?: string }) {
   const body = (
     <>
-      <div className="flex items-center justify-between text-cocoa">
-        <span className="text-xs font-medium tracking-wide">{label}</span>
+      <div className="flex items-center justify-between text-muted">
+        <span className="text-[13px] font-medium">{label}</span>
         <span className="text-copper">{icon}</span>
       </div>
-      <p className="mt-3 font-display text-3xl text-espresso">{value}</p>
+      <p className="mt-3 text-2xl font-semibold text-espresso">{value}</p>
     </>
   );
   const cls = "block rounded-2xl border border-stone/70 bg-cream p-5";
@@ -193,7 +193,7 @@ function QuickLink({ href, icon, label }: { href: string; icon: React.ReactNode;
     <li>
       <Link
         href={href}
-        className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-cocoa transition-colors hover:bg-ivory hover:text-espresso"
+        className="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-ivory hover:text-espresso"
       >
         <span className="flex items-center gap-2.5">
           <span className="text-copper">{icon}</span>

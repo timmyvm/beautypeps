@@ -55,7 +55,7 @@ export function ArticleForm({ article }: { article: Article | null }) {
                     if (!slugTouched) setSlug(slugify(ev.target.value));
                   }}
                   aria-invalid={!!e.title}
-                  className="h-12 font-display text-lg"
+                  className="h-12 text-base font-semibold"
                 />
               </Field>
               <Field label="URL slug" htmlFor="slug" error={e.slug} hint={`/learn/${slug || "…"}`}>

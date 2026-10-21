@@ -47,7 +47,7 @@ export function ProfileForm({
       <Field label="Mobile (optional)" htmlFor="phone" error={e.phone}>
         <Input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={v?.phone ?? user.phone ?? ""} aria-invalid={!!e.phone} />
       </Field>
-      <label className="flex items-start gap-3 text-sm text-cocoa">
+      <label className="flex items-start gap-3 text-sm text-muted">
         <Checkbox
           name="marketing"
           className="mt-0.5"

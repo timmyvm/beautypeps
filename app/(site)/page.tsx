@@ -45,7 +45,7 @@ export default async function HomePage() {
 
       <SpecimenHero products={products} />
 
-      <section className="container-bp mt-24 lg:mt-40" aria-labelledby="catalogue-title">
+      <section className="container-bp mt-24 pt-3 lg:mt-40" aria-labelledby="catalogue-title">
         <h2 id="catalogue-title" className="display-type mb-4 text-head" data-reveal="">
           All {products.length} formulas
         </h2>

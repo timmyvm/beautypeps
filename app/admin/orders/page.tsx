@@ -35,10 +35,10 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
         description={`${total} ${total === 1 ? "order" : "orders"}${sp.status ? ` · ${ORDER_STATUSES[sp.status as OrderStatus]?.label ?? ""}` : ""}${hasFilters ? " matching your filters" : ""}.`}
         actions={
           <>
-            <Link href="/admin/orders/auspost" className={buttonClasses({ variant: "outline", size: "sm" })}>
+            <Link href="/admin/orders/auspost" className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
               <Truck className="size-4" /> Australia Post CSV
             </Link>
-            <a href={exportHref} className={buttonClasses({ variant: "outline", size: "sm" })}>
+            <a href={exportHref} className={buttonClasses({ variant: "outline", size: "sm", className: "bg-surface-2 hover:bg-stone" })}>
               <Download className="size-4" /> Export CSV
             </a>
           </>
@@ -63,21 +63,21 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
           <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-taupe" aria-hidden />
           <Input name="q" defaultValue={sp.q} placeholder="Order #, email, name, tracking…" className="pl-10" />
         </label>
-        <label className="text-xs text-cocoa">
+        <label className="text-[13px] text-muted">
           <span className="mb-1 block">From</span>
           <Input type="date" name="from" defaultValue={sp.from} className="w-40" />
         </label>
-        <label className="text-xs text-cocoa">
+        <label className="text-[13px] text-muted">
           <span className="mb-1 block">To</span>
           <Input type="date" name="to" defaultValue={sp.to} className="w-40" />
         </label>
-        <button type="submit" className={buttonClasses({ size: "md" })}>
+        <button type="submit" className={buttonClasses({ variant: "dark", size: "sm" })}>
           Filter
         </button>
         {hasFilters && (
           <Link
             href={sp.status ? `/admin/orders?status=${sp.status}` : "/admin/orders"}
-            className="px-2 text-xs text-cocoa underline underline-offset-4 hover:text-espresso"
+            className="px-2 text-[13px] text-muted underline underline-offset-4 hover:text-espresso"
           >
             Clear
           </Link>
@@ -109,19 +109,19 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
                   <Link href={`/admin/orders/${o.id}`} className="font-medium text-espresso hover:text-copper-dark">
                     {o.orderNumber}
                   </Link>
-                  {!o.userId && <span className="ml-2 text-[10px] tracking-wider text-taupe uppercase">Guest</span>}
+                  {!o.userId && <span className="ml-2 text-[13px] text-taupe">Guest</span>}
                 </td>
-                <td className="whitespace-nowrap text-cocoa">{formatDate(o.createdAt)}</td>
+                <td className="whitespace-nowrap text-muted">{formatDate(o.createdAt)}</td>
                 <td className="max-w-64">
                   <span className="block truncate text-espresso">
                     {o.shippingAddress.firstName} {o.shippingAddress.lastName}
                   </span>
-                  <span className="block truncate text-xs text-taupe">{o.email}</span>
+                  <span className="block truncate text-[13px] text-taupe">{o.email}</span>
                 </td>
                 <td className="text-right tabular-nums">{itemCounts.get(o.id) ?? 0}</td>
                 <td className="text-right font-medium tabular-nums">{formatMoney(o.total)}</td>
                 <td>
-                  <span className="block text-xs text-cocoa">{PAYMENT_METHODS[o.paymentMethod].label}</span>
+                  <span className="block text-[13px] text-muted">{PAYMENT_METHODS[o.paymentMethod].label}</span>
                   <Badge
                     tone={o.paymentStatus === "paid" ? "sage" : o.paymentStatus === "refunded" ? "danger" : "amber"}
                     className="mt-1"

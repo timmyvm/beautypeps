@@ -1,6 +1,5 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -18,13 +17,9 @@ export function CopyButton({ value, label = "Copy", className }: { value: string
           /* clipboard unavailable — ignore */
         }
       }}
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-stone bg-cream px-3 py-1 text-xs text-cocoa transition-colors hover:border-copper hover:text-copper-dark",
-        className,
-      )}
+      className={cn("press text-small font-normal text-accent underline underline-offset-4", className)}
       aria-label={copied ? "Copied" : `${label}: ${value}`}
     >
-      {copied ? <Check className="size-3.5 text-sage" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
       {copied ? "Copied" : label}
     </button>
   );

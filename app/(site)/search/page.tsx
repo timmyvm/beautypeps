@@ -1,12 +1,11 @@
-import { Search } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { PeptideCard } from "@/components/product/peptide-chip-card";
-import { ProductCard } from "@/components/product/product-card";
+import { PeptideRows } from "@/components/product/peptide-chip-card";
+import { FilterChip, SpecimenGrid } from "@/components/shop/specimen-grid";
 import { buttonClasses } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/misc";
 import { searchAll } from "@/lib/queries/catalog";
+import { getPublishedPeptides } from "@/lib/queries/content";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -21,109 +20,104 @@ const SUGGESTIONS = ["GHK-Cu", "Argireline", "Matrixyl", "Eye", "Brightening", "
 export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const q = ((Array.isArray(sp.q) ? sp.q[0] : sp.q) ?? "").slice(0, 80);
-  const results = q.trim() ? await searchAll(q) : null;
+  const [results, peptides] = await Promise.all([q.trim() ? searchAll(q) : Promise.resolve(null), getPublishedPeptides()]);
   const total = results ? results.products.length + results.peptides.length + results.articles.length : 0;
+  const grades = Object.fromEntries(peptides.map((p) => [p.slug, { name: p.name, grade: p.evidenceLevel }]));
 
   return (
-    <div className="container-bp py-12 md:py-16">
-      <div className="mx-auto max-w-2xl text-center">
-        <p className="eyebrow mb-3">Search</p>
-        <h1 className="font-display text-4xl text-espresso md:text-5xl">
-          {q ? <>Results for “{q}”</> : "What are you looking for?"}
-        </h1>
-        <form action="/search" role="search" className="relative mt-8">
-          <label htmlFor="site-search" className="sr-only">
-            Search products, peptides and articles
-          </label>
-          <Search className="pointer-events-none absolute top-1/2 left-5 size-5 -translate-y-1/2 text-taupe" aria-hidden />
-          <input
-            id="site-search"
-            name="q"
-            defaultValue={q}
-            autoFocus={!q}
-            placeholder="Search products, peptides and articles"
-            className="h-14 w-full rounded-full border border-stone bg-cream pr-32 pl-14 text-base shadow-sm focus:border-copper focus:ring-2 focus:ring-copper/20 focus:outline-none"
-          />
-          <button type="submit" className={buttonClasses({ className: "absolute top-1.5 right-1.5 h-11" })}>
-            Search
-          </button>
-        </form>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {SUGGESTIONS.map((s) => (
-            <Link
-              key={s}
-              href={`/search?q=${encodeURIComponent(s)}`}
-              className="rounded-full border border-stone px-3 py-1 text-xs text-cocoa hover:border-copper hover:text-copper-dark"
-            >
-              {s}
-            </Link>
-          ))}
-        </div>
-        {results && (
-          <p className="mt-6 text-sm text-cocoa" aria-live="polite">
-            {total === 0 ? "No results" : `${total} ${total === 1 ? "result" : "results"}`}
+    <div className="container-bp pt-10 md:pt-16">
+      <header className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+        <div className="lg:col-span-6" data-reveal="">
+          <h1 className="display-type text-head">{q ? `Results for “${q}”` : "Search the shop"}</h1>
+          <p className="mt-4 max-w-[48ch] text-body" aria-live="polite">
+            {results
+              ? total === 0
+                ? "Nothing matched. Try a peptide name, an INCI name or a concern."
+                : `${total} ${total === 1 ? "result" : "results"} across formulas, the peptide library and the journal.`
+              : "Formulas, peptide monographs and journal articles, all in one search."}
           </p>
-        )}
-      </div>
+        </div>
+        <div className="lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+          <form action="/search" role="search" className="flex">
+            <label htmlFor="site-search" className="sr-only">
+              Search products, peptides and articles
+            </label>
+            <input
+              id="site-search"
+              name="q"
+              defaultValue={q}
+              autoFocus={!q}
+              placeholder="Try GHK-Cu or fine lines"
+              className="h-14 min-w-0 flex-1 bg-surface px-5 text-body text-ink placeholder:text-taupe focus:outline-2 focus:outline-accent"
+            />
+            <button type="submit" className={buttonClasses({ size: "lg" })}>
+              Search
+            </button>
+          </form>
+          <ul className="mt-3 flex flex-wrap gap-2" aria-label="Suggestions">
+            {SUGGESTIONS.map((s) => (
+              <li key={s}>
+                <FilterChip href={`/search?q=${encodeURIComponent(s)}`} active={s.toLowerCase() === q.toLowerCase()}>
+                  {s}
+                </FilterChip>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </header>
 
       {results && total === 0 && (
-        <EmptyState
-          className="mx-auto mt-12 max-w-2xl"
-          icon={<Search className="size-8" />}
-          title={`Nothing found for “${q}”`}
-          description="Try a peptide name (like GHK-Cu), an INCI name, or a concern such as fine lines."
-          action={
-            <Link href="/shop" className={buttonClasses({ variant: "outline" })}>
-              Browse all products
-            </Link>
-          }
-        />
+        <section className="mt-16 grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" aria-labelledby="none-heading">
+          <div>
+            <h2 id="none-heading" className="display-type text-head">
+              Nothing for “{q}”
+            </h2>
+            <p className="mt-4 max-w-[48ch] text-body">
+              Search by peptide (GHK-Cu, Argireline), by INCI name, or by what you want to change, such as fine lines.
+            </p>
+          </div>
+          <Link href="/shop" className={buttonClasses({ size: "lg" })}>
+            Browse every formula
+          </Link>
+        </section>
       )}
 
       {results && results.products.length > 0 && (
-        <section className="mt-16" aria-labelledby="sr-products">
-          <h2 id="sr-products" className="mb-6 font-display text-2xl text-espresso">
-            Products <span className="text-base text-taupe">({results.products.length})</span>
+        <section className="mt-20 md:mt-28" aria-labelledby="sr-products">
+          <h2 id="sr-products" className="display-type mb-10 text-head" data-reveal="">
+            Formulas
           </h2>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 lg:grid-cols-4">
-            {results.products.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <SpecimenGrid products={results.products} grades={grades} doubles={false} />
         </section>
       )}
 
       {results && results.peptides.length > 0 && (
-        <section className="mt-16" aria-labelledby="sr-peptides">
-          <h2 id="sr-peptides" className="mb-6 font-display text-2xl text-espresso">
-            Peptide Library <span className="text-base text-taupe">({results.peptides.length})</span>
+        <section className="mt-28 md:mt-40" aria-labelledby="sr-peptides">
+          <h2 id="sr-peptides" className="display-type mb-10 text-head" data-reveal="">
+            Peptide library
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {results.peptides.map((p) => (
-              <PeptideCard key={p.slug} peptide={p} />
-            ))}
-          </div>
+          <PeptideRows peptides={results.peptides} />
         </section>
       )}
 
       {results && results.articles.length > 0 && (
-        <section className="mt-16" aria-labelledby="sr-articles">
-          <h2 id="sr-articles" className="mb-6 font-display text-2xl text-espresso">
-            Journal <span className="text-base text-taupe">({results.articles.length})</span>
+        <section className="mt-28 md:mt-40" aria-labelledby="sr-articles">
+          <h2 id="sr-articles" className="display-type mb-10 text-head" data-reveal="">
+            Journal
           </h2>
-          <ul className="grid gap-6 md:grid-cols-2">
-            {results.articles.map((a) => (
-              <li key={a.slug}>
-                <Link href={`/learn/${a.slug}`} className="group flex gap-5 rounded-2xl border border-stone/70 bg-cream p-4 hover:border-copper/50">
-                  <div className="relative aspect-[3/2] w-32 shrink-0 overflow-hidden rounded-xl bg-ivory sm:w-40">
-                    {a.coverImage && <Image src={a.coverImage} alt="" fill sizes="160px" className="object-cover" />}
+          <ul className="grid gap-x-[var(--gutter)] gap-y-12 md:grid-cols-2">
+            {results.articles.map((a, i) => (
+              <li key={a.slug} data-reveal="" style={{ ["--reveal-i" as string]: i % 2 }}>
+                <Link href={`/learn/${a.slug}`} className="group grid gap-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+                  <div className="relative aspect-[3/2] overflow-hidden bg-surface">
+                    {a.coverImage && <Image src={a.coverImage} alt="" fill sizes="(min-width: 768px) 20vw, 100vw" className="object-cover" />}
                   </div>
-                  <div className="min-w-0 py-1">
-                    <p className="text-[11px] font-semibold tracking-wider text-copper-dark uppercase">
-                      {a.category} · {a.readMinutes} min read
+                  <div className="min-w-0">
+                    <h3 className="text-lead font-medium group-hover:underline group-hover:underline-offset-4">{a.title}</h3>
+                    <p className="mt-2 line-clamp-3 text-body">{a.excerpt}</p>
+                    <p className="mt-2 text-small text-muted">
+                      {a.category}, {a.readMinutes} minute read
                     </p>
-                    <h3 className="mt-1 font-display text-lg leading-snug text-espresso group-hover:text-copper-dark">{a.title}</h3>
-                    <p className="mt-1 line-clamp-2 text-sm text-cocoa">{a.excerpt}</p>
                   </div>
                 </Link>
               </li>

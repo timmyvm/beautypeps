@@ -64,7 +64,7 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
                 {!a.isDefault && (
                   <form action={setDefaultAddressAction}>
                     <input type="hidden" name="id" value={a.id} />
-                    <button type="submit" className="text-cocoa hover:text-espresso">
+                    <button type="submit" className="text-muted hover:text-espresso">
                       Make default
                     </button>
                   </form>

@@ -36,7 +36,7 @@ export default async function PackingSlipPage({ params }: Props) {
     <>
       <style>{printCss}</style>
       <div className="mb-6 flex items-center justify-between print:hidden">
-        <Link href={`/admin/orders/${order.id}`} className="text-xs text-cocoa hover:text-espresso">
+        <Link href={`/admin/orders/${order.id}`} className="text-[13px] text-muted hover:text-espresso">
           ← Back to {order.orderNumber}
         </Link>
         <PrintButton />
@@ -46,7 +46,7 @@ export default async function PackingSlipPage({ params }: Props) {
         <header className="flex items-start justify-between gap-6 border-b border-stone pb-6">
           <div>
             <Image src="/images/brand/logo-wordmark.png" alt={settings.storeName} width={1229} height={301} className="h-8 w-auto" />
-            <p className="mt-3 text-xs leading-relaxed text-cocoa">
+            <p className="mt-3 text-[13px] leading-relaxed text-muted">
               {settings.businessAddress}
               <br />
               {settings.supportEmail}
@@ -54,22 +54,22 @@ export default async function PackingSlipPage({ params }: Props) {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[11px] font-semibold tracking-[0.2em] text-copper-dark uppercase">Packing slip</p>
+            <p className="text-[13px] font-semibold text-copper-dark">Packing slip</p>
             <p className="mt-1 font-mono text-2xl">{order.orderNumber}</p>
-            <p className="mt-1 text-xs text-cocoa">Ordered {formatDate(order.createdAt)}</p>
+            <p className="mt-1 text-[13px] text-muted">Ordered {formatDate(order.createdAt)}</p>
           </div>
         </header>
 
         <section className="grid gap-8 py-6 sm:grid-cols-2">
           <div>
-            <p className="mb-2 text-[11px] font-semibold tracking-[0.2em] text-cocoa uppercase">Ship to</p>
+            <p className="mb-2 text-[13px] font-semibold text-muted">Ship to</p>
             <AddressBlock address={order.shippingAddress} />
           </div>
           <div>
-            <p className="mb-2 text-[11px] font-semibold tracking-[0.2em] text-cocoa uppercase">Shipping</p>
+            <p className="mb-2 text-[13px] font-semibold text-muted">Shipping</p>
             <p className="text-sm">{SHIPPING_METHOD_LABELS[order.shippingMethod]}</p>
             {order.trackingNumber && <p className="mt-1 font-mono text-sm">{order.trackingNumber}</p>}
-            <p className="mt-3 text-sm text-cocoa">
+            <p className="mt-3 text-sm text-muted">
               {units} {units === 1 ? "unit" : "units"} · {order.items.length} {order.items.length === 1 ? "line" : "lines"}
             </p>
           </div>
@@ -77,7 +77,7 @@ export default async function PackingSlipPage({ params }: Props) {
 
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-y border-stone text-[11px] tracking-wider text-cocoa uppercase">
+            <tr className="border-y border-stone text-[13px] text-muted">
               <th className="w-10 py-2.5 font-semibold">
                 <span className="sr-only">Packed</span>
               </th>
@@ -94,9 +94,9 @@ export default async function PackingSlipPage({ params }: Props) {
                 </td>
                 <td className="py-3">
                   {item.name}
-                  {item.size && <span className="ml-2 text-xs text-cocoa">{item.size}</span>}
+                  {item.size && <span className="ml-2 text-[13px] text-muted">{item.size}</span>}
                 </td>
-                <td className="py-3 font-mono text-xs">{item.sku}</td>
+                <td className="py-3 font-mono text-[13px]">{item.sku}</td>
                 <td className="py-3 text-right text-base font-semibold">{item.quantity}</td>
               </tr>
             ))}
@@ -105,12 +105,12 @@ export default async function PackingSlipPage({ params }: Props) {
 
         {order.customerNote && (
           <section className="mt-6 rounded-xl border border-stone p-4">
-            <p className="mb-1 text-[11px] font-semibold tracking-[0.2em] text-cocoa uppercase">Customer note</p>
+            <p className="mb-1 text-[13px] font-semibold text-muted">Customer note</p>
             <p className="text-sm whitespace-pre-line">{order.customerNote}</p>
           </section>
         )}
 
-        <footer className="mt-10 border-t border-stone pt-6 text-center text-xs leading-relaxed text-cocoa">
+        <footer className="mt-10 border-t border-stone pt-6 text-center text-[13px] leading-relaxed text-muted">
           Thank you for choosing Beauty Peps. Store your peptides somewhere cool and dark, and patch test before first use.
           <br />
           Questions? {settings.supportEmail}

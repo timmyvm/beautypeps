@@ -40,7 +40,7 @@ export function MarkdownEditor({
         <Label htmlFor={id} className="mb-0">
           {label}
         </Label>
-        <div className="flex rounded-full border border-stone bg-ivory p-0.5 text-[11px] font-medium" role="tablist">
+        <div className="flex rounded-full border border-stone bg-ivory p-0.5 text-[13px] font-medium" role="tablist">
           {(["write", "preview"] as const).map((t) => (
             <button
               key={t}
@@ -50,7 +50,7 @@ export function MarkdownEditor({
               onClick={() => setTab(t)}
               className={cn(
                 "rounded-full px-3 py-1 capitalize transition-colors",
-                tab === t ? "bg-espresso text-cream" : "text-cocoa hover:text-espresso",
+                tab === t ? "bg-espresso text-cream" : "text-muted hover:text-espresso",
               )}
             >
               {t}
@@ -87,7 +87,7 @@ export function MarkdownEditor({
           )}
         </div>
       )}
-      <div className="mt-1.5 flex justify-between gap-3 text-xs">
+      <div className="mt-1.5 flex justify-between gap-3 text-[13px]">
         {error ? (
           <p className="text-danger" role="alert">
             {error}

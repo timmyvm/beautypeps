@@ -53,12 +53,12 @@ export function ConfirmButton({
 
   if (asking) {
     return (
-      <span className="inline-flex flex-wrap items-center gap-2 rounded-xl border border-danger/30 bg-danger-light/60 px-3 py-1.5 text-xs text-danger">
+      <span className="inline-flex flex-wrap items-center gap-2 rounded-xl border border-danger/30 bg-danger-light/60 px-3 py-1.5 text-[13px] text-danger">
         <span>{confirm}</span>
         <button type="button" onClick={run} className="font-semibold underline underline-offset-2">
           {confirmLabel}
         </button>
-        <button type="button" onClick={() => setAsking(false)} className="text-cocoa">
+        <button type="button" onClick={() => setAsking(false)} className="text-muted">
           Cancel
         </button>
       </span>
@@ -77,7 +77,7 @@ export function ConfirmButton({
         {children}
       </button>
       {result && (
-        <span role="status" className={cn("inline-flex items-center gap-1 text-xs", result.ok ? "text-sage" : "text-danger")}>
+        <span role="status" className={cn("inline-flex items-center gap-1 text-[13px]", result.ok ? "text-sage" : "text-danger")}>
           {result.ok && <Check className="size-3.5" aria-hidden />}
           {result.message}
         </span>

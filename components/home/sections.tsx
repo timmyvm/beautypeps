@@ -76,10 +76,10 @@ export function BlueByCopper({ products }: { products: ProductCardData[] }) {
   const rest = frames.filter((f) => !f.lifted);
 
   return (
-    <section className="mt-40 overflow-hidden lg:mt-60" aria-labelledby="blue-title">
+    <section className="mt-40 overflow-hidden pt-3 lg:mt-60" aria-labelledby="blue-title">
       <div className="container-bp grid gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
         {/* Nearly empty column: heading on top, notes further down beside the frames they describe */}
-        <div className="flex flex-col justify-between gap-8 lg:col-span-3">
+        <div className="lg:col-span-3">
           <div {...reveal(0)}>
             <h2 id="blue-title" className="display-type text-head">
               Blue by copper
@@ -88,45 +88,28 @@ export function BlueByCopper({ products }: { products: ProductCardData[] }) {
               Read the GHK-Cu monograph
             </Link>
           </div>
-          <div className="hidden space-y-6 text-body lg:block" {...reveal(1)}>
-            <p className="max-w-[30ch]">
-              The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out this
-              colour.
-            </p>
-            <p className="max-w-[30ch]">Use it at night, apart from vitamin C and strong acids, which loosen the copper.</p>
-          </div>
         </div>
 
         {/* The run: one frame lifted out of the row, bottoms aligned, leaving the right edge */}
         <div className="lg:col-span-9">
-          <ul className="hidden items-end gap-1.5 lg:flex">
-            {[lifted, ...rest].map((f, i) => (
-              <li key={f.src} className="shrink-0" {...reveal(i)}>
-                <Link href={f.href} className="group block">
-                  <div
-                    className="relative overflow-hidden bg-surface"
-                    style={{ height: f.lifted ? "66vh" : "30vh", aspectRatio: f.ratio }}
-                  >
-                    {f.video ? (
-                      <LoopVideo src={f.video} poster={f.src} label={f.alt} />
-                    ) : (
-                      <Image
-                        src={f.src}
-                        alt={f.alt}
-                        fill
-                        sizes={f.lifted ? "40vw" : "25vw"}
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    )}
-                  </div>
-                  <div className="mt-2 flex justify-between gap-4 text-small">
-                    <span className="font-medium">{f.name}</span>
-                    <span className="text-muted">{f.fact}</span>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="hidden items-end gap-1.5 lg:flex">
+            <FrameItem frame={lifted} index={0} />
+            {/* The notes sit above the row, level with the frames they describe */}
+            <div className="flex min-w-0 flex-col justify-between gap-10 self-stretch">
+              <div className="max-w-[40ch] space-y-4 pt-1 pl-8 text-body" {...reveal(1)}>
+                <p>
+                  The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out
+                  this colour.
+                </p>
+                <p>Use it at night, apart from vitamin C and strong acids, which loosen the copper.</p>
+              </div>
+              <div className="flex items-end gap-1.5">
+                {rest.map((f, i) => (
+                  <FrameItem key={f.src} frame={f} index={i + 2} />
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Phone: the lifted frame first at full width, the rest two by two */}
           <div className="lg:hidden">
@@ -169,6 +152,32 @@ export function BlueByCopper({ products }: { products: ProductCardData[] }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function FrameItem({ frame: f, index }: { frame: Frame; index: number }) {
+  return (
+    <div className="shrink-0" {...reveal(index)}>
+      <Link href={f.href} className="group block">
+        <div className="relative overflow-hidden bg-surface" style={{ height: f.lifted ? "66vh" : "30vh", aspectRatio: f.ratio }}>
+          {f.video ? (
+            <LoopVideo src={f.video} poster={f.src} label={f.alt} />
+          ) : (
+            <Image
+              src={f.src}
+              alt={f.alt}
+              fill
+              sizes={f.lifted ? "40vw" : "25vw"}
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          )}
+        </div>
+        <div className="mt-2 flex justify-between gap-4 text-small">
+          <span className="font-medium">{f.name}</span>
+          <span className="text-muted">{f.fact}</span>
+        </div>
+      </Link>
+    </div>
   );
 }
 
@@ -278,7 +287,7 @@ export function PowderToSkin({ powder, serum }: { powder?: ProductCardData; seru
   ];
 
   return (
-    <section className="container-bp mt-40 lg:mt-60" aria-labelledby="powder-title">
+    <section className="container-bp mt-40 pt-3 lg:mt-60" aria-labelledby="powder-title">
       <div className="relative grid grid-cols-1 gap-7 lg:grid-cols-12 lg:items-end lg:gap-2.5">
         {/* The heading sits in the empty ground above the two smaller tiles */}
         <h2
@@ -466,7 +475,7 @@ export function FaqCards({ settings }: { settings: StoreSettings }) {
   ];
 
   return (
-    <section className="container-bp mt-40 lg:mt-60" aria-labelledby="faq-title">
+    <section className="container-bp mt-40 pt-3 lg:mt-60" aria-labelledby="faq-title">
       <div className="lg:mx-[16.66%]">
         <div className="mb-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between" {...reveal(0)}>
           <h2 id="faq-title" className="display-type text-head">

@@ -41,7 +41,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         title="Products"
         description={`${counts.all} products in the catalogue · ${counts.active} live in the store`}
         actions={
-          <ButtonLink href="/admin/products/new" size="sm">
+          <ButtonLink href="/admin/products/new" variant="dark" size="sm">
             <Plus className="size-4" /> New product
           </ButtonLink>
         }
@@ -97,15 +97,15 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           ))}
           <option value="none">Uncategorised</option>
         </select>
-        <label className="flex h-10 items-center gap-2 rounded-full border border-stone bg-cream px-4 text-sm text-cocoa">
+        <label className="flex h-10 items-center gap-2 rounded-full border border-stone bg-cream px-4 text-sm text-muted">
           <input type="checkbox" name="low" value="1" defaultChecked={!!sp.low} className="accent-copper" />
           Low stock
         </label>
-        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10" })}>
+        <button type="submit" className={buttonClasses({ variant: "outline", size: "sm", className: "h-10 bg-surface-2 hover:bg-stone" })}>
           Filter
         </button>
         {filtersActive && (
-          <Link href="/admin/products" className="px-2 text-xs text-cocoa underline underline-offset-4">
+          <Link href="/admin/products" className="px-2 text-[13px] text-muted underline underline-offset-4">
             Clear
           </Link>
         )}
@@ -115,7 +115,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         <EmptyState
           title={filtersActive ? "No products match" : "No products yet"}
           description={filtersActive ? "Try a different search or filter." : "Create your first product to start selling."}
-          action={!filtersActive ? <ButtonLink href="/admin/products/new">New product</ButtonLink> : undefined}
+          action={!filtersActive ? <ButtonLink href="/admin/products/new" variant="dark" size="sm">New product</ButtonLink> : undefined}
         />
       ) : (
         <>
@@ -151,13 +151,13 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                         <span className="truncate">{p.name}</span>
                         {p.featured && <Star className="size-3.5 shrink-0 fill-copper text-copper" aria-label="Featured" />}
                       </Link>
-                      <p className="font-mono text-[11px] text-taupe">{p.sku}</p>
+                      <p className="font-mono text-[13px] text-taupe">{p.sku}</p>
                     </td>
-                    <td className="text-cocoa">{p.categoryName ?? <span className="text-taupe">—</span>}</td>
+                    <td className="text-muted">{p.categoryName ?? <span className="text-taupe">—</span>}</td>
                     <td className="text-right whitespace-nowrap">
                       {formatMoney(p.price)}
                       {p.compareAtPrice && p.compareAtPrice > p.price && (
-                        <span className="block text-[11px] text-taupe line-through">{formatMoney(p.compareAtPrice)}</span>
+                        <span className="block text-[13px] text-taupe line-through">{formatMoney(p.compareAtPrice)}</span>
                       )}
                     </td>
                     <td className="text-right whitespace-nowrap">
@@ -169,14 +169,14 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                       >
                         {p.stock <= 0 ? "Sold out" : p.stock}
                       </span>
-                      {low && p.stock > 0 && <span className="block text-[11px] text-copper-dark">Low</span>}
+                      {low && p.stock > 0 && <span className="block text-[13px] text-copper-dark">Low</span>}
                     </td>
                     <td>
                       <Badge tone={STATUS_TONE[p.status]} className="capitalize">
                         {p.status}
                       </Badge>
                     </td>
-                    <td className="whitespace-nowrap text-cocoa">{formatDate(p.updatedAt)}</td>
+                    <td className="whitespace-nowrap text-muted">{formatDate(p.updatedAt)}</td>
                     <td>
                       <div className="flex items-center justify-end gap-1">
                         <Link href={`/admin/products/${p.id}`} className={buttonClasses({ variant: "ghost", size: "sm" })}>
@@ -204,7 +204,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
               })}
             </tbody>
           </DataTable>
-          <p className="mt-3 text-xs text-taupe">{total} result{total === 1 ? "" : "s"}</p>
+          <p className="mt-3 text-[13px] text-taupe">{total} result{total === 1 ? "" : "s"}</p>
           <Pagination page={page} pageCount={pageCount} basePath="/admin/products" searchParams={persist} />
         </>
       )}

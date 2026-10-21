@@ -45,8 +45,8 @@ export default async function AccountOrdersPage({ searchParams }: { searchParams
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-sm font-medium tracking-wide text-espresso">{o.orderNumber}</p>
-                    <p className="mt-1 text-xs text-cocoa">
+                    <p className="font-mono text-sm font-medium text-espresso">{o.orderNumber}</p>
+                    <p className="mt-1 text-[13px] text-muted">
                       Placed {formatDate(o.createdAt)} · {pluralize(o.itemCount, "item")}
                     </p>
                   </div>
@@ -64,13 +64,13 @@ export default async function AccountOrdersPage({ searchParams }: { searchParams
                       </div>
                     ))}
                     {o.itemCount > o.previews.length && o.previews.length >= 4 && (
-                      <div className="grid size-14 place-items-center rounded-xl border-2 border-cream bg-sand text-xs text-cocoa">
+                      <div className="grid size-14 place-items-center rounded-xl border-2 border-cream bg-sand text-[13px] text-muted">
                         +
                       </div>
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-taupe">Total</p>
+                    <p className="text-[13px] text-taupe">Total</p>
                     <p className="text-base font-medium text-espresso">{formatMoney(o.total)}</p>
                   </div>
                 </div>

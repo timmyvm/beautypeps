@@ -17,8 +17,8 @@ export function ReviewForm({ productId, productName }: { productId: string; prod
 
   if (state.ok) {
     return (
-      <div className="rounded-2xl border border-sage/30 bg-sage-light/60 p-6 text-sm text-sage" role="status">
-        <p className="font-display text-xl text-espresso">Thank you</p>
+      <div className="bg-sage-light p-6 text-body text-sage" role="status">
+        <p className="text-lead font-medium text-ink">Thank you</p>
         <p className="mt-1">{state.message}</p>
       </div>
     );
@@ -39,7 +39,7 @@ export function ReviewForm({ productId, productName }: { productId: string; prod
       <FormMessage state={state} />
 
       <fieldset>
-        <legend className="mb-2 text-xs font-medium tracking-wide text-cocoa">Your rating for {productName}</legend>
+        <legend className="mb-2 text-small font-medium text-ink">Your rating for {productName}</legend>
         <div className="flex items-center gap-3">
           <div className="flex" onMouseLeave={() => setHover(0)}>
             {[1, 2, 3, 4, 5].map((n) => (
@@ -55,17 +55,17 @@ export function ReviewForm({ productId, productName }: { productId: string; prod
                 />
                 <Star
                   className={cn(
-                    "size-7 text-copper transition-colors peer-focus-visible:rounded peer-focus-visible:outline-2 peer-focus-visible:outline-copper",
-                    n <= shown ? "fill-copper" : "fill-transparent opacity-40",
+                    "size-7 text-ink transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-accent",
+                    n <= shown ? "fill-ink" : "fill-transparent opacity-40",
                   )}
                   aria-hidden
                 />
               </label>
             ))}
           </div>
-          <span className="text-sm text-cocoa">{LABELS[shown]}</span>
+          <span className="text-body">{LABELS[shown]}</span>
         </div>
-        {state.errors?.rating && <p className="mt-1.5 text-xs text-danger">{state.errors.rating}</p>}
+        {state.errors?.rating && <p className="mt-1.5 text-small text-danger">{state.errors.rating}</p>}
       </fieldset>
 
       <div className="grid gap-5 sm:grid-cols-[2fr_1fr]">
