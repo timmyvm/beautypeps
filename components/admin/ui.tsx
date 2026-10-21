@@ -3,7 +3,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/* Admin building blocks. Keep admin pages visually consistent by using these. */
+/*
+ * Admin building blocks — achromatic ledger: white panels with one hairline on the stone ground,
+ * a noun title at 24px, 13px grey sentence-case table headers, rules instead of zebra bands.
+ */
 
 export function AdminPageHeader({
   title,
@@ -17,16 +20,16 @@ export function AdminPageHeader({
   back?: { href: string; label: string };
 }) {
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       {back && (
-        <Link href={back.href} className="mb-3 inline-flex items-center gap-1 text-[13px] text-muted hover:text-espresso">
-          <ChevronLeft className="size-3.5" /> {back.label}
+        <Link href={back.href} className="mb-2 inline-flex items-center gap-1 text-[13px] text-muted hover:text-ink">
+          <ChevronLeft className="size-3.5" aria-hidden /> {back.label}
         </Link>
       )}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-espresso">{title}</h1>
-          {description && <p className="mt-1.5 text-sm text-muted">{description}</p>}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-[24px] leading-tight font-semibold tracking-[-0.01em] text-ink">{title}</h1>
+          {description && <p className="mt-1 text-[15px] text-muted">{description}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>
@@ -48,10 +51,10 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className={cn("rounded-2xl border border-stone/70 bg-cream", className)}>
+    <section className={cn("border border-surface-2 bg-white", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between gap-4 border-b border-stone/60 px-5 py-4">
-          {title && <h2 className="text-sm font-semibold text-espresso">{title}</h2>}
+        <div className="flex items-center justify-between gap-4 px-5 pt-4 pb-1">
+          {title && <h2 className="text-[16px] font-semibold text-ink">{title}</h2>}
           {actions}
         </div>
       )}
@@ -60,39 +63,41 @@ export function Panel({
   );
 }
 
-export function StatCard({
-  label,
-  value,
-  hint,
-  icon,
-}: {
-  label: string;
-  value: ReactNode;
-  hint?: ReactNode;
-  icon?: ReactNode;
-}) {
+/** A figure with its label above it. Group several in a KpiStrip rather than giving each a tile. */
+export function StatCard({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="rounded-2xl border border-stone/70 bg-cream p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] font-medium text-muted">{label}</p>
-        {icon && <span className="text-copper">{icon}</span>}
-      </div>
-      <p className="mt-3 text-2xl font-semibold text-espresso">{value}</p>
-      {hint && <p className="mt-1 text-[13px] text-taupe">{hint}</p>}
+    <div className="min-w-0 px-5 py-4">
+      <p className="text-[13px] text-muted">{label}</p>
+      <p className="mt-1 text-[24px] leading-tight font-medium text-ink tabular-nums">{value}</p>
+      {hint && <p className="mt-0.5 text-[13px] text-muted">{hint}</p>}
     </div>
   );
 }
 
-/** Table wrapper: horizontal scroll on mobile, consistent cell styles via [&_th]/[&_td]. */
+/** One container split by hairlines into equal columns. */
+export function KpiStrip({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-2 divide-surface-2 border border-surface-2 bg-white sm:grid-cols-4 sm:divide-x [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-surface-2 sm:[&>*:nth-child(n+3)]:border-t-0",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Table wrapper: scrolls inside its own frame on small screens; rules, not bands. */
 export function DataTable({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("relative overflow-x-auto rounded-2xl border border-stone/70 bg-cream", className)}>
+    <div className={cn("relative overflow-x-auto border border-surface-2 bg-white", className)}>
       <table
         className={cn(
-          "w-full min-w-[640px] text-left text-sm",
-          "[&_th]:border-b [&_th]:border-stone/60 [&_th]:bg-ivory/60 [&_th]:px-4 [&_th]:py-3 [&_th]:text-[13px] [&_th]:font-semibold [&_th]:tracking-wider [&_th]:text-muted [&_th]:uppercase",
-          "[&_td]:border-b [&_td]:border-stone/40 [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle",
-          "[&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr:hover]:bg-ivory/40",
+          "w-full min-w-[640px] text-left text-[14px]",
+          "[&_th]:h-10 [&_th]:px-4 [&_th]:text-[13px] [&_th]:font-normal [&_th]:whitespace-nowrap [&_th]:text-muted",
+          "[&_td]:border-t [&_td]:border-surface [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle",
+          "[&_td.text-right]:tabular-nums [&_tbody_tr:hover]:bg-surface/60",
         )}
       >
         {children}
@@ -122,19 +127,19 @@ export function Pagination({
     return s ? `${basePath}?${s}` : basePath;
   };
   return (
-    <div className="mt-6 flex items-center justify-between text-sm text-muted">
-      <span>
+    <div className="mt-4 flex items-center justify-between text-[14px] text-muted">
+      <span className="tabular-nums">
         Page {page} of {pageCount}
       </span>
       <div className="flex gap-2">
         {page > 1 ? (
-          <Link href={href(page - 1)} className="flex items-center gap-1 rounded-lg border border-stone px-3 py-1.5 hover:bg-cream">
-            <ChevronLeft className="size-4" /> Prev
+          <Link href={href(page - 1)} className="flex h-9 items-center gap-1 bg-surface-2 px-3 text-ink hover:bg-stone">
+            <ChevronLeft className="size-4" aria-hidden /> Previous
           </Link>
         ) : null}
         {page < pageCount ? (
-          <Link href={href(page + 1)} className="flex items-center gap-1 rounded-lg border border-stone px-3 py-1.5 hover:bg-cream">
-            Next <ChevronRight className="size-4" />
+          <Link href={href(page + 1)} className="flex h-9 items-center gap-1 bg-surface-2 px-3 text-ink hover:bg-stone">
+            Next <ChevronRight className="size-4" aria-hidden />
           </Link>
         ) : null}
       </div>
@@ -142,7 +147,7 @@ export function Pagination({
   );
 }
 
-/** Pill-style filter tabs driven by a query param. */
+/** Underline tabs on a full-width rule, driven by a query param. */
 export function FilterTabs({
   basePath,
   param,
@@ -157,26 +162,29 @@ export function FilterTabs({
   searchParams?: Record<string, string | undefined>;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap gap-2">
-      {options.map((o) => {
-        const qs = new URLSearchParams();
-        for (const [k, v] of Object.entries(searchParams)) if (v && k !== param && k !== "page") qs.set(k, v);
-        if (o.value) qs.set(param, o.value);
-        const active = (current ?? "") === o.value;
-        return (
-          <Link
-            key={o.value || "all"}
-            href={qs.toString() ? `${basePath}?${qs}` : basePath}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-              active ? "border-espresso bg-espresso text-cream" : "border-stone bg-cream text-muted hover:border-taupe",
-            )}
-          >
-            {o.label}
-            {o.count !== undefined && <span className="ml-1.5 opacity-60">{o.count}</span>}
-          </Link>
-        );
-      })}
+    <div className="scrollbar-none mb-5 overflow-x-auto border-b border-surface-2">
+      <div className="flex min-w-max gap-6">
+        {options.map((o) => {
+          const qs = new URLSearchParams();
+          for (const [k, v] of Object.entries(searchParams)) if (v && k !== param && k !== "page") qs.set(k, v);
+          if (o.value) qs.set(param, o.value);
+          const active = (current ?? "") === o.value;
+          return (
+            <Link
+              key={o.value || "all"}
+              href={qs.toString() ? `${basePath}?${qs}` : basePath}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "-mb-px flex h-10 items-center gap-1.5 border-b-2 text-[14px] transition-colors",
+                active ? "border-ink text-ink" : "border-transparent text-muted hover:text-ink",
+              )}
+            >
+              {o.label}
+              {o.count !== undefined && <span className="text-muted tabular-nums">{o.count}</span>}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
