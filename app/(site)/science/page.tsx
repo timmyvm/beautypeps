@@ -227,7 +227,7 @@ export default function SciencePage() {
                     i % 2 === 0 ? "bg-surface" : "bg-bg",
                   )}
                 >
-                  <div className={cn("p-4 lg:col-span-3", i % 2 === 0 ? "bg-bg" : "bg-surface")}>
+                  <div className={cn("p-4 lg:col-span-4", i % 2 === 0 ? "bg-bg" : "bg-surface")}>
                     <ClassDiagram type={key} />
                   </div>
                   <div className="lg:col-span-7 lg:col-start-6">
@@ -253,27 +253,29 @@ export default function SciencePage() {
           </ul>
         </section>
 
-        <Chapter
-          id="penetration"
-          title="The penetration problem"
-          aside={
-            <ChapterPicture
-              src="/images/editorial/texture.webp"
-              alt="A clear gel and a white cream swatched side by side on a pale ground"
-              caption="The vehicle matters: a leave-on serum gives a peptide time to work."
-            />
-          }
-        >
-          <Prose>
-            <p>
-              A peptide can only work if it reaches its target. For years the rule of thumb has been the{" "}
-              <Term slug="dalton">500 dalton rule</Term>: molecules much larger than about 500 daltons struggle to
-              cross intact skin on their own. Most cosmetic peptides sit above that line, and many are water-loving,
-              while the stratum corneum favours oil-loving molecules.
-            </p>
-            <p>Formulators use four tricks to close the gap.</p>
-          </Prose>
-          <dl className="mt-8 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-2">
+      </div>
+
+      <section
+        id="penetration"
+        aria-labelledby="penetration-title"
+        className="mt-24 scroll-mt-8 bg-field-frost py-20 lg:mt-36 lg:py-28"
+      >
+        <div className="container-bp">
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+            <h2 id="penetration-title" className="display-type text-head lg:col-span-5" {...reveal(0)}>
+              The penetration problem
+            </h2>
+            <Prose className="lg:col-span-6 lg:col-start-7">
+              <p>
+                A peptide can only work if it reaches its target. For years the rule of thumb has been the{" "}
+                <Term slug="dalton">500 dalton rule</Term>: molecules much larger than about 500 daltons struggle to
+                cross intact skin on their own. Most cosmetic peptides sit above that line, and many are water-loving,
+                while the stratum corneum favours oil-loving molecules.
+              </p>
+              <p>Formulators use four tricks to close the gap.</p>
+            </Prose>
+          </div>
+          <dl className="mt-14 grid gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
                 title: "Palmitoylation",
@@ -295,8 +297,8 @@ export default function SciencePage() {
                 text: "Leave-on serums at studied concentrations give peptides a chance. A rinse-off cleanser with a trace of peptide does not.",
                 href: "/compare",
               },
-            ].map((t) => (
-              <div key={t.title}>
+            ].map((t, i) => (
+              <div key={t.title} {...reveal(i + 1)}>
                 <dt className="text-lead font-medium">
                   <Link href={t.href} className="link-quiet">
                     {t.title}
@@ -306,14 +308,30 @@ export default function SciencePage() {
               </div>
             ))}
           </dl>
-          <Prose className="mt-10">
-            <p>
+          <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+            <Figure
+              ratio="aspect-[16/9]"
+              className="lg:col-span-5"
+              caption="The vehicle matters: a leave-on serum gives a peptide time to work."
+            >
+              <Image
+                src="/images/editorial/texture.webp"
+                alt="A clear gel and a white cream swatched side by side on a pale ground"
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover"
+              />
+            </Figure>
+            <p className="max-w-[60ch] text-body lg:col-span-6 lg:col-start-7 lg:pb-8">
               Even so, only a small fraction of any topical active reaches the dermis. That is not a reason to dismiss
               peptides, since very small amounts of a signalling molecule can matter, but it is why we publish
               concentrations and why we are cautious about dramatic claims.
             </p>
-          </Prose>
-        </Chapter>
+          </div>
+        </div>
+      </section>
+
+      <div className="container-bp">
 
         <Chapter
           id="evidence"
@@ -429,51 +447,63 @@ export default function SciencePage() {
           </Prose>
         </Chapter>
 
-        <Chapter
-          id="stability"
-          title="Stability and storage"
-          aside={
-            <figure className="mt-10" {...reveal(1)}>
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
-                <LoopVideo
-                  src="/video/copper-drop.mp4"
-                  poster="/video/copper-drop-poster.webp"
-                  label="Drops of blue copper peptide serum falling onto a brushed copper plate"
-                />
-              </div>
-              <figcaption className="mt-3 max-w-[40ch] text-small">
-                GHK-Cu serum is blue from its copper. Green or brown means the complex has broken down.
-              </figcaption>
-            </figure>
-          }
-        >
-          <dl className="grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-3">
-            {[
-              { title: "Keep them cool", text: "Heat speeds degradation. Store serums below 25 °C and pure powders in the fridge." },
-              { title: "Mind the pH", text: "Most peptides are happiest between pH 5 and 7. Very acidic or alkaline formulas can break peptide bonds." },
-              { title: "Keep powders dry", text: "Freeze-dried peptides stay stable for years when dry and sealed. Once dissolved, use them within weeks." },
-            ].map((c) => (
-              <div key={c.title}>
-                <dt className="text-lead font-medium">{c.title}</dt>
-                <dd className="mt-2 text-body">{c.text}</dd>
-              </div>
-            ))}
-          </dl>
-          <Prose className="mt-10">
-            <p>
+      </div>
+
+      <section
+        id="stability"
+        aria-labelledby="stability-title"
+        className="mt-24 scroll-mt-8 bg-field-ink py-20 text-field-ink-ink lg:mt-36 lg:py-28"
+      >
+        <div className="container-bp grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-[var(--gutter)]">
+          <figure className="lg:col-span-5" {...reveal(1)}>
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-white/10">
+              <LoopVideo
+                src="/video/copper-drop.mp4"
+                poster="/video/copper-drop-poster.webp"
+                label="Drops of blue copper peptide serum falling onto a brushed copper plate"
+              />
+            </div>
+            <figcaption className="mt-3 max-w-[40ch] text-small text-white/80">
+              GHK-Cu serum is blue from its copper. Green or brown means the complex has broken down.
+            </figcaption>
+          </figure>
+          <div className="lg:col-span-6 lg:col-start-7">
+            <h2 id="stability-title" className="display-type text-head" {...reveal(0)}>
+              Stability and storage
+            </h2>
+            <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-3">
+              {[
+                { title: "Keep them cool", text: "Heat speeds degradation. Store serums below 25 °C and pure powders in the fridge." },
+                { title: "Mind the pH", text: "Most peptides are happiest between pH 5 and 7. Very acidic or alkaline formulas can break peptide bonds." },
+                { title: "Keep powders dry", text: "Freeze-dried peptides stay stable for years when dry and sealed. Once dissolved, use them within weeks." },
+              ].map((c, i) => (
+                <div key={c.title} {...reveal(i + 1)}>
+                  <dt className="text-lead font-medium">{c.title}</dt>
+                  <dd className="mt-2 text-body">{c.text}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-10 max-w-[60ch] text-body">
               Peptides can also be broken down by enzymes called proteases, on the skin and in poorly preserved
               formulas, which is another reason acetylated, amidated or palmitoylated peptides are preferred in
               skincare. If you formulate with our pure actives, add them in the{" "}
-              <Term slug="cool-down-phase">cool-down phase</Term> below 40 °C and read{" "}
-              <Link href="/learn/storing-peptide-powders">our storage guide</Link>.
+              <Term slug="cool-down-phase" className="text-white underline underline-offset-4">
+                cool-down phase
+              </Term>{" "}
+              below 40 °C and read{" "}
+              <Link href="/learn/storing-peptide-powders" className="text-white underline underline-offset-4">
+                our storage guide
+              </Link>
+              .
             </p>
-          </Prose>
-          <Note title="A word on colour">
-            Copper peptide serums are naturally blue. If a GHK-Cu product turns green or brown, the copper complex may
-            have degraded or oxidised, and it is time to replace it.
-          </Note>
-        </Chapter>
-      </div>
+            <p className="mt-6 max-w-[60ch] text-body">
+              <strong className="font-medium">A word on colour.</strong> Copper peptide serums are naturally blue. If a
+              GHK-Cu product turns green or brown, the copper complex may have degraded or oxidised, and it is time to
+              replace it.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section aria-labelledby="next-title" className="container-bp mt-28 lg:mt-44">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
@@ -580,9 +610,9 @@ function ChapterPicture({ src, alt, caption }: { src: string; alt: string; capti
   );
 }
 
-function Term({ slug, children }: { slug: string; children: ReactNode }) {
+function Term({ slug, children, className }: { slug: string; children: ReactNode; className?: string }) {
   return (
-    <Link href={`/glossary#${slug}`} title="See the glossary">
+    <Link href={`/glossary#${slug}`} title="See the glossary" className={className}>
       {children}
     </Link>
   );

@@ -234,7 +234,7 @@ export default async function ProductPage({ params }: Props) {
 
         {/* The formula: heading in the left third, the text in the right two thirds */}
         <section className="mt-32 grid grid-cols-1 gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="formula-heading">
-          <h2 id="formula-heading" className={`${HEAD} lg:col-span-4`} data-reveal="">
+          <h2 id="formula-heading" className={`${HEAD} lg:sticky lg:top-28 lg:col-span-4 lg:self-start`} data-reveal="">
             The formula
           </h2>
           <div className="lg:col-span-7 lg:col-start-6" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
@@ -268,7 +268,7 @@ export default async function ProductPage({ params }: Props) {
                     </thead>
                     <tbody>
                       {product.keyActives.map((a) => (
-                        <tr key={a.name} className="border-b border-stone align-top">
+                        <tr key={a.name} /* taste-skill-ignore: rows of a real table */ className="border-b border-stone align-top">
                           <td className="px-4 py-4 font-medium">
                             {a.name}
                             {a.note && <span className="mt-1 block text-small font-normal sm:hidden">{a.note}</span>}

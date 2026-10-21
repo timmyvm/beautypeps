@@ -34,7 +34,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
               ? total === 0
                 ? "Nothing matched. Try a peptide name, an INCI name or a concern."
                 : `${total} ${total === 1 ? "result" : "results"} across formulas, the peptide library and the journal.`
-              : "Formulas, peptide monographs and journal articles, all in one search."}
+              : "Search formulas, peptide monographs and journal articles by name, INCI name or concern."}
           </p>
         </div>
         <div className="lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>

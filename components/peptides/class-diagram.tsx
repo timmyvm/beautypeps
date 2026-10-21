@@ -51,8 +51,8 @@ function Carrier({ arrow }: { arrow: string }) {
       <line x1={47} y1={40} x2={44} y2={50} className="stroke-accent" strokeWidth={2} />
       <line x1={59} y1={40} x2={62} y2={50} className="stroke-accent" strokeWidth={2} />
       <path d="M100 56 Q 150 64 168 134" className="fill-none stroke-ink" strokeWidth={1.6} strokeDasharray="3 4" markerEnd={`url(#${arrow})`} />
-      <circle cx={190} cy={150} r={8} className="fill-accent" />
-      <rect x={208} y={138} width={60} height={24} className="fill-white" />
+      <circle cx={204} cy={152} r={8} className="fill-accent" />
+      <path d="M244 152 L226.4 142 A20 20 0 1 1 226.4 162 Z" className="fill-white" />
     </>
   );
 }

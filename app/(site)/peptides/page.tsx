@@ -154,7 +154,7 @@ export default async function PeptideLibraryPage({ searchParams }: { searchParam
           {Object.entries(PEPTIDE_CLASSES).map(([key, c], i) => (
             <li key={key} {...reveal(i)}>
               <Link href={href({ class: key })} scroll={false} className="group block">
-                <div className={cn("p-5", activeClass === key && "bg-accent-soft")}>
+                <div className={cn("p-5", activeClass === key ? "bg-accent-soft" : "bg-surface group-hover:bg-surface-2")}>
                   <ClassDiagram type={key} />
                 </div>
                 <h3 className="mt-4 text-lead font-medium group-hover:underline group-hover:underline-offset-4">

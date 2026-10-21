@@ -11,7 +11,6 @@ import { ClassDiagram, classDiagramTitle } from "@/components/peptides/class-dia
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
 import { classLabel, classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
 import { ProductCard, SpecimenTile, toneFor } from "@/components/product/product-card";
-import { LoopVideo } from "@/components/site/loop-video";
 import { ButtonLink } from "@/components/ui/button";
 import { concernLabel } from "@/lib/constants";
 import { evidenceLevel } from "@/lib/content/evidence";
@@ -23,6 +22,7 @@ import {
   getProductsWithPeptide,
   getRelatedPeptides,
 } from "@/lib/queries/content";
+import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
 
@@ -58,7 +58,6 @@ export default async function PeptideMonographPage({ params }: { params: Params 
   ]
     .filter(Boolean)
     .join(", ");
-  const isCopper = peptide.peptideClass === "carrier";
 
   const facts: [string, string | null | undefined][] = [
     ["INCI name", peptide.inciName],
@@ -128,11 +127,11 @@ export default async function PeptideMonographPage({ params }: { params: Params 
           <h2 id="facts-title" className="display-type text-head" {...reveal(0)}>
             The facts
           </h2>
-          <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-2 lg:grid-cols-4" {...reveal(1)}>
+          <dl className="mt-10 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-8 lg:grid-cols-4" {...reveal(1)}>
             {facts
               .filter(([, v]) => v)
               .map(([k, v]) => (
-                <div key={k} className="min-w-0">
+                <div key={k} className={cn("min-w-0", String(v).length > 28 && "col-span-2 sm:col-span-1")}>
                   <dt className="text-small text-muted">{k}</dt>
                   <dd className={k === "Sequence" ? "mt-1 text-body break-words" : "mt-1 text-body"}>{v}</dd>
                 </div>
@@ -211,29 +210,15 @@ export default async function PeptideMonographPage({ params }: { params: Params 
             id="how-to-use"
             title="How to use it"
             aside={
-              isCopper ? (
-                <Figure
-                  ratio="aspect-[4/5]"
-                  className="mt-10 hidden max-w-[420px] lg:block"
-                  caption="Copper peptide serum is blue from its copper. Green or brown means it has broken down."
-                >
-                  <LoopVideo
-                    src="/video/copper-drop.mp4"
-                    poster="/video/copper-drop-poster.webp"
-                    label="Drops of blue copper peptide serum falling onto a brushed copper plate"
-                  />
-                </Figure>
-              ) : (
-                <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
-                  <Image
-                    src="/images/editorial/ritual.webp"
-                    alt="A woman pressing serum from a glass dropper onto her cheekbone"
-                    fill
-                    sizes="30vw"
-                    className="drift object-cover object-[50%_30%]"
-                  />
-                </Figure>
-              )
+              <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
+                <Image
+                  src="/images/editorial/ritual.webp"
+                  alt="A woman pressing serum from a glass dropper onto her cheekbone"
+                  fill
+                  sizes="30vw"
+                  className="drift object-cover object-[50%_30%]"
+                />
+              </Figure>
             }
           >
             <Markdown>{peptide.usage}</Markdown>
@@ -302,7 +287,12 @@ export default async function PeptideMonographPage({ params }: { params: Params 
               Not sure which? Build a routine
             </Link>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+          <div
+            className={cn(
+              "mt-12 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-10 md:grid-cols-3",
+              products.length === 5 ? "lg:grid-cols-5" : "lg:grid-cols-4",
+            )}
+          >
             {products.map((p, i) => (
               <div key={p.id} {...reveal(i % 4)}>
                 <ProductCard product={p} index={i} />

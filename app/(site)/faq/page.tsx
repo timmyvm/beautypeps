@@ -35,6 +35,10 @@ const GROUP_PICTURES: Record<string, { src: string; alt: string }> = {
     src: "/images/editorial/unboxing.webp",
     alt: "An opened box holding three serums in tissue paper",
   },
+  account: {
+    src: "/images/articles/beginner-peptide-routine.webp",
+    alt: "Three serums and a vase on a travertine tray in a bathroom",
+  },
 };
 
 export default async function FaqPage() {
@@ -109,7 +113,8 @@ export default async function FaqPage() {
                     name={`faq-${g.id}`}
                     open={gi === 0 && i === 0}
                     className={cn("index-card group relative", CARD_FIELDS[(i + gi) % CARD_FIELDS.length])}
-                    style={{ ["--tab-x" as string]: `${i % 6}`, zIndex: i + 1 }}
+                    data-reveal="row"
+                    style={{ ["--tab-x" as string]: `${i % 6}`, ["--reveal-i" as string]: i, zIndex: i + 1 }}
                   >
                     <summary className="flex min-h-[96px] cursor-pointer list-none flex-col justify-center px-6 pt-[56px] pb-[46px] [&::-webkit-details-marker]:hidden">
                       <span className="index-tab absolute top-0 flex h-10 items-center px-5 text-small font-medium">

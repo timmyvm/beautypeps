@@ -86,7 +86,9 @@ export default async function PolicyPage({ params }: { params: Params }) {
                 {part.title}
               </h2>
             )}
-            <Markdown className="min-w-0 lg:col-span-7 lg:col-start-6 [&>:first-child]:mt-0">{part.body}</Markdown>
+            <div className="min-w-0 lg:col-span-7 lg:col-start-6" {...reveal(1)}>
+              <Markdown className="[&>:first-child]:mt-0">{part.body}</Markdown>
+            </div>
           </section>
         ))}
         <section aria-label="Questions" className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">

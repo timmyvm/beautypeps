@@ -25,7 +25,7 @@ export async function Footer() {
             <p className="mt-6 mb-3 text-body">The Peptide Letter: new research, twice a month.</p>
             <NewsletterForm />
           </div>
-          <p className="text-small">
+          <p className="text-body">
             Cosmetics for external use only. Not intended to diagnose, treat, cure or prevent any disease; statements
             have not been evaluated by the TGA. The Peptide Library summarises published research and is not medical
             advice. © {year} {settings.storeName}

@@ -68,11 +68,11 @@ export function PeptideEntry({
       <Link
         href={`/peptides/${peptide.slug}`}
         className={cn(
-          "group grid grid-cols-[72px_minmax(0,1fr)] items-center gap-x-5 gap-y-3 px-3 py-4 transition-colors sm:grid-cols-[96px_minmax(0,1fr)] sm:px-4 lg:grid-cols-[112px_minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-x-8",
+          "group grid grid-cols-[72px_minmax(0,1fr)] items-center gap-x-5 gap-y-3 px-3 py-4 transition-colors sm:grid-cols-[96px_minmax(0,1fr)] sm:px-4 lg:grid-cols-[140px_minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-x-8",
           index % 2 === 0 ? "bg-surface hover:bg-surface-2" : "bg-bg hover:bg-surface",
         )}
       >
-        <SpecimenThumb specimen={specimen} className="aspect-square w-full" sizes="(min-width: 1024px) 112px, 96px" />
+        <SpecimenThumb specimen={specimen} className="aspect-square w-full" sizes="(min-width: 1024px) 140px, 96px" />
         <span className="min-w-0">
           <h3 className="text-lead font-medium text-ink group-hover:underline group-hover:underline-offset-4">{peptide.name}</h3>
           <span className="mt-1 block text-body text-ink">
