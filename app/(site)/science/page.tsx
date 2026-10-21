@@ -550,7 +550,8 @@ function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-surface-2 align-top">
+        {/* taste-skill-ignore: the rules separate the rows of a real data table */}
+        <tbody className="divide-y divide-surface-2 align-top" /* taste-skill-ignore */>
           {rows.map((r, i) => (
             <tr key={i}>
               {r.map((c, j) =>

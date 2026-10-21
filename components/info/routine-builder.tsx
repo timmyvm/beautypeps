@@ -338,7 +338,7 @@ function Results({
             </section>
           </div>
 
-          <aside aria-labelledby="bag-title" className="h-fit bg-field-ink p-6 text-field-ink-ink sm:p-8 lg:sticky lg:top-8 lg:col-span-4 lg:col-start-9">
+          <aside aria-labelledby="bag-title" className="order-first h-fit bg-field-ink p-6 text-field-ink-ink sm:p-8 lg:sticky lg:top-8 lg:order-none lg:col-span-4 lg:col-start-9">
             <h3 id="bag-title" className="text-lead font-medium">
               The routine, in one go
             </h3>

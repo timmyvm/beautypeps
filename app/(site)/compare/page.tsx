@@ -86,7 +86,7 @@ export default async function ComparePage() {
                       key={p.id}
                       data-reveal="row"
                       style={{ ["--reveal-i" as string]: Math.min(i, 8) }}
-                      className="align-top [&>*]:border-b [&>*]:border-surface-2 [&>*]:px-4 [&>*]:py-5"
+                      className="align-top [&>*]:border-b [&>*]:border-surface-2 [&>*]:px-4 [&>*]:py-5" /* taste-skill-ignore: rows of a real table */
                     >
                       <th scope="row" className="w-[300px] font-normal">
                         <Link href={`/peptides/${p.slug}`} className="group flex items-start gap-4">
