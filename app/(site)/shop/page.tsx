@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FilterChip, SpecimenGrid } from "@/components/shop/specimen-grid";
-import { SortSelect } from "@/components/shop/sort-select";
+import { ParamSelect, SortSelect } from "@/components/shop/sort-select";
 import { buttonClasses } from "@/components/ui/button";
 import { CONCERNS, concernLabel } from "@/lib/constants";
 import { getCategories, getFeaturedProducts, listProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/queries/catalog";
@@ -68,6 +68,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
       ? `Formulas chosen for ${concernLabel(concern).toLowerCase()}. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is.`
       : "Every formula we make, shown plainly. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is, graded 1 to 5.");
   const count = `${products.length} ${products.length === 1 ? "formula" : "formulas"}`;
+  const categoryOptions = [{ value: "", label: "Everything" }, ...categories.map((c) => ({ value: c.slug, label: c.name }))];
+  const concernOptions = [{ value: "", label: "Any concern" }, ...CONCERNS.map((c) => ({ value: c.slug, label: c.label }))];
 
   return (
     <div className="container-bp pt-10 md:pt-16">
@@ -81,31 +83,72 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         </p>
       </header>
 
-      {/* Filters: plain, filled controls at text size */}
-      <div className="mt-12 space-y-3">
-        <nav aria-label="Categories" className="flex flex-wrap gap-2" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
-          <FilterChip href={href({ category: undefined })} active={!categorySlug}>
-            Everything
+      {/* Phones: the count and one control; every filter folds into it */}
+      <details className="group mt-10 bg-surface md:hidden" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-2 text-body [&::-webkit-details-marker]:hidden">
+          <span aria-live="polite">
+            {count}
+            {q ? ` matching “${q}”` : ""}
+          </span>
+          <span className="underline underline-offset-4">
+            <span className="group-open:hidden">Filter and sort</span>
+            <span className="hidden group-open:inline">Close</span>
+          </span>
+        </summary>
+        <div className="space-y-4 px-4 pt-2 pb-5">
+          <Suspense>
+            <ParamSelect name="category" label="Category" options={categoryOptions} value={categorySlug ?? ""} stacked />
+            <ParamSelect name="concern" label="Concern" options={concernOptions} value={concern ?? ""} stacked />
+            <SortSelect options={PRODUCT_SORTS} value={sort} stacked />
+          </Suspense>
+          <form action="/shop" role="search">
+            {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
+            {concern && <input type="hidden" name="concern" value={concern} />}
+            <label htmlFor="shop-q-phone" className="mb-1.5 block text-body">
+              Search
+            </label>
+            <input
+              id="shop-q-phone"
+              name="q"
+              defaultValue={q}
+              placeholder="Search the catalogue"
+              className="h-11 w-full bg-white px-4 text-body text-ink placeholder:text-taupe focus:outline-2 focus:outline-accent"
+            />
+          </form>
+          <p className="flex flex-wrap gap-x-6 gap-y-2 text-body">
+            <Link href={href({ instock: inStock ? undefined : "1" })} aria-pressed={inStock} className="underline underline-offset-4">
+              {inStock ? "Show sold-out formulas too" : "In stock only"}
+            </Link>
+            {q && (
+              <Link href={href({ q: undefined })} className="underline underline-offset-4">
+                Clear search
+              </Link>
+            )}
+          </p>
+        </div>
+      </details>
+
+      {/* Tablet and up: categories as filled chips, everything else in one toolbar */}
+      <nav
+        aria-label="Categories"
+        className="mt-12 hidden flex-wrap gap-2 md:flex"
+        data-reveal=""
+        style={{ ["--reveal-i" as string]: 2 }}
+      >
+        <FilterChip href={href({ category: undefined })} active={!categorySlug}>
+          Everything
+        </FilterChip>
+        {categories.map((c) => (
+          <FilterChip key={c.id} href={href({ category: c.slug })} active={c.slug === categorySlug}>
+            {c.name}
           </FilterChip>
-          {categories.map((c) => (
-            <FilterChip key={c.id} href={href({ category: c.slug })} active={c.slug === categorySlug}>
-              {c.name}
-            </FilterChip>
-          ))}
-        </nav>
-        <nav aria-label="Concerns" className="flex flex-wrap gap-2" data-reveal="" style={{ ["--reveal-i" as string]: 3 }}>
-          {CONCERNS.map((c) => (
-            <FilterChip key={c.slug} href={href({ concern: c.slug === concern ? undefined : c.slug })} active={c.slug === concern}>
-              {c.label}
-            </FilterChip>
-          ))}
-        </nav>
-      </div>
+        ))}
+      </nav>
 
       <div
-        className="mt-8 flex flex-col gap-4 bg-surface px-4 py-3 md:flex-row md:items-center md:justify-between"
+        className="mt-3 hidden flex-wrap items-center justify-between gap-x-6 gap-y-3 bg-surface px-4 py-3 md:flex"
         data-reveal=""
-        style={{ ["--reveal-i" as string]: 4 }}
+        style={{ ["--reveal-i" as string]: 3 }}
       >
         <p className="text-body" aria-live="polite">
           {count}
@@ -129,6 +172,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
           >
             {inStock ? "Showing in-stock only (show all)" : "In stock only"}
           </Link>
+          <Suspense>
+            <ParamSelect name="concern" label="Concern" options={concernOptions} value={concern ?? ""} />
+          </Suspense>
           <form action="/shop" role="search" className="flex">
             {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
             {concern && <input type="hidden" name="concern" value={concern} />}
@@ -149,7 +195,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         </div>
       </div>
 
-      <section className="mt-10" aria-label="Formulas">
+      <section className="mt-8 md:mt-10" aria-label="Formulas">
         {products.length === 0 ? (
           <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" data-reveal="">
             <div>

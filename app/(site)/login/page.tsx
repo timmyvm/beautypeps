@@ -24,7 +24,7 @@ export default async function LoginPage({
 
   return (
     <AuthShell
-      title="Sign in"
+      title="Sign in to Beauty Peps"
       description="Access your orders, saved addresses and wishlist."
       footer={
         <p>
