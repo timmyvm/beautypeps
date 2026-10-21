@@ -103,3 +103,40 @@ Scores: design 8 · usability 8 · creativity 8 · content 8 → 8.0
 Caps applied: none.
 Still short: 1. the hero's left-half rest is long on very tall screens; 2. catalogue fact lines (14px,
 muted) are the smallest text on the page; 3. the reviews section shows seeded demo reviews until real ones exist.
+
+## Whole site: inspector before (old build) → after (final production build), FAIL / WARN
+| Page | Before | After |
+| --- | --- | --- |
+| / | 16 / 9 | 0 / 2 (both defended above) |
+| /shop | 9 / 9 | 0 / 2 |
+| /products/ghk-cu-copper-peptide-serum | 13 / 9 | 0 / 0 |
+| /search?q=copper | 10 / 9 | 0 / 2 |
+| /cart | — | 0 / 2 |
+| /track | 8 / 7 | 0 / 2 |
+| /contact | 9 / 7 | 0 / 2 |
+| /peptides | 14 / 10 | 0 / 0 |
+| /peptides/ghk-cu | 10 / 9 | 0 / 1 |
+| /science | 13 / 8 | 0 / 0 |
+| /compare | 13 / 7 | 0 / 2 |
+| /routine-builder | 10 / 7 | 0 / 1 |
+| /learn | 10 / 7 | 0 / 2 |
+| /learn/what-are-peptides | 11 / 9 | 0 / 2 |
+| /glossary | 13 / 10 | 0 / 2 |
+| /faq | 9 / 9 | 0 / 3 |
+| /about | 12 / 8 | 0 / 1 |
+| /policies/shipping | 8 / 6 | 0 / 1 |
+| /login, /register, /forgot-password | — | 0 / 2, 0 / 3, 0 / 2 |
+| admin overview / orders / order detail (inspect --app) | 4/4, 5/2, 4/5 | 0/0, 0/0, 0/0 |
+| /account (inspect --app) | 2 / 5 | 0 / 2 |
+
+Remaining WARNs are of four kinds, each defensible: no-footage on pages where the one real clip
+(the copper serum) would not be about the subject; still-page on short task pages (12–14 moving
+elements, warn below 16); card-rows where the catalogue/specimen grid is the archive; first-action on
+/register and /glossary (the button ends a five-field form; a glossary has no primary action).
+
+App screens (account, admin) dealt their own app style: achromatic-ledger, seed 1969225264,
+--keep palette,type.
+
+Regression on the final build: 104 routes × 2 widths × (public, customer, admin) all 200 with no
+console errors or phone overflow; end-to-end guest checkout → tracking → admin paid/shipped →
+customer sees tracking → register links guest order: pass.

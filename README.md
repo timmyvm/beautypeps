@@ -13,6 +13,17 @@ Beauty Peps is an online store for cosmetic beauty peptides, built with **Next.j
 
 Payments are **manual: bank transfer or PayID**. When a customer places an order, the confirmation email includes the payment details and uses the order number as the payment reference. The admin then clicks **Mark as paid**, then **Shipped** with a tracking number, and the customer is emailed at each step.
 
+## Design
+
+The site follows a direction dealt by the **tasteskill** design skill (`.claude/skills/design-taste-frontend`):
+*the specimen catalogue*. Every product stands alone on a flat colour tile like an entry in a field guide,
+named plainly with its concentration and the evidence grade of its lead peptide. Colours come from the product
+itself (GHK-Cu sapphire, frosted glass, travertine stone, ink); the typeface is Chillax. Working notes,
+the direction sheet and before/after measurements are in [`.taste-skill/`](.taste-skill/notes.md).
+
+To re-check a page against the skill's house rules: `node .claude/skills/design-taste-frontend/scripts/inspect.mjs http://localhost:3000/<page>`
+(set `CHROME_PATH` to a Chrome/Chromium binary).
+
 ## Quick start
 
 ```bash

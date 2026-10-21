@@ -5,6 +5,9 @@ import { MelbourneTime } from "./melbourne-time";
 import { FOOTER_LINKS } from "./nav-links";
 import { NewsletterForm } from "./newsletter-form";
 
+// The board's tiles arrive in reading order as the footer enters.
+const tile = (i: number) => ({ "data-reveal": "", style: { ["--reveal-i" as string]: i } });
+
 const timeFmt = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Melbourne", weekday: "long", hour: "numeric", minute: "2-digit" });
 
 /** The footer is the last two rows of the board: filled tiles, every cell used. */
@@ -17,7 +20,7 @@ export async function Footer() {
       <h2 className="sr-only">About Beauty Peps</h2>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-12">
         {/* Statement + newsletter + legal */}
-        <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-6 md:min-h-[300px] lg:col-span-4">
+        <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-6 md:min-h-[300px] lg:col-span-4" {...tile(0)}>
           <div>
             <p className="max-w-[26ch] text-lead font-medium">
               Cosmetic peptides, dosed in full and graded honestly. Made in Melbourne.
@@ -34,7 +37,7 @@ export async function Footer() {
         </div>
 
         {/* Navigation */}
-        <nav aria-label="Footer" className="col-span-2 bg-field-frost p-6 md:col-span-6 lg:col-span-4">
+        <nav aria-label="Footer" className="col-span-2 bg-field-frost p-6 md:col-span-6 lg:col-span-4" {...tile(1)}>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-body">
             {FOOTER_LINKS.map((l) => (
               <li key={l.href}>
@@ -47,7 +50,7 @@ export async function Footer() {
         </nav>
 
         {/* Local time */}
-        <div className="col-span-2 flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-6 lg:col-span-2">
+        <div className="col-span-2 flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-6 lg:col-span-2" {...tile(2)}>
           <p className="text-body">Melbourne</p>
           <p className="text-lead font-medium">
             <MelbourneTime initial={timeFmt.format(new Date())} />
@@ -56,7 +59,7 @@ export async function Footer() {
         </div>
 
         {/* Email */}
-        <div className="col-span-2 flex flex-col justify-between gap-6 bg-field-stone p-6 md:col-span-6 lg:col-span-2">
+        <div className="col-span-2 flex flex-col justify-between gap-6 bg-field-stone p-6 md:col-span-6 lg:col-span-2" {...tile(3)}>
           <p className="text-body">Questions about a formula or an order</p>
           <a href={`mailto:${settings.supportEmail}`} className="link-quiet text-body font-medium">
             {settings.supportEmail.split("@")[0]}@
@@ -66,7 +69,7 @@ export async function Footer() {
         </div>
 
         {/* The name returns */}
-        <div className="col-span-2 flex min-h-[180px] items-center justify-center bg-field-ink p-8 md:col-span-8 md:min-h-[320px]">
+        <div className="col-span-2 flex min-h-[180px] items-center justify-center bg-field-ink p-8 md:col-span-8 md:min-h-[320px]" {...tile(0)}>
           <Image
             src="/images/brand/logo-wordmark-light.png"
             alt="Beauty Peps"
@@ -79,6 +82,7 @@ export async function Footer() {
         {/* Invitation */}
         <Link
           href="/routine-builder"
+          {...tile(1)}
           className="press group col-span-2 flex min-h-[200px] flex-col justify-between bg-accent p-6 text-accent-ink hover:bg-accent-strong md:col-span-4 md:min-h-[320px]"
         >
           <span className="max-w-[12ch] text-lead font-medium">Build your routine</span>

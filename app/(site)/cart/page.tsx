@@ -25,11 +25,11 @@ export default async function CartPage() {
           <h1 id="bag-heading" className="display-type text-[clamp(2.75rem,1rem+5vw,5.75rem)] lg:col-span-7" data-reveal="">
             Your bag is empty
           </h1>
-          <div className="lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
-            <p className="max-w-[44ch] text-lead">
+          <div className="lg:col-span-5 lg:col-start-8">
+            <p className="max-w-[44ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
               Start with a bestseller, or let the routine builder match peptides to what you want to change.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
               <Link href="/shop" className={buttonClasses({ size: "lg" })}>
                 See every formula
               </Link>
