@@ -71,11 +71,13 @@ export function SpecimenTile({
   const cutout = specimenSrc(product.image);
   return (
     <div className={cn("specimen relative overflow-hidden", TILE_BG[tone], className)}>
+      {/* `priority` marks a likely largest paint: fetched first and never lazy (next/image's own prop is deprecated). */}
       <Image
         src={cutout ?? product.image}
         alt={product.name}
         fill
-        priority={priority}
+        loading={priority ? "eager" : undefined}
+        fetchPriority={priority ? "high" : undefined}
         sizes={sizes}
         className={cutout ? "object-contain" : "object-cover"}
       />

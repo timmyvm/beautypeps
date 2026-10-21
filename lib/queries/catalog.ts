@@ -1,8 +1,9 @@
 import "server-only";
 
 import { and, asc, desc, eq, inArray, or, sql, type AnyColumn, type SQL } from "drizzle-orm";
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import type { ProductCardData } from "@/components/product/product-card";
+import { TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { articles, categories, peptides, products, reviews } from "@/lib/db/schema";
 
@@ -38,6 +39,9 @@ const cardColumns = {
 
 /** Approved review averages keyed by product id. */
 export async function getRatingsMap(productIds?: string[]): Promise<Map<string, Rating>> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   if (productIds && productIds.length === 0) return new Map();
   const rows = await db
     .select({
@@ -55,11 +59,17 @@ export async function getRatingsMap(productIds?: string[]): Promise<Map<string, 
   return new Map(rows.map((r) => [r.productId, { average: Number(r.average), count: Number(r.count) }]));
 }
 
-export const getCategories = cache(async () => {
+export async function getCategories() {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   return db.select().from(categories).orderBy(asc(categories.sortOrder), asc(categories.name));
-});
+}
 
 export async function getCategoryBySlug(slug: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   return db.query.categories.findFirst({ where: eq(categories.slug, slug) });
 }
 
@@ -75,6 +85,9 @@ export async function listProducts(opts: {
   inStock?: boolean;
   limit?: number;
 }): Promise<ProductCardData[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   const where: SQL[] = [eq(products.status, "active")];
 
   if (opts.category) {
@@ -134,15 +147,21 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductCardData[]>
   return all.slice(0, limit);
 }
 
-export const getProductBySlug = cache(async (slug: string) => {
+export async function getProductBySlug(slug: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   const product = await db.query.products.findFirst({
     where: and(eq(products.slug, slug), eq(products.status, "active")),
     with: { category: true },
   });
   return product ?? null;
-});
+}
 
 export async function getApprovedReviews(productId: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   return db
     .select()
     .from(reviews)
@@ -154,6 +173,9 @@ export async function getRelatedProducts(
   product: { id: string; categoryId: string | null; concerns: string[] },
   limit = 4,
 ): Promise<ProductCardData[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   const candidates = await db
     .select({ ...cardColumns, categoryId: products.categoryId, concerns: products.concerns })
     .from(products)
@@ -175,6 +197,9 @@ export async function getRelatedProducts(
 }
 
 export async function getPeptidesBySlugs(slugs: string[]) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   if (slugs.length === 0) return [];
   const rows = await db
     .select({
@@ -191,6 +216,9 @@ export async function getPeptidesBySlugs(slugs: string[]) {
 }
 
 export async function getPeptideTeasers(limit = 6) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db
     .select({
       slug: peptides.slug,
@@ -207,6 +235,9 @@ export async function getPeptideTeasers(limit = 6) {
 }
 
 export async function getLatestArticles(limit = 3) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db
     .select({
       slug: articles.slug,
@@ -225,6 +256,9 @@ export async function getLatestArticles(limit = 3) {
 
 /** Approved high-rated reviews with their product, for social proof. */
 export async function getTopReviews(limit = 6) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   return db
     .select({
       id: reviews.id,
@@ -251,6 +285,9 @@ export async function getUserReviewForProduct(userId: string, productId: string)
 }
 
 export async function searchAll(q: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog, TAGS.content);
   const term = q.trim().toLowerCase();
   if (!term) return { products: [], peptides: [], articles: [] };
   const pattern = `%${escapeLike(term)}%`;

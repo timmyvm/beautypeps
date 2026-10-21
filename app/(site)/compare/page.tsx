@@ -9,12 +9,14 @@ import { concernLabel } from "@/lib/constants";
 import { PAIRINGS, PEPTIDE_USAGE } from "@/lib/content/compare";
 import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Compare peptides side by side",
   description:
     "Compare GHK-Cu, Matrixyl, Argireline, SNAP-8, Leuphasyl and more side by side: what each is best for, typical concentration, evidence grade, pH, when to use it and what to pair it with.",
-};
+  path: "/compare",
+});
 
 const VERDICT = {
   great: { label: "Good together", className: "text-ink" },
@@ -46,7 +48,8 @@ export default async function ComparePage() {
               src="/images/editorial/lab.webp"
               alt="A formulation bench with beakers, a scale and amber vials in morning light"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

@@ -1,10 +1,11 @@
 "use server";
 
 import { and, eq, ne, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSession, destroySession, hashPassword, requireUser, verifyPassword } from "@/lib/auth/session";
+import { TAGS } from "@/lib/cache-tags";
 import { AU_STATES } from "@/lib/constants";
 import { db } from "@/lib/db";
 import {
@@ -52,6 +53,7 @@ export async function cancelOrderAction(_prev: FormState, formData: FormData): P
       .set({ stock: sql`${products.stock} + ${item.quantity}` })
       .where(eq(products.id, item.productId));
   }
+  revalidateTag(TAGS.catalog, "max");
 
   await db.insert(orderEvents).values({
     orderId: order.id,

@@ -56,7 +56,7 @@ export function SpecimenHero({ products }: { products: ProductCardData[] }) {
               data-reveal={t.big ? undefined : ""}
               style={{ ["--reveal-i" as string]: i }}
             >
-              <div className={cn(t.big && "shutter")}>
+              <div className={cn(t.big && "shutter-now")}>
                 <SpecimenTile
                   product={t.product!}
                   tone={t.tone}
@@ -76,9 +76,10 @@ export function SpecimenHero({ products }: { products: ProductCardData[] }) {
               {tiles
                 .filter((t) => t.phone)
                 .filter((_, i) => i % 2 === col)
-                .map((t) => (
+                .map((t, row) => (
                   <Link key={t.slug} href={`/products/${t.slug}`} aria-label={t.product!.name}>
-                    <SpecimenTile product={t.product!} tone={t.tone} sizes="50vw" className="aspect-[3/4] w-full" />
+                    {/* The top pair is the phone's first screen (and its largest paint): fetched straight away. */}
+                    <SpecimenTile product={t.product!} tone={t.tone} priority={row === 0} sizes="50vw" className="aspect-[3/4] w-full" />
                   </Link>
                 ))}
             </div>

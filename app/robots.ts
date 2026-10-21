@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/account", "/checkout", "/cart", "/api", "/login", "/register", "/reset-password"],
+        // Private or per-visitor pages, and search results (endless URL variations with nothing new to index).
+        disallow: ["/admin", "/account", "/checkout", "/cart", "/api", "/login", "/register", "/reset-password", "/forgot-password", "/search"],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

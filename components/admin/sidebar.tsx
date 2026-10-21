@@ -108,7 +108,7 @@ export function AdminSidebar({ counts, footer }: { counts: SidebarCounts; footer
 
   const brand = (
     <Link href="/admin" className="flex items-center gap-3 px-3">
-      <Image src="/images/brand/logo-wordmark.png" alt="Beauty Peps" width={1229} height={301} className="h-6 w-auto" priority />
+      <Image src="/images/brand/logo-wordmark.png" alt="Beauty Peps" width={98} height={24} className="h-6 w-auto" loading="eager" />
       <span className="text-[13px] text-muted">Store admin</span>
     </Link>
   );
@@ -142,7 +142,7 @@ export function AdminSidebar({ counts, footer }: { counts: SidebarCounts; footer
       {/* Phone and tablet: a 48px bar with the screen's name and a menu */}
       <div className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-surface-2 bg-surface px-4 lg:hidden">
         <Link href="/admin" aria-label="Admin overview">
-          <Image src="/images/brand/logo-wordmark.png" alt="Beauty Peps" width={1229} height={301} className="h-5 w-auto" />
+          <Image src="/images/brand/logo-wordmark.png" alt="Beauty Peps" width={82} height={20} className="h-5 w-auto" />
         </Link>
         <span className="text-[14px] font-medium text-ink">{current?.label ?? "Admin"}</span>
         <button type="button" onClick={() => setOpen(true)} className="h-11 text-[14px] font-medium text-ink" aria-expanded={open}>

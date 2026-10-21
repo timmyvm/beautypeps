@@ -276,6 +276,19 @@
   .js .shutter.is-in img {
     transform: none;
   }
+  /*
+   * Above the fold the first picture is often the largest paint, so it is never clipped or hidden: it
+   * settles into its tile as the page opens, with no script involved. `backwards` hands the end state back
+   * to the normal rules, so hover movement still works.
+   */
+  .js .shutter-now img {
+    animation: shutter-settle 1400ms var(--ease-soft) backwards;
+  }
+  @keyframes shutter-settle {
+    from {
+      transform: scale(1.08);
+    }
+  }
 
   /* One moving picture: a slow drift on a large photograph */
   .drift {

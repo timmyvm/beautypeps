@@ -1,22 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { PageHeader, reveal } from "@/components/info/page-header";
 import { ArticleCard } from "@/components/learn/article-card";
 import { NewsletterForm } from "@/components/site/newsletter-form";
 import { ARTICLE_CATEGORIES } from "@/lib/constants";
 import { getPublishedArticles } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "The Journal: peptide guides, routines and research",
   description:
     "Evidence-led guides to cosmetic peptides: how copper peptides work, layering peptides with retinol and vitamin C, building a beginner routine, and what the research really says.",
-};
+  path: "/learn",
+});
 
 type SearchParams = Promise<{ category?: string }>;
 
-export default async function JournalPage({ searchParams }: { searchParams: SearchParams }) {
+/** This view is chosen by the URL, so it renders per request inside the page's static shell. */
+export default function JournalPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Suspense fallback={<div className="container-bp min-h-dvh pt-10 md:pt-16" aria-busy="true" />}>
+      <JournalPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function JournalPageContent({ searchParams }: { searchParams: SearchParams }) {
   const { category } = await searchParams;
   const activeCategory = ARTICLE_CATEGORIES.find((c) => c === category);
   const all = await getPublishedArticles();

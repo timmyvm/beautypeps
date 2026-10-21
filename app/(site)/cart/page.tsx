@@ -12,6 +12,9 @@ import { computeTotals } from "@/lib/pricing";
 import { getFeaturedProducts } from "@/lib/queries/catalog";
 import { getSettings } from "@/lib/settings";
 
+// Per-visitor (session, bag or order cookie): renders at request time.
+export const instant = false;
+
 export const metadata: Metadata = { title: "Your bag", robots: { index: false } };
 
 export default async function CartPage() {
@@ -44,7 +47,7 @@ export default async function CartPage() {
             <h2 id="best-heading" className="display-type mb-10 text-head" data-reveal="">
               Bestsellers
             </h2>
-            <SpecimenGrid products={bestsellers} doubles={false} />
+            <SpecimenGrid products={bestsellers} doubles={false} priority={2} />
           </section>
         )}
       </div>

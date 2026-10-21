@@ -20,6 +20,7 @@ import {
   getPeptideBySlug,
   getPeptideSpecimens,
   getProductsWithPeptide,
+  getPublishedPeptides,
   getRelatedPeptides,
 } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
@@ -29,18 +30,31 @@ type Params = Promise<{ slug: string }>;
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const peptide = await getPeptideBySlug(slug);
-  if (!peptide) return { title: "Peptide not found" };
+  if (!peptide) notFound();
   const title = `${peptide.name} (${peptide.inciName}): mechanism, evidence and how to use it`;
   return {
     title,
     description: peptide.summary,
     alternates: { canonical: `/peptides/${peptide.slug}` },
-    openGraph: { title, description: peptide.summary, type: "article" },
+    openGraph: { title, description: peptide.summary, type: "article", url: `/peptides/${peptide.slug}` },
+    twitter: { card: "summary_large_image", title, description: peptide.summary },
   };
 }
 
+/** Every published entry is prerendered at build; a new one is rendered on its first visit and kept. */
+export async function generateStaticParams() {
+  const peptides = await getPublishedPeptides();
+  return peptides.map((x) => ({ slug: x.slug }));
+}
+
+// The slug is read before any Suspense boundary, so a page added after the build is rendered on its
+// first visit and then kept as a static page (ISR) like the rest.
 export default async function PeptideMonographPage({ params }: { params: Params }) {
   const { slug } = await params;
+  return <PeptideMonographPageView slug={slug} />;
+}
+
+async function PeptideMonographPageView({ slug }: { slug: string }) {
   const peptide = await getPeptideBySlug(slug);
   if (!peptide) notFound();
 

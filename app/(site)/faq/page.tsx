@@ -8,12 +8,14 @@ import { ButtonLink } from "@/components/ui/button";
 import { faqPlainText, getFaqGroups } from "@/lib/content/faq";
 import { getSettings } from "@/lib/settings";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "FAQ",
+export const metadata: Metadata = pageMetadata({
+  title: "Peptide skincare FAQ: results, layering, payment and shipping",
   description:
     "Answers about cosmetic peptides, using and layering our products, pure actives, payment by bank transfer or PayID, Australia Post shipping, returns and your account.",
-};
+  path: "/faq",
+});
 
 const CARD_FIELDS = ["bg-field-stone", "bg-field-frost", "bg-surface-2"];
 
@@ -70,7 +72,8 @@ export default async function FaqPage() {
               src="/images/editorial/hero.webp"
               alt="Three peptide serums on a travertine plinth in soft afternoon light"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

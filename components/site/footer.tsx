@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { getSettings } from "@/lib/settings";
@@ -8,12 +9,16 @@ import { NewsletterForm } from "./newsletter-form";
 // The board's tiles arrive in reading order as the footer enters.
 const tile = (i: number) => ({ "data-reveal": "", style: { ["--reveal-i" as string]: i } });
 
-const timeFmt = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Melbourne", weekday: "long", hour: "numeric", minute: "2-digit" });
+/** The copyright year, kept in the cache so the footer stays part of the static shell. */
+async function copyrightYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
 
 /** The footer is the last two rows of the board: filled tiles, every cell used. */
 export async function Footer() {
-  const settings = await getSettings();
-  const year = new Date().getFullYear();
+  const [settings, year] = await Promise.all([getSettings(), copyrightYear()]);
 
   return (
     <footer className="container-bp mt-32 pb-[var(--margin)] md:mt-40">
@@ -53,7 +58,7 @@ export async function Footer() {
         <div className="col-span-2 flex flex-col justify-between gap-6 bg-surface-2 p-6 md:col-span-6 lg:col-span-2" {...tile(2)}>
           <p className="text-body">Melbourne</p>
           <p className="text-lead font-medium">
-            <MelbourneTime initial={timeFmt.format(new Date())} />
+            <MelbourneTime />
           </p>
           <p className="text-small">{settings.dispatchTime}</p>
         </div>
@@ -75,6 +80,7 @@ export async function Footer() {
             alt="Beauty Peps"
             width={1229}
             height={301}
+            sizes="(min-width: 1024px) 52rem, 90vw"
             className="h-auto w-full max-w-[52rem]"
           />
         </div>

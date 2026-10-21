@@ -7,7 +7,8 @@ import { requireAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { contactMessages, orders, reviews } from "@/lib/db/schema";
 
-export const dynamic = "force-dynamic";
+// Every admin screen is request-time (session + live counts); it is allowed to block.
+export const instant = false;
 
 export const metadata: Metadata = {
   title: { default: "Admin", template: "%s · Admin · Beauty Peps" },

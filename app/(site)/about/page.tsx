@@ -6,12 +6,14 @@ import { productFact, SpecimenTile, toneFor } from "@/components/product/product
 import { ButtonLink } from "@/components/ui/button";
 import { getActiveProducts } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Beauty Peps",
   description:
     "Beauty Peps is a Melbourne peptide skincare brand built by formulators. We publish our concentrations, make small batches and put education first.",
-};
+  path: "/about",
+});
 
 const VALUES = [
   {
@@ -59,7 +61,8 @@ export default async function AboutPage() {
               src="/images/editorial/lab.webp"
               alt="Serums and glassware on the bench of the Beauty Peps formulation lab"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

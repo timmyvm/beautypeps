@@ -6,6 +6,9 @@ import { ForgotPasswordForm } from "@/components/auth/auth-forms";
 import { getCurrentUser } from "@/lib/auth/session";
 import { authDestination } from "@/lib/queries/account";
 
+// Per-visitor (session, bag or order cookie): renders at request time.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Forgot your password?",
   robots: { index: false, follow: false },

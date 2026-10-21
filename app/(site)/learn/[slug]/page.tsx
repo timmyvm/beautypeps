@@ -11,7 +11,7 @@ import { ShareButton } from "@/components/learn/share-button";
 import { ProductCard } from "@/components/product/product-card";
 import { NewsletterForm } from "@/components/site/newsletter-form";
 import { splitTitle } from "@/lib/content/titles";
-import { getArticleBySlug, getProductsForArticle, getRelatedArticles } from "@/lib/queries/content";
+import { getArticleBySlug, getProductsForArticle, getPublishedArticles, getRelatedArticles } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
@@ -19,7 +19,7 @@ type Params = Promise<{ slug: string }>;
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
-  if (!article) return { title: "Article not found" };
+  if (!article) notFound();
   const description = article.seoDescription ?? article.excerpt;
   return {
     title: article.title,
@@ -31,17 +31,29 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "article",
       publishedTime: (article.publishedAt ?? article.createdAt).toISOString(),
       authors: [article.author],
-      images: article.coverImage ? [article.coverImage] : undefined,
+      url: `/learn/${article.slug}`,
     },
   };
 }
 
+/** Every published entry is prerendered at build; a new one is rendered on its first visit and kept. */
+export async function generateStaticParams() {
+  const articles = await getPublishedArticles();
+  return articles.map((x) => ({ slug: x.slug }));
+}
+
+// The slug is read before any Suspense boundary, so a page added after the build is rendered on its
+// first visit and then kept as a static page (ISR) like the rest.
 export default async function ArticlePage({ params }: { params: Params }) {
   const { slug } = await params;
+  return <ArticlePageView slug={slug} />;
+}
+
+async function ArticlePageView({ slug }: { slug: string }) {
   const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
-  const [related, products] = await Promise.all([getRelatedArticles(article, 3), getProductsForArticle(article, 4)]);
+  const [related, products] = await Promise.all([getRelatedArticles({ id: article.id, category: article.category }, 3), getProductsForArticle(article, 4)]);
   const toc = extractToc(article.body);
   const published = article.publishedAt ?? article.createdAt;
   const t = splitTitle(article.title);
@@ -86,8 +98,8 @@ export default async function ArticlePage({ params }: { params: Params }) {
           </div>
         </div>
         {article.coverImage && (
-          <div className="shutter relative mt-10 aspect-[3/2] w-full overflow-hidden bg-surface sm:aspect-[2/1] lg:mt-14 lg:aspect-[21/9]">
-            <Image src={article.coverImage} alt="" fill priority sizes="100vw" className="object-cover" />
+          <div className="shutter-now relative mt-10 aspect-[3/2] w-full overflow-hidden bg-surface sm:aspect-[2/1] lg:mt-14 lg:aspect-[21/9]">
+            <Image src={article.coverImage} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="object-cover" />
           </div>
         )}
       </header>

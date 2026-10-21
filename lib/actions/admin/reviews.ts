@@ -1,7 +1,8 @@
 "use server";
 
 import { eq, inArray } from "drizzle-orm";
-import { refresh, revalidatePath } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { requireAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { products, reviews, type ReviewStatus } from "@/lib/db/schema";
@@ -14,6 +15,7 @@ async function revalidateReview(reviewId: string) {
     .where(eq(reviews.id, reviewId));
   if (row[0]) revalidatePath(`/products/${row[0].slug}`);
   revalidatePath("/admin/reviews");
+  updateTag(TAGS.catalog);
 }
 
 export async function setReviewStatusAction(reviewId: string, status: ReviewStatus) {
@@ -31,6 +33,7 @@ export async function bulkApproveReviewsAction(formData: FormData) {
   if (ids.length === 0) return;
   await db.update(reviews).set({ status: "approved" }).where(inArray(reviews.id, ids));
   revalidatePath("/admin/reviews");
+  updateTag(TAGS.catalog);
   revalidatePath("/products/[slug]", "page");
   refresh();
 }

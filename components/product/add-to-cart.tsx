@@ -88,7 +88,7 @@ export function AddToCart({ productId, productName, price, maxQuantity }: Props)
           onClick={() => add(qty)}
           disabled={soldOut || pending}
           className={buttonClasses({ size: "lg", className: "min-w-0 flex-1 px-5" })}
-          aria-label={soldOut ? `${productName} is sold out` : `Add ${qty} ${productName} to bag`}
+          aria-label={soldOut ? `Sold out: ${productName}` : `Add to bag · ${formatMoney(price * qty)}: ${qty} × ${productName}`}
         >
           {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
           {soldOut ? "Sold out" : <>Add to bag · {formatMoney(price * qty)}</>}

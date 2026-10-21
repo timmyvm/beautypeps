@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense, type ComponentProps } from "react";
+import { JsonLd, siteUrl } from "@/components/info/json-ld";
 import { Markdown } from "@/components/markdown";
 import { AddToCart, StickyAddToCart } from "@/components/product/add-to-cart";
 import { PeptideRows } from "@/components/product/peptide-chip-card";
@@ -15,6 +17,7 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { MAX_QTY_PER_LINE } from "@/lib/cart";
 import { concernLabel } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
+import { getActiveProducts } from "@/lib/queries/content";
 import {
   getApprovedReviews,
   getPeptidesBySlugs,
@@ -30,37 +33,49 @@ type Props = { params: Promise<{ slug: string }> };
 // One heading size for this page: the product name and every section heading.
 const HEAD = "display-type text-[clamp(1.75rem,1rem+2.6vw,3.5rem)]";
 
+/** Every active formula is prerendered at build; one added later is rendered on its first visit and kept. */
+export async function generateStaticParams() {
+  const products = await getActiveProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return { title: "Product not found" };
+  if (!product) notFound();
+  const description = product.seoDescription || product.shortDescription;
   return {
     title: product.seoTitle || `${product.name}${product.subtitle ? `: ${product.subtitle}` : ""}`,
-    description: product.seoDescription || product.shortDescription,
+    description,
     alternates: { canonical: `/products/${product.slug}` },
+    // The preview picture is this segment's opengraph-image: the specimen on its tile, named and graded.
     openGraph: {
+      type: "website",
+      url: `/products/${product.slug}`,
       title: product.name,
-      description: product.seoDescription || product.shortDescription,
-      images: [product.image],
+      description,
     },
+    twitter: { card: "summary_large_image", title: product.name, description },
   };
 }
 
+// The slug is read before any Suspense boundary, so a page added after the build is rendered on its
+// first visit and then kept as a static page (ISR) like the rest.
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  return <ProductView slug={slug} />;
+}
+
+async function ProductView({ slug }: { slug: string }) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [user, settings, reviews, peptides, related] = await Promise.all([
-    getCurrentUser(),
+  const [settings, reviews, peptides, related] = await Promise.all([
     getSettings(),
     getApprovedReviews(product.id),
     getPeptidesBySlugs(product.peptideSlugs),
-    getRelatedProducts(product),
+    getRelatedProducts({ id: product.id, categoryId: product.categoryId, concerns: product.concerns }),
   ]);
-  const [wishlisted, myReview] = user
-    ? await Promise.all([isInWishlist(user.id, product.id), getUserReviewForProduct(user.id, product.id)])
-    : [false, null];
 
   const photos = [product.image, ...product.gallery.filter((g) => g && g !== product.image)];
   const maxQuantity = Math.min(product.stock, MAX_QTY_PER_LINE);
@@ -70,28 +85,77 @@ export default async function ProductPage({ params }: Props) {
   const lead = product.keyActives[0];
   const leadPeptide = peptides[0];
   const isCopper = product.peptideSlugs.includes("ghk-cu");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const base = siteUrl();
+  const url = `${base}/products/${product.slug}`;
+  const abs = (src: string) => (src.startsWith("http") ? src : `${base}${src}`);
 
+  // Product + Offer with shipping and returns, as Google's merchant listings read them.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": `${url}#product`,
     name: product.name,
     description: product.shortDescription,
-    image: photos.map((i) => (i.startsWith("http") ? i : `${siteUrl}${i}`)),
+    url,
+    image: photos.map(abs),
     sku: product.sku,
-    brand: { "@type": "Brand", name: "Beauty Peps" },
+    brand: { "@type": "Brand", name: settings.storeName },
     category: product.category?.name,
+    ...(product.size && { size: product.size }),
     offers: {
       "@type": "Offer",
-      url: `${siteUrl}/products/${product.slug}`,
+      url,
       priceCurrency: "AUD",
       price: (product.price / 100).toFixed(2),
       availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: settings.storeName, url: base },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: (product.price >= settings.freeShippingThreshold && settings.freeShippingThreshold > 0 ? 0 : settings.standardShipping / 100).toFixed(2),
+          currency: "AUD",
+        },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "AU" },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 8, unitCode: "DAY" },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "AU",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 30,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/ReturnShippingFees",
+      },
     },
     ...(reviewCount > 0 && {
-      aggregateRating: { "@type": "AggregateRating", ratingValue: average.toFixed(1), reviewCount },
+      aggregateRating: { "@type": "AggregateRating", ratingValue: average.toFixed(1), reviewCount, bestRating: 5, worstRating: 1 },
+      review: reviews.slice(0, 5).map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.authorName },
+        datePublished: r.createdAt.toISOString().slice(0, 10),
+        reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+        ...(r.title && { name: r.title }),
+        reviewBody: r.body,
+      })),
     }),
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${base}/` },
+      { "@type": "ListItem", position: 2, name: "Shop", item: `${base}/shop` },
+      ...(product.category
+        ? [{ "@type": "ListItem", position: 3, name: product.category.name, item: `${base}/shop?category=${product.category.slug}` }]
+        : []),
+      { "@type": "ListItem", position: product.category ? 4 : 3, name: product.name },
+    ],
   };
 
   const specs = [
@@ -112,16 +176,14 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-      />
+      <JsonLd data={jsonLd} />
+      <JsonLd data={breadcrumbs} />
 
       <div className="container-bp pt-6 pb-28 md:pt-10 lg:pb-0">
         {/* The specimen, and everything needed to buy it */}
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
           <div className="lg:col-span-6 lg:row-start-1">
-            <div className="shutter">
+            <div className="shutter-now">
               <SpecimenTile
                 product={product}
                 tone={toneFor(product.slug)}
@@ -189,7 +251,9 @@ export default async function ProductPage({ params }: Props) {
               <div id="buy" className="mt-4">
                 <AddToCart productId={product.id} productName={product.name} price={product.price} maxQuantity={maxQuantity} />
               </div>
-              <WishlistButton productId={product.id} productSlug={product.slug} initial={wishlisted} className="mt-4" />
+              <Suspense fallback={<WishlistButton productId={product.id} productSlug={product.slug} initial={false} className="mt-4" />}>
+                <ViewerWishlistButton productId={product.id} productSlug={product.slug} />
+              </Suspense>
 
               <ul className="mt-8 space-y-1 bg-surface px-5 py-4 text-small">
                 <li>
@@ -365,13 +429,24 @@ export default async function ProductPage({ params }: Props) {
         )}
 
         <div className="mt-32 lg:mt-48">
-          <ReviewsSection
-            product={{ id: product.id, name: product.name, slug: product.slug }}
-            reviews={reviews}
-            signedIn={!!user}
-            alreadyReviewed={!!myReview}
-            headingClass={HEAD}
-          />
+          {/* The reviews are in the static page; whether this visitor can write one streams in. */}
+          <Suspense
+            fallback={
+              <ReviewsSection
+                product={{ id: product.id, name: product.name, slug: product.slug }}
+                reviews={reviews}
+                signedIn={false}
+                alreadyReviewed={false}
+                headingClass={HEAD}
+              />
+            }
+          >
+            <ViewerReviewsSection
+              product={{ id: product.id, name: product.name, slug: product.slug }}
+              reviews={reviews}
+              headingClass={HEAD}
+            />
+          </Suspense>
         </div>
 
         {related.length > 0 && (
@@ -387,4 +462,16 @@ export default async function ProductPage({ params }: Props) {
       <StickyAddToCart productId={product.id} productName={product.name} price={product.price} maxQuantity={maxQuantity} />
     </>
   );
+}
+
+async function ViewerWishlistButton({ productId, productSlug }: { productId: string; productSlug: string }) {
+  const user = await getCurrentUser();
+  const wishlisted = user ? await isInWishlist(user.id, productId) : false;
+  return <WishlistButton productId={productId} productSlug={productSlug} initial={wishlisted} className="mt-4" />;
+}
+
+async function ViewerReviewsSection(props: Omit<ComponentProps<typeof ReviewsSection>, "signedIn" | "alreadyReviewed">) {
+  const user = await getCurrentUser();
+  const mine = user ? await getUserReviewForProduct(user.id, props.product.id) : null;
+  return <ReviewsSection {...props} signedIn={!!user} alreadyReviewed={!!mine} />;
 }

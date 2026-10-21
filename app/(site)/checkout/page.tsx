@@ -11,6 +11,9 @@ import { resolveCartDiscount } from "@/lib/orders";
 import { computeTotals } from "@/lib/pricing";
 import { getSettings } from "@/lib/settings";
 
+// Per-visitor (session, bag or order cookie): renders at request time.
+export const instant = false;
+
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 
 export default async function CheckoutPage() {

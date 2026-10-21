@@ -1,21 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LEARN_LINKS, SHOP_LINKS } from "./nav-links";
 
 /** Phone navigation: a "Menu" text button that opens a full-screen sheet. */
 export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: boolean }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-
-  // Close whenever the route changes.
-  const [lastPath, setLastPath] = useState(pathname);
-  if (pathname !== lastPath) {
-    setLastPath(pathname);
-    setOpen(false);
-  }
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -46,7 +37,12 @@ export function MobileMenu({ signedIn, isAdmin }: { signedIn: boolean; isAdmin: 
               Close
             </button>
           </div>
-          <nav aria-label="Mobile" className="flex flex-col gap-10 px-[var(--margin)] pt-4 pb-12">
+          {/* Choosing any link closes the sheet (it lives in the shared header, so it would stay open). */}
+          <nav
+            aria-label="Mobile"
+            className="flex flex-col gap-10 px-[var(--margin)] pt-4 pb-12"
+            onClick={(e) => (e.target as HTMLElement).closest("a") && setOpen(false)}
+          >
             <ul className="space-y-1">
               {SHOP_LINKS.map((l) => (
                 <li key={l.href}>

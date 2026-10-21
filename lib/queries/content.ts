@@ -1,19 +1,23 @@
 import "server-only";
 
 import { and, asc, desc, eq, inArray, ne } from "drizzle-orm";
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { articles, categories, peptides, products, type Article, type Peptide } from "@/lib/db/schema";
 
 /* Read-only queries for the Peptide Library, Journal and other educational pages. */
 
-export const getPublishedPeptides = cache(async (): Promise<Peptide[]> => {
+export async function getPublishedPeptides(): Promise<Peptide[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db
     .select()
     .from(peptides)
     .where(eq(peptides.published, true))
     .orderBy(asc(peptides.sortOrder), asc(peptides.name));
-});
+}
 
 export async function filterPeptides(opts: { peptideClass?: string; concern?: string }) {
   const all = await getPublishedPeptides();
@@ -24,11 +28,17 @@ export async function filterPeptides(opts: { peptideClass?: string; concern?: st
   );
 }
 
-export const getPeptideBySlug = cache(async (slug: string) => {
+export async function getPeptideBySlug(slug: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db.query.peptides.findFirst({ where: and(eq(peptides.slug, slug), eq(peptides.published, true)) });
-});
+}
 
 export async function getPeptidesBySlugs(slugs: string[]) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   if (slugs.length === 0) return [];
   return db
     .select()
@@ -69,14 +79,17 @@ const productCardColumns = {
 
 export type CatalogProduct = Awaited<ReturnType<typeof getActiveProducts>>[number];
 
-export const getActiveProducts = cache(async () => {
+export async function getActiveProducts() {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.catalog);
   return db
     .select(productCardColumns)
     .from(products)
     .leftJoin(categories, eq(products.categoryId, categories.id))
     .where(eq(products.status, "active"))
     .orderBy(asc(products.sortOrder), asc(products.name));
-});
+}
 
 /** Active products whose formula includes the given peptide. */
 export async function getProductsWithPeptide(slug: string) {
@@ -88,19 +101,28 @@ export async function getProductsWithPeptide(slug: string) {
 /* Journal                                                             */
 /* ------------------------------------------------------------------ */
 
-export const getPublishedArticles = cache(async (): Promise<Article[]> => {
+export async function getPublishedArticles(): Promise<Article[]> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db
     .select()
     .from(articles)
     .where(eq(articles.published, true))
     .orderBy(desc(articles.publishedAt), desc(articles.createdAt));
-});
+}
 
-export const getArticleBySlug = cache(async (slug: string) => {
+export async function getArticleBySlug(slug: string) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   return db.query.articles.findFirst({ where: and(eq(articles.slug, slug), eq(articles.published, true)) });
-});
+}
 
-export async function getRelatedArticles(article: Article, limit = 3) {
+export async function getRelatedArticles(article: Pick<Article, "id" | "category">, limit = 3) {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.content);
   const rows = await db
     .select()
     .from(articles)

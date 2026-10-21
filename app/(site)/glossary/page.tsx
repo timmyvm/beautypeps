@@ -5,12 +5,14 @@ import { Figure, PageHeader, reveal } from "@/components/info/page-header";
 import { ButtonLink } from "@/components/ui/button";
 import { GLOSSARY } from "@/lib/content/glossary";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Peptide and skincare glossary",
   description:
     "Plain-English definitions of the terms you'll meet in peptide skincare: INCI names, daltons, fibroblasts, the extracellular matrix, palmitoylation, the SNARE complex, MMPs and more.",
-};
+  path: "/glossary",
+});
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -65,7 +67,8 @@ export default function GlossaryPage() {
               src="/images/articles/what-are-peptides.webp"
               alt="A chain of copper and glass beads curving across a cream ground"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

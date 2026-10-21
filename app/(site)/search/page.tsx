@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PeptideRows } from "@/components/product/peptide-chip-card";
 import { FilterChip, SpecimenGrid } from "@/components/shop/specimen-grid";
 import { buttonClasses } from "@/components/ui/button";
@@ -17,7 +18,16 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 
 const SUGGESTIONS = ["GHK-Cu", "Argireline", "Matrixyl", "Eye", "Brightening", "Copper", "Lip", "Scalp"];
 
-export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
+/** This view is chosen by the URL, so it renders per request inside the page's static shell. */
+export default function SearchPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Suspense fallback={<div className="container-bp min-h-dvh pt-10 md:pt-16" aria-busy="true" />}>
+      <SearchPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function SearchPageContent({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const q = ((Array.isArray(sp.q) ? sp.q[0] : sp.q) ?? "").slice(0, 80);
   const [results, peptides] = await Promise.all([q.trim() ? searchAll(q) : Promise.resolve(null), getPublishedPeptides()]);

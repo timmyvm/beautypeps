@@ -24,7 +24,7 @@ export function Price({
 
 export function Stars({ rating, size = 14, className }: { rating: number; size?: number; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-0.5 text-ink", className)} aria-label={`${rating.toFixed(1)} out of 5`}>
+    <span role="img" className={cn("inline-flex items-center gap-0.5 text-ink", className)} aria-label={`${rating.toFixed(1)} out of 5`}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}

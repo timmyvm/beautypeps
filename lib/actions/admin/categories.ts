@@ -1,7 +1,8 @@
 "use server";
 
 import { and, count, eq, ne } from "drizzle-orm";
-import { refresh, revalidatePath } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
@@ -57,11 +58,13 @@ export async function saveCategoryAction(_prev: FormState, formData: FormData): 
   if (!id) {
     const [created] = await db.insert(categories).values(parsed.data).returning({ id: categories.id });
     revalidatePath("/admin/categories");
+  updateTag(TAGS.catalog);
     redirect(`/admin/categories/${created.id}?saved=created`);
   }
 
   await db.update(categories).set(parsed.data).where(eq(categories.id, id));
   revalidatePath("/admin/categories");
+  updateTag(TAGS.catalog);
   refresh();
   return { ok: true, message: `Saved ${parsed.data.name}.` };
 }
@@ -71,5 +74,6 @@ export async function deleteCategoryAction(categoryId: string) {
   const [{ n }] = await db.select({ n: count() }).from(products).where(eq(products.categoryId, categoryId));
   await db.delete(categories).where(eq(categories.id, categoryId));
   revalidatePath("/admin/categories");
+  updateTag(TAGS.catalog);
   redirect(`/admin/categories?notice=deleted${n ? `&moved=${n}` : ""}`);
 }

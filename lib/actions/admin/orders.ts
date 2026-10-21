@@ -1,10 +1,11 @@
 "use server";
 
 import { and, eq, inArray, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
+import { TAGS } from "@/lib/cache-tags";
 import { AU_STATES, ORDER_STATUSES } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { orderEvents, orderItems, orders, products } from "@/lib/db/schema";
@@ -42,6 +43,7 @@ async function restockOrder(orderId: string, actor: string) {
     visibleToCustomer: false,
     actor,
   });
+  revalidateTag(TAGS.catalog, "max");
   return true;
 }
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { JsonLd, siteUrl } from "./json-ld";
 
+/** The trail above a page, published to search engines as a BreadcrumbList too. */
 export function Breadcrumbs({
   items,
   className,
@@ -10,6 +12,18 @@ export function Breadcrumbs({
 }) {
   return (
     <nav aria-label="Breadcrumb" className={cn("text-small text-ink", className)}>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: items.map((item, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: item.label,
+            ...(item.href && { item: `${siteUrl()}${item.href}` }),
+          })),
+        }}
+      />
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {items.map((item, i) => (
           <li key={item.label} className="flex items-center gap-2">

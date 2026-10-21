@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { JournalShelf } from "@/components/shop/journal-shelf";
 import {
   OrderHistory,
@@ -18,16 +19,28 @@ import { formatDate } from "@/lib/format";
 import { findOrderForTracking } from "@/lib/orders";
 import { getPublishedArticles } from "@/lib/queries/content";
 import { getSettings } from "@/lib/settings";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Track your order",
-  description: "Check the status of your Beauty Peps order with your order number and email address.",
-};
+  description:
+    "Check the status of your Beauty Peps order with your order number and email address.",
+  path: "/track",
+});
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 const str = (v: string | string[] | undefined) => ((Array.isArray(v) ? v[0] : v) ?? "").trim();
 
-export default async function TrackPage({ searchParams }: { searchParams: SearchParams }) {
+/** This view is chosen by the URL, so it renders per request inside the page's static shell. */
+export default function TrackPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Suspense fallback={<div className="container-bp min-h-dvh pt-10 md:pt-16" aria-busy="true" />}>
+      <TrackPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function TrackPageContent({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const orderNumber = str(sp.order).slice(0, 20);
   const email = str(sp.email).slice(0, 200);
@@ -91,12 +104,13 @@ export default async function TrackPage({ searchParams }: { searchParams: Search
         </div>
 
         <figure className="lg:col-span-5">
-          <div className="shutter relative aspect-[4/3] overflow-hidden bg-surface-2 lg:aspect-[4/5]">
+          <div className="shutter-now relative aspect-[4/3] overflow-hidden bg-surface-2 lg:aspect-[4/5]">
             <Image
               src="/images/editorial/unboxing.webp"
               alt="An opened Beauty Peps parcel: three serums in tissue with a handwritten card"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

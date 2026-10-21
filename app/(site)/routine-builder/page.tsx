@@ -4,12 +4,14 @@ import { RoutineBuilder } from "@/components/info/routine-builder";
 import { LoopVideo } from "@/components/site/loop-video";
 import type { BuilderProduct } from "@/lib/content/routine";
 import { getActiveProducts, getPublishedPeptides } from "@/lib/queries/content";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Routine builder: find your peptide routine",
   description:
     "Answer four quick questions about your skin and goals, and we'll build a morning and evening peptide routine, with the reasoning behind every product.",
-};
+  path: "/routine-builder",
+});
 
 const RULES = [
   {

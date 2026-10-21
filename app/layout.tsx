@@ -25,11 +25,10 @@ export const metadata: Metadata = {
   },
   description:
     "Small-batch cosmetic peptide serums made in Melbourne — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more — with the concentration on every label and an evidence grade for every peptide.",
-  openGraph: {
-    type: "website",
-    siteName: "Beauty Peps",
-    images: ["/images/editorial/hero.webp"],
-  },
+  applicationName: "Beauty Peps",
+  // Preview pictures come from the opengraph-image routes (a site card here, one per product, peptide and article).
+  openGraph: { type: "website", siteName: "Beauty Peps", locale: "en_AU" },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

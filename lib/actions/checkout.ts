@@ -2,9 +2,11 @@
 
 import { and, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/session";
+import { TAGS } from "@/lib/cache-tags";
 import { clearCart } from "@/lib/cart";
 import { AU_STATES } from "@/lib/constants";
 import { db } from "@/lib/db";
@@ -119,6 +121,8 @@ export async function placeOrderAction(_prev: FormState, formData: FormData): Pr
 
   if (!result.ok) return { ok: false, message: result.error };
 
+  // Stock went down: refresh the catalogue pages in the background.
+  revalidateTag(TAGS.catalog, "max");
   await clearCart();
   const jar = await cookies();
   jar.set(LAST_ORDER_COOKIE, result.orderNumber, {

@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ContactForm } from "@/components/shop/contact-form";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getSettings } from "@/lib/settings";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact us",
+export const metadata: Metadata = pageMetadata({
+  title: "Contact Beauty Peps",
   description:
     "Questions about an order, a product or formulating with our pure peptides? The Beauty Peps team replies within one business day.",
-};
+  path: "/contact",
+});
 
 export default async function ContactPage() {
-  const [settings, user] = await Promise.all([getSettings(), getCurrentUser()]);
+  const settings = await getSettings();
 
   return (
     <div className="container-bp pt-10 pb-24 md:pt-16">
@@ -86,10 +89,9 @@ export default async function ContactPage() {
           <h2 id="contact-form-heading" className="display-type mb-8 text-head">
             Send a message
           </h2>
-          <ContactForm
-            defaultEmail={user?.email}
-            defaultName={user ? `${user.firstName} ${user.lastName}`.trim() : undefined}
-          />
+          <Suspense fallback={<ContactForm />}>
+            <SignedInContactForm />
+          </Suspense>
         </section>
       </div>
 
@@ -147,3 +149,14 @@ const STUDIO = [
     sizes: "(min-width: 768px) 25vw, 50vw",
   },
 ];
+
+/** Signed-in customers get their name and email filled in; the form itself is in the static page. */
+async function SignedInContactForm() {
+  const user = await getCurrentUser();
+  return (
+    <ContactForm
+      defaultEmail={user?.email}
+      defaultName={user ? `${user.firstName} ${user.lastName}`.trim() : undefined}
+    />
+  );
+}

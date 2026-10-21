@@ -1,7 +1,8 @@
 "use server";
 
 import { and, eq, ne } from "drizzle-orm";
-import { refresh, revalidatePath } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
@@ -183,6 +184,7 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
   if (!id) {
     const [created] = await db.insert(products).values(values).returning({ id: products.id });
     revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
     redirect(`/admin/products/${created.id}?saved=created`);
   }
 
@@ -193,6 +195,7 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
   if (result.length === 0) return { ok: false, message: "This product no longer exists." };
 
   revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
   revalidatePath(`/products/${data.slug}`);
   refresh();
   return { ok: true, message: `Saved ${data.name}.` };
@@ -215,6 +218,7 @@ export async function adjustStockAction(
   if (next < 0) return { ok: false, message: "Stock can't go below zero." };
   await db.update(products).set({ stock: next }).where(eq(products.id, productId));
   revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
   return { ok: true, message: `Stock is now ${next}.`, stock: next };
 }
 
@@ -245,6 +249,7 @@ export async function duplicateProductAction(productId: string) {
     .values({ ...rest, name: `${source.name} (copy)`, slug, sku, status: "draft", featured: false, stock: 0 })
     .returning({ id: products.id });
   revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
   redirect(`/admin/products/${created.id}?saved=duplicated`);
 }
 
@@ -252,6 +257,7 @@ export async function setProductStatusAction(productId: string, status: "active"
   await requireAdmin();
   await db.update(products).set({ status }).where(eq(products.id, productId));
   revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
   refresh();
   return { ok: true, message: status === "archived" ? "Archived" : status === "active" ? "Now active" : "Moved to drafts" };
 }
@@ -267,5 +273,6 @@ export async function deleteProductAction(productId: string) {
   }
   await db.delete(products).where(eq(products.id, productId));
   revalidatePath("/admin/products");
+  updateTag(TAGS.catalog);
   redirect("/admin/products?notice=deleted");
 }

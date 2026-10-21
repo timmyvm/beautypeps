@@ -7,28 +7,70 @@ import { buttonClasses } from "@/components/ui/button";
 import { CONCERNS, concernLabel } from "@/lib/constants";
 import { getCategories, getFeaturedProducts, listProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/queries/catalog";
 import { getPublishedPeptides } from "@/lib/queries/content";
+import { SITE_CARD } from "@/lib/seo";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 const str = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) || undefined;
 
+const SHOP_DESCRIPTION =
+  "Every Beauty Peps formula, with its lead peptide, its concentration and that peptide's evidence grade: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more.";
+
+/*
+ * Category and concern views are landing pages in their own right, so each is its own canonical URL.
+ * Sorting, the stock toggle and free-text searches are views of those pages, so they point back to them.
+ */
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const sp = await searchParams;
   const categorySlug = str(sp.category);
-  const concern = str(sp.concern);
+  const concern = CONCERNS.some((c) => c.slug === str(sp.concern)) ? str(sp.concern) : undefined;
+  // Sorted or stock-filtered views just point to their canonical; free-text results also stay unindexed.
+  const robots = str(sp.q) ? { index: false, follow: true } : undefined;
+
   if (categorySlug) {
     const cat = (await getCategories()).find((c) => c.slug === categorySlug);
-    if (cat) return { title: cat.name, description: cat.tagline ?? cat.description ?? undefined };
+    if (cat) {
+      const description = cat.tagline ?? cat.description ?? SHOP_DESCRIPTION;
+      return {
+        title: `${cat.name}: peptide serums`,
+        description,
+        alternates: { canonical: `/shop?category=${cat.slug}` },
+        openGraph: { title: cat.name, description, url: `/shop?category=${cat.slug}`, images: [SITE_CARD] },
+        robots,
+      };
+    }
+    return { title: "Shop peptide serums", alternates: { canonical: "/shop" }, robots: { index: false, follow: true } };
   }
-  if (concern) return { title: `Peptides for ${concernLabel(concern).toLowerCase()}` };
+  if (concern) {
+    const label = concernLabel(concern).toLowerCase();
+    const description = `Beauty Peps formulas chosen for ${label}: the peptide doing the work in each, its concentration and its evidence grade.`;
+    return {
+      title: `Peptide serums for ${label}`,
+      description,
+      alternates: { canonical: `/shop?concern=${concern}` },
+      openGraph: { title: `Peptide serums for ${label}`, description, url: `/shop?concern=${concern}`, images: [SITE_CARD] },
+      robots,
+    };
+  }
   return {
     title: "Shop peptide serums",
-    description:
-      "Every Beauty Peps formula, with its lead peptide, its concentration and that peptide's evidence grade: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more.",
+    description: SHOP_DESCRIPTION,
+    alternates: { canonical: "/shop" },
+    openGraph: { title: "Shop peptide serums", description: SHOP_DESCRIPTION, url: "/shop", images: [SITE_CARD] },
+    robots,
   };
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
+/** The filters live in the URL, so the catalogue renders per request inside the page's static shell. */
+export default function ShopPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Suspense fallback={<div className="container-bp min-h-dvh pt-10 md:pt-16" aria-busy="true" />}>
+      <ShopContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
   const categorySlug = str(sp.category);
   const concern = str(sp.concern);

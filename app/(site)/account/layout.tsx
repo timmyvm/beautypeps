@@ -3,6 +3,9 @@ import { AccountNav } from "@/components/account/account-nav";
 import { logoutAction } from "@/lib/actions/session";
 import { requireUser } from "@/lib/auth/session";
 
+// Account screens are per-customer and render at request time.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: { default: "My account", template: "%s · My account · Beauty Peps" },
   robots: { index: false, follow: false },

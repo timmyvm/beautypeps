@@ -10,12 +10,14 @@ import { LoopVideo } from "@/components/site/loop-video";
 import { ButtonLink } from "@/components/ui/button";
 import { PEPTIDE_CLASSES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "The science of cosmetic peptides",
   description:
     "How cosmetic peptides work: amino acids and peptide bonds, collagen and the dermis, the four peptide classes, the skin-penetration problem, and how to read the evidence behind peptide claims.",
-};
+  path: "/science",
+});
 
 const SECTIONS = [
   { id: "what-is-a-peptide", title: "What is a peptide?" },
@@ -76,7 +78,8 @@ export default function SciencePage() {
               src="/images/editorial/science.webp"
               alt="A model of a peptide chain in copper and blue beads beside a single droplet, on a dark ground"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

@@ -20,12 +20,22 @@ const PICTURES: Record<string, { src: string; alt: string }> = {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const policy = getPolicy(slug, DEFAULT_SETTINGS);
-  if (!policy) return { title: "Policy not found" };
+  if (!policy) notFound();
   return { title: policy.title, description: policy.summary, alternates: { canonical: `/policies/${slug}` } };
 }
 
+export function generateStaticParams() {
+  return POLICY_LINKS.map((p) => ({ slug: p.slug }));
+}
+
+// The slug is read before any Suspense boundary, so a page added after the build is rendered on its
+// first visit and then kept as a static page (ISR) like the rest.
 export default async function PolicyPage({ params }: { params: Params }) {
   const { slug } = await params;
+  return <PolicyPageView slug={slug} />;
+}
+
+async function PolicyPageView({ slug }: { slug: string }) {
   const settings = await getSettings();
   const policy = getPolicy(slug, settings);
   if (!policy) notFound();
@@ -51,7 +61,7 @@ export default async function PolicyPage({ params }: { params: Params }) {
         figure={
           pic && (
             <Figure ratio="aspect-[4/3]">
-              <Image src={pic.src} alt={pic.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
+              <Image src={pic.src} alt={pic.alt} fill loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" />
             </Figure>
           )
         }

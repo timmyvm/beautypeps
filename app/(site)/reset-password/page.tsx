@@ -6,6 +6,9 @@ import { ResetPasswordForm } from "@/components/auth/auth-forms";
 import { ButtonLink } from "@/components/ui/button";
 import { getValidPasswordReset } from "@/lib/queries/account";
 
+// Per-visitor (session, bag or order cookie): renders at request time.
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Choose a new password",
   robots: { index: false, follow: false },

@@ -11,6 +11,9 @@ import { formatMoney } from "@/lib/format";
 import { getOrderByNumber, LAST_ORDER_COOKIE } from "@/lib/orders";
 import { getSettings } from "@/lib/settings";
 
+// Per-visitor (session, bag or order cookie): renders at request time.
+export const instant = false;
+
 export const metadata: Metadata = { title: "Order confirmed", robots: { index: false } };
 
 type Props = { params: Promise<{ orderNumber: string }> };

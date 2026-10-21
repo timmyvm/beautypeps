@@ -1,9 +1,6 @@
 import { Footer } from "@/components/site/footer";
 import { Header } from "@/components/site/header";
 
-// Every page reads the session / cart cookie, so render per request.
-export const dynamic = "force-dynamic";
-
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="site-type flex min-h-dvh flex-col bg-bg text-ink">

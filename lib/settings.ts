@@ -1,6 +1,7 @@
 import "server-only";
 
-import { cache } from "react";
+import { cacheLife, cacheTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { db } from "@/lib/db";
 import { settings as settingsTable } from "@/lib/db/schema";
 
@@ -48,14 +49,17 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   tiktok: "https://tiktok.com/",
 };
 
-export const getSettings = cache(async (): Promise<StoreSettings> => {
+export async function getSettings(): Promise<StoreSettings> {
+  "use cache";
+  cacheLife("days");
+  cacheTag(TAGS.settings);
   const rows = await db.select().from(settingsTable);
   const merged: Record<string, unknown> = { ...DEFAULT_SETTINGS };
   for (const row of rows) {
     if (row.key in DEFAULT_SETTINGS) merged[row.key] = row.value;
   }
   return merged as StoreSettings;
-});
+}
 
 export async function saveSettings(patch: Partial<StoreSettings>) {
   for (const [key, value] of Object.entries(patch)) {

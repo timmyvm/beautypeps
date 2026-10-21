@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-header";
 import { ClassDiagram } from "@/components/peptides/class-diagram";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
@@ -11,16 +11,27 @@ import { CONCERNS, concernLabel, PEPTIDE_CLASSES } from "@/lib/constants";
 import { EVIDENCE_LEVELS } from "@/lib/content/evidence";
 import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Peptide Library",
+export const metadata: Metadata = pageMetadata({
+  title: "Peptide Library: every cosmetic peptide, evidence-graded",
   description:
     "An open, evidence-graded reference to every cosmetic peptide we formulate with: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more. Mechanisms, research, concentrations and how to use them.",
-};
+  path: "/peptides",
+});
 
 type SearchParams = Promise<{ class?: string; concern?: string }>;
 
-export default async function PeptideLibraryPage({ searchParams }: { searchParams: SearchParams }) {
+/** This view is chosen by the URL, so it renders per request inside the page's static shell. */
+export default function PeptideLibraryPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Suspense fallback={<div className="container-bp min-h-dvh pt-10 md:pt-16" aria-busy="true" />}>
+      <PeptideLibraryPageContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function PeptideLibraryPageContent({ searchParams }: { searchParams: SearchParams }) {
   const { class: classParam, concern } = await searchParams;
   const activeClass = classParam && PEPTIDE_CLASSES[classParam] ? classParam : undefined;
   const activeConcern = CONCERNS.some((c) => c.slug === concern) ? concern : undefined;
@@ -62,7 +73,8 @@ export default async function PeptideLibraryPage({ searchParams }: { searchParam
               src="/images/editorial/actives.webp"
               alt="A row of amber vials of freeze-dried peptide powder on a travertine bench beside a scale"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />

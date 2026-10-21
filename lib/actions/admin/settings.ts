@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
 import { parseMoney } from "@/lib/format";
@@ -54,5 +55,6 @@ export async function saveSettingsAction(_prev: FormState, formData: FormData): 
   await saveSettings(parsed.data);
   // Settings feed the storefront header/footer, checkout and emails.
   revalidatePath("/", "layout");
+  updateTag(TAGS.settings);
   return { ok: true, message: "Settings saved." };
 }

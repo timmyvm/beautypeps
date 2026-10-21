@@ -24,6 +24,36 @@ the direction sheet and before/after measurements are in [`.taste-skill/`](.tast
 To re-check a page against the skill's house rules: `node .claude/skills/design-taste-frontend/scripts/inspect.mjs http://localhost:3000/<page>`
 (set `CHROME_PATH` to a Chrome/Chromium binary).
 
+## Speed and SEO
+
+**Caching.** The site uses Next 16's Cache Components (`cacheComponents` in `next.config.ts`):
+
+- Every public page is prerendered as a static shell that a CDN can serve straight away. Only the per-visitor parts stream in: the header's bag count and sign-in link, the wishlist button, the review form and the contact-form prefill.
+- The shop, search, Peptide Library and Journal filters live in the URL, so their lists render per request inside the static frame.
+- Account, cart, checkout, sign-in and admin pages render at request time (`instant = false`).
+- Store data is read through cached queries (`"use cache"`) tagged `catalog`, `content` or `settings` (`lib/cache-tags.ts`). When you save something in the admin, the matching tag is expired, so the public pages show the change on the next visit.
+- Orders and cancellations refresh stock in the background. Every page also rebuilds once a day as a safety net.
+- Products, peptides and articles added after a deploy are rendered on their first visit and then kept.
+
+**Speed.**
+- Above-the-fold images are fetched first and are never lazy or clipped, so the largest paint doesn't wait for JavaScript.
+- Clips and their posters load only as they come into view.
+- The logo and favicon are served at their display size.
+
+**SEO.**
+- Every indexable page has a canonical URL and a matching link preview.
+- Shop category and concern views are their own landing pages. Sorted and stock-filtered views point back to them, and search results stay out of the index.
+- Share images are drawn at build time in the house style (`lib/og.tsx`): one for each product, peptide monograph and article, plus a site card.
+- Structured data:
+  - `OnlineStore` and `WebSite` on the home page.
+  - `Product` on each product page, with price, stock, shipping, returns, rating and reviews.
+  - `Article` on articles and monographs.
+  - `FAQPage` on the FAQ.
+  - `BreadcrumbList` wherever breadcrumbs appear.
+- The sitemap lists product photos and article covers. Listing pages are dated by their newest item.
+- `robots.txt` keeps private pages and search results out.
+- Set `NEXT_PUBLIC_SITE_URL` in production: canonicals, share images, the sitemap and structured data all build their URLs from it.
+
 ## Quick start
 
 ```bash

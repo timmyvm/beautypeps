@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getCartCount } from "@/lib/cart";
 import { getSettings } from "@/lib/settings";
@@ -8,8 +9,7 @@ import { MAIN_NAV } from "./nav-links";
 
 /** A plain bar on the page ground: wordmark, four links, one action (the bag). */
 export async function Header() {
-  const [user, cartCount, settings] = await Promise.all([getCurrentUser(), getCartCount(), getSettings()]);
-  const accountHref = user ? (user.role === "admin" ? "/admin" : "/account") : "/login";
+  const settings = await getSettings();
 
   return (
     <>
@@ -26,21 +26,36 @@ export async function Header() {
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-6">
-            <Link href={accountHref} className="link-quiet hidden text-small font-medium text-ink sm:inline">
-              {user ? "Account" : "Sign in"}
-            </Link>
-            <Link
-              href="/cart"
-              className="press inline-flex h-10 items-center bg-ink px-4 text-small font-medium text-white tabular hover:bg-black"
-              aria-label={`Bag, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
-            >
-              Bag{cartCount > 0 ? ` (${cartCount})` : ""}
-            </Link>
-            <MobileMenu signedIn={!!user} isAdmin={user?.role === "admin"} />
-          </div>
+          {/* The bar is part of every page's static shell; the visitor's own bag and sign-in stream in. */}
+          <Suspense fallback={<HeaderActions />}>
+            <VisitorActions />
+          </Suspense>
         </div>
       </header>
     </>
+  );
+}
+
+async function VisitorActions() {
+  const [user, cartCount] = await Promise.all([getCurrentUser(), getCartCount()]);
+  return <HeaderActions user={user ? { isAdmin: user.role === "admin" } : null} cartCount={cartCount} />;
+}
+
+function HeaderActions({ user = null, cartCount = 0 }: { user?: { isAdmin: boolean } | null; cartCount?: number }) {
+  const accountHref = user ? (user.isAdmin ? "/admin" : "/account") : "/login";
+  return (
+    <div className="ml-auto flex items-center gap-6">
+      <Link href={accountHref} className="link-quiet hidden text-small font-medium text-ink sm:inline">
+        {user ? "Account" : "Sign in"}
+      </Link>
+      <Link
+        href="/cart"
+        className="press inline-flex h-10 items-center bg-ink px-4 text-small font-medium text-white tabular hover:bg-black"
+        aria-label={`Bag, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+      >
+        Bag{cartCount > 0 ? ` (${cartCount})` : ""}
+      </Link>
+      <MobileMenu signedIn={!!user} isAdmin={!!user?.isAdmin} />
+    </div>
   );
 }

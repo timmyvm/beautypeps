@@ -1,7 +1,8 @@
 "use server";
 
 import { and, eq, ne } from "drizzle-orm";
-import { refresh, revalidatePath } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
@@ -88,12 +89,14 @@ export async function saveArticleAction(_prev: FormState, formData: FormData): P
   if (!id) {
     const [created] = await db.insert(articles).values(data).returning({ id: articles.id });
     revalidatePath("/admin/articles");
+  updateTag(TAGS.content);
     redirect(`/admin/articles/${created.id}?saved=created`);
   }
 
   const result = await db.update(articles).set(data).where(eq(articles.id, id)).returning({ id: articles.id });
   if (result.length === 0) return { ok: false, message: "This article no longer exists." };
   revalidatePath("/admin/articles");
+  updateTag(TAGS.content);
   revalidatePath(`/learn/${data.slug}`);
   revalidatePath("/learn");
   refresh();
@@ -104,6 +107,7 @@ export async function deleteArticleAction(articleId: string) {
   await requireAdmin();
   await db.delete(articles).where(eq(articles.id, articleId));
   revalidatePath("/admin/articles");
+  updateTag(TAGS.content);
   revalidatePath("/learn");
   redirect("/admin/articles?notice=deleted");
 }

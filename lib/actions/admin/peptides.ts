@@ -1,7 +1,8 @@
 "use server";
 
 import { and, eq, ne } from "drizzle-orm";
-import { refresh, revalidatePath } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
+import { TAGS } from "@/lib/cache-tags";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/session";
@@ -100,6 +101,7 @@ export async function savePeptideAction(_prev: FormState, formData: FormData): P
   if (!id) {
     const [created] = await db.insert(peptides).values(data).returning({ id: peptides.id });
     revalidatePath("/admin/peptides");
+  updateTag(TAGS.content);
     redirect(`/admin/peptides/${created.id}?saved=created`);
   }
 
@@ -122,6 +124,7 @@ export async function savePeptideAction(_prev: FormState, formData: FormData): P
 
   await db.update(peptides).set(data).where(eq(peptides.id, id));
   revalidatePath("/admin/peptides");
+  updateTag(TAGS.content);
   revalidatePath(`/peptides/${data.slug}`);
   refresh();
   return { ok: true, message: `Saved ${data.name}.` };
@@ -140,5 +143,6 @@ export async function deletePeptideAction(peptideId: string) {
   }
   await db.delete(peptides).where(eq(peptides.id, peptideId));
   revalidatePath("/admin/peptides");
+  updateTag(TAGS.content);
   redirect("/admin/peptides?notice=deleted");
 }
