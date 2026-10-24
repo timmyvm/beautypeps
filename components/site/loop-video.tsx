@@ -8,10 +8,23 @@ import { cn } from "@/lib/utils";
  * Nothing is fetched until the clip comes near the viewport: the poster is a lazy image underneath (so it also
  * shows without script), and the video gets its source only when it is about to be seen.
  */
-export function LoopVideo({ src, poster, label, className }: { src: string; poster: string; label: string; className?: string }) {
+export function LoopVideo({
+  src,
+  poster,
+  label,
+  className,
+  priority = false,
+}: {
+  src: string;
+  poster: string;
+  label: string;
+  className?: string;
+  /** Above the fold: the poster loads first and the clip starts at once. */
+  priority?: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   const visible = useRef(false);
-  const [near, setNear] = useState(false);
+  const [near, setNear] = useState(priority);
 
   useEffect(() => {
     const video = ref.current;
@@ -44,7 +57,15 @@ export function LoopVideo({ src, poster, label, className }: { src: string; post
   return (
     <span className="relative block h-full w-full">
       {/* eslint-disable-next-line @next/next/no-img-element -- the same file the video uses as its poster */}
-      <img src={poster} alt="" aria-hidden loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+      <img
+        src={poster}
+        alt=""
+        aria-hidden
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <video
         ref={ref}
         className={cn("relative h-full w-full object-cover", className)}
@@ -53,7 +74,7 @@ export function LoopVideo({ src, poster, label, className }: { src: string; post
         muted
         loop
         playsInline
-        preload="none"
+        preload={priority ? "auto" : "none"}
         aria-label={label}
       />
     </span>

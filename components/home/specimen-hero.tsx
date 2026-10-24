@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { SequenceStrand } from "@/components/peptides/sequence-strand";
 import { SpecimenTile, type ProductCardData, type TileTone } from "@/components/product/product-card";
+import { LoopVideo } from "@/components/site/loop-video";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +23,7 @@ const MOSAIC: Placement[] = [
   { slug: "lip-peptide-plumping-balm", tone: "stone", area: "lg:col-start-4 lg:row-start-3" },
 ];
 
-export function SpecimenHero({ products }: { products: ProductCardData[] }) {
+export function SpecimenHero({ products, ghkSequence }: { products: ProductCardData[]; ghkSequence: string }) {
   const bySlug = new Map(products.map((p) => [p.slug, p]));
   const tiles = MOSAIC.map((m) => ({ ...m, product: bySlug.get(m.slug) })).filter((t) => t.product);
 
@@ -32,6 +34,14 @@ export function SpecimenHero({ products }: { products: ProductCardData[] }) {
         <h1 id="hero-title" className="display-type max-w-[11ch] text-[10.5vw] text-ink sm:text-[clamp(2.75rem,5.9vw,5.75rem)]" style={{ textWrap: "balance" }}>
           Peptide serums, graded
         </h1>
+        {/* The mark, drawn from the molecule it is named after: choose a bead to name it */}
+        <SequenceStrand
+          sequence={ghkSequence}
+          label="GHK-Cu"
+          interactive
+          caption="GHK-Cu: glycine, histidine and lysine holding one copper ion, and the three circles of our mark. Choose one to name it."
+          className="hero-strand hidden lg:block"
+        />
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:gap-10">
           <p className="max-w-[34ch] text-lead text-ink">
             Small-batch Melbourne serums from 13 cosmetic peptides, with the concentration on every label and an
@@ -56,15 +66,19 @@ export function SpecimenHero({ products }: { products: ProductCardData[] }) {
               data-reveal={t.big ? undefined : ""}
               style={{ ["--reveal-i" as string]: i }}
             >
-              <div className={cn(t.big && "shutter-now")}>
-                <SpecimenTile
-                  product={t.product!}
-                  tone={t.tone}
-                  priority={t.big}
-                  sizes={t.big ? "30vw" : "15vw"}
-                  className="aspect-[3/4] w-full"
-                />
-              </div>
+              {t.big ? (
+                // The flagship on its plinth, with the day's light drifting across the copper
+                <div className="shutter-now relative aspect-[3/4] w-full overflow-hidden bg-field-stone">
+                  <LoopVideo
+                    src="/video/ghk-cu-light.mp4"
+                    poster="/images/editorial/ghk-cu-plinth.webp"
+                    label={`${t.product!.name} on its travertine plinth, window light drifting across it`}
+                    priority
+                  />
+                </div>
+              ) : (
+                <SpecimenTile product={t.product!} tone={t.tone} sizes="15vw" className="aspect-[3/4] w-full" />
+              )}
             </Link>
           ))}
         </div>
