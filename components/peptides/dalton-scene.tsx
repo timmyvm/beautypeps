@@ -34,7 +34,7 @@ export function DaltonScene({
   const ref = useRef<HTMLElement>(null);
 
   useScene(ref, {
-    hold: 2,
+    hold: 1.25,
     build(tl, { q }) {
       const items = q("[data-row]");
       gsap.set(q("[data-bar]"), { scaleX: 0 });

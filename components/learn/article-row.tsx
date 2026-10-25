@@ -14,13 +14,7 @@ type RowArticle = Pick<
  * One entry in the Journal's index, read across like a line in a field guide's contents: the picture, the
  * headline with its deck and excerpt, and, when the entry is about a peptide, that peptide drawn.
  */
-export function ArticleRow({
-  article,
-  specimen,
-}: {
-  article: RowArticle;
-  specimen?: Pick<Peptide, "name" | "sequence"> | null;
-}) {
+export function ArticleRow({ article, specimen }: { article: RowArticle; specimen?: Pick<Peptide, "name" | "sequence"> | null }) {
   const t = splitTitle(article.title);
   return (
     <Link href={`/learn/${article.slug}`} className="group grid gap-5 sm:grid-cols-12 sm:gap-[var(--gutter)]">

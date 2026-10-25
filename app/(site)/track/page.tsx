@@ -182,14 +182,9 @@ async function TrackPageContent({ searchParams }: { searchParams: SearchParams }
           <h2 id="arrive-heading" className="display-type text-head" data-reveal="">
             The day it arrives
           </h2>
-          <ol className="mt-10 grid gap-2">
+          <ol className="mt-10 space-y-8 bg-field-frost p-6 sm:p-10">
             {ARRIVAL.map((step, i) => (
-              <li
-                key={step.title}
-                className={`p-6 sm:p-8 ${ARRIVAL_FIELDS[i % ARRIVAL_FIELDS.length]}`}
-                data-reveal=""
-                style={{ ["--reveal-i" as string]: i + 1 }}
-              >
+              <li key={step.title} data-reveal="" style={{ ["--reveal-i" as string]: i + 1 }}>
                 <h3 className="text-lead font-medium">{step.title}</h3>
                 <p className="mt-2 max-w-[52ch] text-body">{step.text}</p>
               </li>
@@ -222,8 +217,6 @@ async function TrackPageContent({ searchParams }: { searchParams: SearchParams }
     </div>
   );
 }
-
-const ARRIVAL_FIELDS = ["bg-field-frost", "bg-field-stone", "bg-field-sapphire text-field-sapphire-ink"];
 
 const ARRIVAL = [
   {

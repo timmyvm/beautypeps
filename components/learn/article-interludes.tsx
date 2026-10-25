@@ -26,7 +26,10 @@ export function InterludeView({ item, peptides }: { item: Interlude; peptides: M
     return (
       <figure className={cn("mt-24 py-20 lg:mt-36 lg:py-32", FIELD[item.field])}>
         <div className="container-bp grid lg:grid-cols-12 lg:gap-[var(--gutter)]">
-          <blockquote className="display-type text-lead sm:text-[calc(var(--text-body)*1.75)] sm:leading-[1.15] lg:col-span-8 lg:col-start-3" {...reveal(0)}>
+          <blockquote
+            className="display-type text-lead sm:text-[calc(var(--text-body)*1.75)] sm:leading-[1.15] lg:col-span-8 lg:col-start-3"
+            {...reveal(0)}
+          >
             <p className="max-w-[30ch] text-balance">{item.text}</p>
           </blockquote>
         </div>

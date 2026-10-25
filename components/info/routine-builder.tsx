@@ -300,7 +300,7 @@ function Results({
           </div>
         </div>
       ) : (
-        <div className="mt-14 grid gap-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        <div className="mt-14 grid grid-cols-[minmax(0,1fr)] gap-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
           <div className="lg:col-span-7">
             <div className="grid gap-12 md:grid-cols-2 md:gap-[var(--gutter)]">
               <RoutineColumn title="Morning" steps={rec.am} />
@@ -328,7 +328,7 @@ function Results({
                           <li key={s}>
                             <Link href={`/peptides/${s}`} className="group flex flex-col gap-2">
                               {sequences[s] && (
-                                <SequenceStrand sequence={sequences[s]} size="sm" label={peptideNames[s] ?? s} />
+                                <SequenceStrand sequence={sequences[s]} size="md" label={peptideNames[s] ?? s} className="max-w-full [zoom:0.5]" />
                               )}
                               <span className="text-body underline underline-offset-4 group-hover:text-accent">{peptideNames[s] ?? s}</span>
                             </Link>
@@ -373,8 +373,8 @@ function Results({
               <span>Total</span>
               <span className="tabular text-lead font-medium">{formatMoney(total)}</span>
             </p>
-            <Button onClick={addAll} disabled={pending} size="lg" className="mt-6 w-full">
-              {pending ? "Adding…" : "Add the whole routine to your bag"}
+            <Button onClick={addAll} disabled={pending} size="lg" className="mt-6 h-auto min-h-14 w-full py-3 text-center whitespace-normal">
+              {pending ? "Adding…" : rec.products.length === 1 ? "Add it to your bag" : `Add all ${rec.products.length} to your bag`}
             </Button>
             <p className="mt-3 min-h-[1.5em] text-body" role="status">
               {result && (

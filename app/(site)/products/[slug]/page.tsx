@@ -450,12 +450,10 @@ async function ProductView({ slug }: { slug: string }) {
                     label="Blue copper peptide powder falling into a beaker of water and dissolving"
                   />
                 ) : isPowder ? (
-                  <Image
-                    src="/images/editorial/cold-chain.webp"
-                    alt="Rows of sealed amber vials of white peptide powder on a refrigerator shelf, a dial thermometer beside them"
-                    fill
-                    sizes="(min-width: 1024px) 40vw, 100vw"
-                    className="drift object-cover"
+                  <LoopVideo
+                    src="/video/white-dissolve.mp4"
+                    poster="/video/white-dissolve-poster.webp"
+                    label="White peptide powder falling from a steel spatula into a beaker of clear water"
                   />
                 ) : isCopper ? (
                   <LoopVideo src="/video/copper-drop.mp4" poster="/video/copper-drop-poster.webp" label="Drops of blue copper peptide serum on a brushed copper plate" />
@@ -471,7 +469,8 @@ async function ProductView({ slug }: { slug: string }) {
               </div>
               {isPowder && (
                 <figcaption className="mt-3 text-body">
-                  {isCopper ? "It dissolves blue in water. Keep the vial at 2–8 °C, sealed and away from light." : "Keep it at 2–8 °C, sealed and away from light."}
+                  {isCopper ? "It turns the water blue as it goes in." : "It goes into a water base below 40 °C."} Keep the vial at 2–8 °C,
+                  sealed and away from light.
                 </figcaption>
               )}
               {blueSerum && <figcaption className="mt-3 text-body">Pressed in after cleansing, before moisturiser.</figcaption>}

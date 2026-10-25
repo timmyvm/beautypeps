@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CartLineRow } from "@/components/shop/cart-line";
+import { CartSuggestions } from "@/components/shop/cart-suggestions";
 import { DiscountForm } from "@/components/shop/discount-form";
 import { FreeShippingBar } from "@/components/shop/free-shipping-bar";
 import { SpecimenGrid } from "@/components/shop/specimen-grid";
@@ -54,7 +55,22 @@ export default async function CartPage() {
     );
   }
 
-  const { discount, code, invalidReason } = await resolveCartDiscount(cart.discountCode, cart.subtotal);
+  const [{ discount, code, invalidReason }, featured] = await Promise.all([
+    resolveCartDiscount(cart.discountCode, cart.subtotal),
+    getFeaturedProducts(9),
+  ]);
+  const inBag = new Set(cart.lines.map((l) => l.product.id));
+  const suggestions = featured
+    .filter((p) => !inBag.has(p.id) && p.stock > 0)
+    .slice(0, 3)
+    .map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      image: p.image,
+      price: p.price,
+      fact: p.keyActives?.[0] ? `${p.keyActives[0].amount} ${p.keyActives[0].name}` : (p.subtitle ?? ""),
+    }));
   const totals = computeTotals({ subtotal: cart.subtotal, shippingMethod: "standard", settings, discount });
 
   return (
@@ -81,6 +97,7 @@ export default async function CartPage() {
               />
             ))}
           </ul>
+          <CartSuggestions items={suggestions} remaining={Math.max(0, settings.freeShippingThreshold - cart.subtotal)} />
         </div>
 
         <aside className="h-fit bg-surface p-6 md:p-8 lg:sticky lg:top-8 lg:col-span-4 lg:col-start-9" aria-labelledby="summary-heading">

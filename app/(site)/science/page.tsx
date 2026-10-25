@@ -9,6 +9,7 @@ import { DaltonScene, type DaltonRow } from "@/components/peptides/dalton-scene"
 import { classShortLabel } from "@/components/peptides/peptide-entry";
 import { PeptideStrand } from "@/components/peptides/peptide-strand";
 import { StrandKey } from "@/components/peptides/sequence-strand";
+import { LoopVideo } from "@/components/site/loop-video";
 import { ButtonLink } from "@/components/ui/button";
 import { PEPTIDE_CLASSES } from "@/lib/constants";
 import type { Peptide } from "@/lib/db/schema";
@@ -360,13 +361,31 @@ export default async function SciencePage() {
               <h3 className="display-type text-head lg:col-span-5" {...reveal(0)}>
                 Four ways in
               </h3>
-              <Prose className="lg:col-span-6 lg:col-start-7">
+              <Prose className="lg:col-span-6 lg:col-start-7 lg:row-span-2">
                 <p>
                   Most cosmetic peptides sit above the line, and many are water-loving, while the stratum corneum favours
                   oil-loving molecules. Collagen, at about 300,000 daltons, would need a bar some 270 times the width of the chart
                   above. Formulators use four tricks to close the gap.
                 </p>
+                <p>
+                  Even so, only a small fraction of any topical active reaches the dermis. That is not a reason to dismiss
+                  peptides, since very small amounts of a signalling molecule can matter, but it is why we publish concentrations
+                  and why we are cautious about dramatic claims.
+                </p>
               </Prose>
+              <Figure
+                ratio="aspect-[16/9]"
+                className="lg:col-span-5"
+                caption="The vehicle matters: a leave-on serum gives a peptide time to work."
+              >
+                <Image
+                  src="/images/editorial/texture.webp"
+                  alt="A clear gel and a white cream swatched side by side on a pale ground"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover"
+                />
+              </Figure>
             </div>
             <dl className="mt-14 grid gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -401,26 +420,6 @@ export default async function SciencePage() {
                 </div>
               ))}
             </dl>
-            <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
-              <Figure
-                ratio="aspect-[16/9]"
-                className="lg:col-span-5"
-                caption="The vehicle matters: a leave-on serum gives a peptide time to work."
-              >
-                <Image
-                  src="/images/editorial/texture.webp"
-                  alt="A clear gel and a white cream swatched side by side on a pale ground"
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  className="object-cover"
-                />
-              </Figure>
-              <p className="max-w-[60ch] text-body lg:col-span-6 lg:col-start-7 lg:pb-8">
-                Even so, only a small fraction of any topical active reaches the dermis. That is not a reason to dismiss peptides,
-                since very small amounts of a signalling molecule can matter, but it is why we publish concentrations and why we
-                are cautious about dramatic claims.
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -585,13 +584,14 @@ export default async function SciencePage() {
         </Chapter>
       </div>
 
+      {/* Past the long read, the closing two sections are simply there: no entrances to wait for. */}
       <section
         id="stability"
         aria-labelledby="stability-title"
         className="mt-24 scroll-mt-8 bg-field-ink py-20 text-field-ink-ink lg:mt-36 lg:py-28"
       >
         <div className="container-bp grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-[var(--gutter)]">
-          <figure className="lg:col-span-5" {...reveal(1)}>
+          <figure className="lg:col-span-5">
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-white/10">
               <Image
                 src="/images/editorial/cold-chain.webp"
@@ -606,7 +606,7 @@ export default async function SciencePage() {
             </figcaption>
           </figure>
           <div className="lg:col-span-6 lg:col-start-7">
-            <h2 id="stability-title" className="display-type text-head" {...reveal(0)}>
+            <h2 id="stability-title" className="display-type text-head">
               Stability and storage
             </h2>
             <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-3">
@@ -623,8 +623,8 @@ export default async function SciencePage() {
                   title: "Keep powders dry",
                   text: "Freeze-dried peptides stay stable for years when dry and sealed. Once dissolved, use them within weeks.",
                 },
-              ].map((c, i) => (
-                <div key={c.title} {...reveal(i + 1)}>
+              ].map((c) => (
+                <div key={c.title}>
                   <dt className="text-lead font-medium">{c.title}</dt>
                   <dd className="mt-2 text-body">{c.text}</dd>
                 </div>
@@ -643,8 +643,20 @@ export default async function SciencePage() {
               </Link>
               .
             </p>
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 sm:items-end sm:gap-[var(--gutter)]">
-              <figure {...reveal(2)}>
+            <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-2">
+              <figure>
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-white/10">
+                  <LoopVideo
+                    src="/video/powder-dissolve.mp4"
+                    poster="/video/powder-dissolve-poster.webp"
+                    label="Blue GHK-Cu powder falling from a spatula into a beaker of water and blooming into blue clouds"
+                  />
+                </div>
+                <figcaption className="mt-3 text-small text-white/80">
+                  GHK-Cu powder going into water. Dissolved, a peptide keeps for weeks rather than years.
+                </figcaption>
+              </figure>
+              <figure>
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-white/10">
                   <Image
                     src="/images/found/chalcanthite.webp"
@@ -658,9 +670,9 @@ export default async function SciencePage() {
                   Chalcanthite: copper sulfate crystals, blue from the same copper(II) ion that GHK holds.
                 </figcaption>
               </figure>
-              <div className="sm:pb-9">
+              <div className="sm:col-span-2">
                 <h3 className="text-lead font-medium">A word on colour</h3>
-                <p className="mt-2 max-w-[40ch] text-body">
+                <p className="mt-2 max-w-[60ch] text-body">
                   Copper peptide serums are naturally blue. If a GHK-Cu product turns green or brown, the copper complex may have
                   degraded or oxidised, and it is time to replace it.
                 </p>
@@ -682,13 +694,13 @@ export default async function SciencePage() {
             />
           </Figure>
           <div className="lg:col-span-5 lg:col-start-8 lg:pb-2">
-            <h2 id="next-title" className="display-type text-head" {...reveal(0)}>
+            <h2 id="next-title" className="display-type text-head">
               Every peptide, one by one
             </h2>
-            <p className="mt-6 max-w-[44ch] text-body" {...reveal(1)}>
+            <p className="mt-6 max-w-[44ch] text-body">
               Sequences, mechanisms, study summaries and how to use each one, graded for strength of evidence.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4" {...reveal(2)}>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
               <ButtonLink href="/peptides">Open the peptide library</ButtonLink>
               <Link href="/compare" className="text-body underline underline-offset-4">
                 Compare peptides
