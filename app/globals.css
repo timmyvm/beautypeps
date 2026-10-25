@@ -293,7 +293,7 @@ html.js .scene.is-live > .scene-stage {
   grid-column: 1 / -1;
 }
 .seq-figure {
-  font-size: clamp(4.5rem, 1rem + 11vw, 11.5rem);
+  font-size: clamp(4.5rem, min(1rem + 11vw, 17svh), 11.5rem);
   line-height: 0.92;
   letter-spacing: -0.045em;
 }
@@ -339,7 +339,7 @@ html.js .scene.is-live > .scene-stage {
 }
 @media (width >= 64rem) {
   .seq-scene .seq-strand {
-    zoom: 1.35;
+    zoom: 1.2;
   }
   .hero-strand {
     display: flex !important;
@@ -357,7 +357,8 @@ html.js .scene.is-live > .scene-stage {
   }
 }
 
-/* Scene: blue by copper. At rest a strip you swipe; live, the run travels under the scroll. */
+/* Scene: blue by copper. Phones and tablets get the frames as a two-column plate; on a desktop at rest
+   they are a strip you scroll sideways, and live the run travels under the scroll. */
 .copper-frame {
   display: grid;
   gap: 2.5rem;
@@ -366,33 +367,47 @@ html.js .scene.is-live > .scene-stage {
   margin-top: 1.75rem;
   max-width: 40ch;
 }
-.copper-view {
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  margin-inline: calc(var(--margin) * -1);
-  padding-inline: var(--margin);
-}
-.copper-view::-webkit-scrollbar {
-  display: none;
-}
 .copper-track {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  width: max-content;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 0.5rem;
 }
-.copper-item {
-  flex: none;
-  scroll-snap-align: start;
+.copper-item:has(.is-lifted) {
+  grid-column: 1 / -1;
 }
 .copper-pic {
-  height: 52vw;
+  aspect-ratio: 4 / 5;
 }
 .copper-pic.is-lifted {
-  height: 78vw;
+  aspect-ratio: 1;
 }
 @media (width >= 64rem) {
+  .copper-view {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    scrollbar-width: none;
+  }
+  .copper-view::-webkit-scrollbar {
+    display: none;
+  }
+  .copper-track {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    width: max-content;
+  }
+  .copper-item {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  .copper-item:has(.is-lifted) {
+    grid-column: auto;
+  }
+  .copper-pic,
+  .copper-pic.is-lifted {
+    aspect-ratio: var(--ratio);
+  }
   .copper-frame {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--gutter);
@@ -406,8 +421,6 @@ html.js .scene.is-live > .scene-stage {
   }
   .copper-view {
     grid-column: 4 / -1;
-    margin-left: 0;
-    padding-left: 0;
   }
   .copper-pic {
     height: 34vh;
@@ -689,9 +702,9 @@ html.js .scene.is-live > .scene-stage {
   container-type: inline-size;
 }
 .index-cards .index-card {
-  --tab-w: 200px;
+  --tab-w: 180px;
   --tab-step: min(150px, calc((100cqw - var(--tab-w) - 3rem) / 5));
-  --tab-h: 40px;
+  --tab-h: 48px;
   --tab-left: calc(var(--tab-x, 0) * var(--tab-step) + 1.5rem);
   clip-path: polygon(
     var(--tab-left) 0,
@@ -710,10 +723,11 @@ html.js .scene.is-live > .scene-stage {
 .index-cards .index-tab {
   left: var(--tab-left);
   width: var(--tab-w);
+  height: var(--tab-h);
 }
 @media (width < 40rem) {
   .index-cards .index-card {
-    --tab-w: 120px;
+    --tab-w: 128px;
     --tab-step: min(48px, calc((100cqw - var(--tab-w) - 3rem) / 5));
   }
 }

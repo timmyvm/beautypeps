@@ -115,22 +115,35 @@ export default async function FaqPage() {
                     key={item.q}
                     name={`faq-${g.id}`}
                     open={gi === 0 && i === 0}
-                    className={cn("index-card group relative", CARD_FIELDS[(i + gi) % CARD_FIELDS.length])}
+                    className={cn(
+                      // Bigger tabs than the shared default; the open card turns sapphire, the one recurring mark.
+                      "index-card group relative [--tab-h:52px]! [--tab-w:232px]! max-sm:[--tab-w:140px]!",
+                      "transition-colors duration-300 open:bg-field-sapphire open:text-field-sapphire-ink",
+                      CARD_FIELDS[(i + gi) % CARD_FIELDS.length],
+                    )}
                     data-reveal="row"
                     style={{ ["--tab-x" as string]: `${i % 6}`, ["--reveal-i" as string]: i, zIndex: i + 1 }}
                   >
-                    <summary className="flex min-h-[96px] cursor-pointer list-none flex-col justify-center px-6 pt-[56px] pb-[46px] [&::-webkit-details-marker]:hidden">
-                      <span className="index-tab absolute top-0 flex h-10 items-center px-5 text-small font-medium">
+                    <summary className="flex min-h-[112px] cursor-pointer list-none flex-col justify-center px-6 pt-[70px] pb-[60px] sm:px-8 [&::-webkit-details-marker]:hidden">
+                      <span className="index-tab absolute top-0 flex h-[52px] items-center px-5 text-body font-medium sm:px-6">
                         {item.tab}
                       </span>
                       <span className="flex items-center justify-between gap-6 text-lead font-medium">
-                        {item.q}
-                        <span aria-hidden className="text-lead leading-none transition-transform duration-300 group-open:rotate-45">
+                        <span className="underline-offset-4 group-hover:underline">{item.q}</span>
+                        <span
+                          aria-hidden
+                          className="text-[calc(var(--text-body)*1.75)] leading-none transition-transform duration-300 group-open:rotate-45"
+                        >
                           +
                         </span>
                       </span>
                     </summary>
-                    <Markdown className="-mt-6 px-6 pb-16 lg:max-w-[56ch] [&_p]:my-0 [details:not([open])_&]:hidden">
+                    <Markdown
+                      className={cn(
+                        "-mt-8 px-6 pb-[84px] text-lead sm:px-8 lg:max-w-[52ch] [&_p]:my-0 [&_p+p]:mt-4 [details:not([open])_&]:hidden",
+                        "[--tw-prose-body:currentColor]! [--tw-prose-bold:currentColor]! [--tw-prose-links:currentColor]! [--tw-prose-bullets:currentColor]!",
+                      )}
+                    >
                       {item.a}
                     </Markdown>
                   </details>

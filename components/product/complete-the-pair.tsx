@@ -41,16 +41,12 @@ export function CompleteThePair({
     });
 
   return (
-    <section className="mt-32 grid grid-cols-1 gap-10 lg:mt-48 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]" aria-labelledby="pair-heading">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 lg:col-span-7">
-        <PairTile item={first} index={0} />
-        <span aria-hidden className="display-type text-head text-muted" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
-          +
-        </span>
-        <PairTile item={second} index={2} />
-      </div>
-
-      <div className="lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+    <section
+      className="mt-32 grid grid-cols-1 gap-10 lg:mt-48 lg:grid-cols-12 lg:grid-rows-[1fr_auto] lg:gap-x-[var(--gutter)] lg:gap-y-0"
+      aria-labelledby="pair-heading"
+    >
+      {/* On a phone the heading leads, then the pair, then the price and the button. */}
+      <div className="lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:self-end" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
         <h2 id="pair-heading" className={headingClass}>
           Complete the pair
         </h2>
@@ -58,7 +54,18 @@ export function CompleteThePair({
           {first.name} with {second.name}.
         </p>
         <p className="mt-3 max-w-[48ch] text-body">{reason}</p>
-        <p className="mt-6 flex items-baseline gap-3">
+      </div>
+
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 lg:col-span-7 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-end">
+        <PairTile item={first} index={0} />
+        <span aria-hidden className="display-type text-head text-muted" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+          +
+        </span>
+        <PairTile item={second} index={2} />
+      </div>
+
+      <div className="lg:col-span-5 lg:col-start-8 lg:row-start-2" data-reveal="" style={{ ["--reveal-i" as string]: 3 }}>
+        <p className="flex items-baseline gap-3 lg:mt-6">
           <span className="tabular text-lead font-medium">{formatMoney(total)}</span>
           <span className="text-small text-muted">for both, GST included</span>
         </p>

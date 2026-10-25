@@ -149,7 +149,7 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
         <p id="concern-question" className="text-lead font-medium">
           What are you treating?
         </p>
-        <ul className="scrollbar-none -mx-[var(--margin)] mt-5 flex gap-2 overflow-x-auto px-[var(--margin)] md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+        <ul className="mt-5 flex flex-wrap gap-2">
           <li>
             <FilterLink href={href({ concern: undefined })} active={!concern} count={pool.length}>
               Everything

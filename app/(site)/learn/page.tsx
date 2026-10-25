@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { PageHeader, reveal } from "@/components/info/page-header";
 import { ArticleCard } from "@/components/learn/article-card";
+import { specimenSlugs } from "@/components/learn/article-extras";
+import { ArticleRow } from "@/components/learn/article-row";
 import { NewsletterForm } from "@/components/site/newsletter-form";
 import { ARTICLE_CATEGORIES } from "@/lib/constants";
-import { getPublishedArticles } from "@/lib/queries/content";
+import { getPublishedArticles, getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 
@@ -30,7 +32,8 @@ export default function JournalPage({ searchParams }: { searchParams: SearchPara
 async function JournalPageContent({ searchParams }: { searchParams: SearchParams }) {
   const { category } = await searchParams;
   const activeCategory = ARTICLE_CATEGORIES.find((c) => c === category);
-  const all = await getPublishedArticles();
+  const [all, peptides] = await Promise.all([getPublishedArticles(), getPublishedPeptides()]);
+  const specimenOf = (a: { slug: string; title: string }) => peptides.find((p) => p.slug === specimenSlugs(a, peptides)[0]) ?? null;
 
   const inView = all.filter((a) => !activeCategory || a.category === activeCategory);
   const lead = activeCategory ? inView[0] : (all.find((a) => a.featured) ?? all[0]);
@@ -63,18 +66,14 @@ async function JournalPageContent({ searchParams }: { searchParams: SearchParams
         <h2 id="list-title" className="display-type text-head" {...reveal(0)}>
           {activeCategory ? `More in ${activeCategory.toLowerCase()}` : "Every guide"}
         </h2>
-        {list.length === 1 ? (
-          <div className="mt-12" {...reveal(1)}>
-            <ArticleCard article={list[0]} layout="row" />
-          </div>
-        ) : list.length > 0 ? (
-          <div className="mt-12 grid gap-x-[var(--gutter)] gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {list.map((a, i) => (
-              <div key={a.id} className={i === 0 && list.length > 3 ? "sm:col-span-2" : undefined} {...reveal(i % 3)}>
-                <ArticleCard article={a} size={i === 0 && list.length > 3 ? "lg" : "md"} />
-              </div>
+        {list.length > 0 ? (
+          <ol className="mt-12 space-y-20 lg:mt-16 lg:space-y-24">
+            {list.map((a) => (
+              <li key={a.id} {...reveal(0)}>
+                <ArticleRow article={a} specimen={specimenOf(a)} />
+              </li>
             ))}
-          </div>
+          </ol>
         ) : (
           <div className="mt-12 bg-surface px-6 py-14 sm:px-10">
             <p className="text-lead">

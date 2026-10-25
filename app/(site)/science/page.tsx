@@ -5,10 +5,14 @@ import type { ReactNode } from "react";
 import { Chapter, Note } from "@/components/info/chapter";
 import { Figure, PageHeader, reveal } from "@/components/info/page-header";
 import { ClassDiagram } from "@/components/peptides/class-diagram";
+import { DaltonScene, type DaltonRow } from "@/components/peptides/dalton-scene";
 import { classShortLabel } from "@/components/peptides/peptide-entry";
-import { LoopVideo } from "@/components/site/loop-video";
+import { PeptideStrand } from "@/components/peptides/peptide-strand";
+import { StrandKey } from "@/components/peptides/sequence-strand";
 import { ButtonLink } from "@/components/ui/button";
 import { PEPTIDE_CLASSES } from "@/lib/constants";
+import type { Peptide } from "@/lib/db/schema";
+import { getPublishedPeptides } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
 import { pageMetadata } from "@/lib/seo";
 
@@ -29,7 +33,7 @@ const SECTIONS = [
   { id: "stability", title: "Stability and storage" },
 ];
 
-const CLASS_EXAMPLES: Record<string, { examples: { label: string; slug: string }[]; detail: string }> = {
+const CLASS_EXAMPLES: Record<string, { examples: { label: string; slug: string }[]; detail: string; drawn: string }> = {
   signal: {
     examples: [
       { label: "Matrixyl", slug: "palmitoyl-pentapeptide-4" },
@@ -37,11 +41,13 @@ const CLASS_EXAMPLES: Record<string, { examples: { label: string; slug: string }
       { label: "Matrixyl synthe'6", slug: "palmitoyl-tripeptide-38" },
       { label: "SYN-COLL", slug: "palmitoyl-tripeptide-5" },
     ],
+    drawn: "palmitoyl-pentapeptide-4",
     detail:
       "Many signal peptides are fragments of collagen or other matrix proteins, known as matrikines. When collagen breaks down these fragments appear naturally and act as a message that repair is needed. Applied to the skin, they aim to send fibroblasts the same message, nudging production of collagen I and III, fibronectin and glycosaminoglycans.",
   },
   carrier: {
     examples: [{ label: "GHK-Cu", slug: "ghk-cu" }],
+    drawn: "ghk-cu",
     detail:
       "Carrier peptides bind a trace element and help deliver it. The best known is GHK-Cu: the tripeptide glycyl-histidyl-lysine holding a copper(II) ion. Copper is a cofactor for lysyl oxidase, which cross-links collagen and elastin, and for the antioxidant enzyme superoxide dismutase. GHK-Cu has been studied for wound healing and remodelling for decades.",
   },
@@ -52,6 +58,7 @@ const CLASS_EXAMPLES: Record<string, { examples: { label: string; slug: string }
       { label: "Leuphasyl", slug: "pentapeptide-18" },
       { label: "Syn-Ake", slug: "dipeptide-diaminobutyroyl-benzylamide-diacetate" },
     ],
+    drawn: "acetyl-hexapeptide-8",
     detail:
       "Repeated expressions crease the skin over time. These peptides interfere, gently and reversibly, with the chain of signals that tells expression muscles to contract, for example by competing with SNAP-25 for a place in the SNARE complex that releases acetylcholine. They are called topical Botox, but the effect is far milder and limited by how much reaches the muscle.",
   },
@@ -60,12 +67,43 @@ const CLASS_EXAMPLES: Record<string, { examples: { label: string; slug: string }
       { label: "Melanostatine-5", slug: "nonapeptide-1" },
       { label: "Eyeseryl", slug: "acetyl-tetrapeptide-5" },
     ],
+    drawn: "nonapeptide-1",
     detail:
       "Some peptides slow the enzymes and receptors behind visible concerns: the matrix metalloproteinases (MMPs) that degrade collagen, or the melanocortin pathway that switches on tyrosinase and pigment. Nonapeptide-1, for example, competes with α-MSH at the MC1 receptor on melanocytes, which may soften the look of uneven tone.",
   },
 };
 
-export default function SciencePage() {
+/** "≈ 802 Da" → 802. GHK-Cu's entry also gives the weight of GHK alone. */
+function daltons(text: string | null | undefined, prefix = "") {
+  const m = text?.match(new RegExp(`${prefix}≈\\s*([\\d,]+)\\s*Da`));
+  return m ? Number(m[1].replace(/,/g, "")) : null;
+}
+
+/* The peptides with a published molecular weight, lightest first; GHK-Cu also stands in for GHK alone. */
+function weighed(peptides: Peptide[]): DaltonRow[] {
+  const rows: DaltonRow[] = [];
+  for (const p of peptides) {
+    if (!p.sequence) continue;
+    const da = daltons(p.molecularWeight);
+    if (!da) continue;
+    if (p.slug === "ghk-cu") {
+      const bare = daltons(p.molecularWeight, "GHK\\s*");
+      if (bare) rows.push({ key: "ghk", name: "GHK", note: "the three amino acids alone", sequence: "Gly-His-Lys", da: bare });
+      rows.push({ key: p.slug, name: p.name, note: "holding its copper ion", sequence: p.sequence, da });
+    } else {
+      rows.push({ key: p.slug, name: p.name, note: p.inciName, sequence: p.sequence, da });
+    }
+  }
+  return rows.sort((a, b) => a.da - b.da);
+}
+
+export default async function SciencePage() {
+  const peptides = await getPublishedPeptides();
+  const bySlug = new Map(peptides.map((p) => [p.slug, p]));
+  const rows = weighed(peptides);
+  const over = rows.filter((r) => r.da > 500).length;
+  const matrixyl = bySlug.get("palmitoyl-pentapeptide-4");
+
   return (
     <>
       <PageHeader
@@ -123,29 +161,44 @@ export default function SciencePage() {
         >
           <Prose>
             <p>
-              Every protein in your body, from collagen and elastin to keratin and the enzymes that keep skin working,
-              is built from the same 20 building blocks: <Term slug="amino-acid">amino acids</Term>. Link two with a{" "}
-              <Term slug="peptide-bond">peptide bond</Term> and you have a dipeptide; three makes a tripeptide; up to
-              about 50 is a peptide. Beyond that, the chain usually folds into a protein.
+              Every protein in your body, from collagen and elastin to keratin and the enzymes that keep skin working, is built
+              from the same 20 building blocks: <Term slug="amino-acid">amino acids</Term>. Link two with a{" "}
+              <Term slug="peptide-bond">peptide bond</Term> and you have a dipeptide; three makes a tripeptide; up to about 50 is
+              a peptide. Beyond that, the chain usually folds into a protein.
             </p>
             <p>
-              That size difference matters. A collagen molecule weighs roughly 300,000 daltons, far too large to pass
-              through the skin, which is why collagen in a cream works as a humectant rather than topping up the
-              collagen in your dermis. Cosmetic peptides are tiny by comparison: GHK is three amino acids, about 340
-              daltons, and most cosmetic peptides sit between 400 and 1,000.
+              That size difference matters. A collagen molecule weighs roughly 300,000 daltons, far too large to pass through the
+              skin, which is why collagen in a cream works as a humectant rather than topping up the collagen in your dermis.
+              Cosmetic peptides are tiny by comparison: GHK is three amino acids, about 340 daltons, and most cosmetic peptides
+              sit between 400 and 1,000.
             </p>
             <Note title="Why short chains are interesting">
-              Short peptides can act as messages. The body already uses fragments of broken-down proteins as signals:
-              pieces of degraded collagen tell fibroblasts that repair is needed. Many cosmetic peptides are synthetic
-              copies of these fragments.
+              Short peptides can act as messages. The body already uses fragments of broken-down proteins as signals: pieces of
+              degraded collagen tell fibroblasts that repair is needed. Many cosmetic peptides are synthetic copies of these
+              fragments.
             </Note>
             <p>
-              Peptides are written in one- or three-letter amino-acid codes. Matrixyl&apos;s core sequence is KTTKS
-              (lysine, threonine, threonine, lysine, serine); GHK-Cu is glycine, histidine and lysine bound to copper.
-              On a label you will see the <Term slug="inci">INCI</Term> name instead, such as Palmitoyl Pentapeptide-4.
-              The number identifies which pentapeptide it is, not how strong it is.
+              Peptides are written in one- or three-letter amino-acid codes. Matrixyl&apos;s core sequence is KTTKS (lysine,
+              threonine, threonine, lysine, serine); GHK-Cu is glycine, histidine and lysine bound to copper. On a label you will
+              see the <Term slug="inci">INCI</Term> name instead, such as Palmitoyl Pentapeptide-4. The number identifies which
+              pentapeptide it is, not how strong it is.
             </p>
           </Prose>
+          {matrixyl?.sequence && (
+            <figure className="mt-10 bg-surface p-6 sm:p-8" {...reveal(1)}>
+              <PeptideStrand
+                sequence={matrixyl.sequence}
+                slug={matrixyl.slug}
+                name={matrixyl.name}
+                size="md"
+                scale={1}
+                interactive
+                draw="reveal"
+                caption="Matrixyl, written Pal-KTTKS: a palmitoyl tail, then lysine, threonine, threonine, lysine and serine. Choose a bead to name it."
+              />
+              <StrandKey className="mt-6" />
+            </figure>
+          )}
         </Chapter>
 
         <Chapter
@@ -164,43 +217,40 @@ export default function SciencePage() {
               <SkinLayers />
             </div>
             <figcaption className="mt-3 max-w-[60ch] text-small">
-              From the top: peptides on the surface, the stratum corneum, the living epidermis, and the dermis, where
-              fibroblasts build collagen and elastin. A peptide has to cross the first two to reach the third.
+              From the top: peptides on the surface, the stratum corneum, the living epidermis, and the dermis, where fibroblasts
+              build collagen and elastin. A peptide has to cross the first two to reach the third.
             </figcaption>
           </figure>
           <Prose>
             <p>
               Skin has two main layers. The <strong>epidermis</strong> is the protective outer layer, topped by the{" "}
-              <Term slug="stratum-corneum">stratum corneum</Term>: 15 to 20 layers of flattened, dead cells held in a
-              lipid mortar. Its job is to keep water in and everything else out, which is exactly what makes topical
-              skincare hard.
+              <Term slug="stratum-corneum">stratum corneum</Term>: 15 to 20 layers of flattened, dead cells held in a lipid
+              mortar. Its job is to keep water in and everything else out, which is exactly what makes topical skincare hard.
             </p>
             <p>
-              Beneath it sits the <strong>dermis</strong>, home to <Term slug="fibroblast">fibroblasts</Term>, the
-              cells that build and maintain the <Term slug="extracellular-matrix">extracellular matrix</Term>. The
-              matrix is the skin&apos;s scaffolding: mostly <Term slug="collagen">collagen I and III</Term>, with{" "}
-              <Term slug="elastin">elastin</Term> for spring and{" "}
-              <Term slug="glycosaminoglycans">glycosaminoglycans</Term> such as hyaluronic acid for cushioning and
+              Beneath it sits the <strong>dermis</strong>, home to <Term slug="fibroblast">fibroblasts</Term>, the cells that
+              build and maintain the <Term slug="extracellular-matrix">extracellular matrix</Term>. The matrix is the skin&apos;s
+              scaffolding: mostly <Term slug="collagen">collagen I and III</Term>, with <Term slug="elastin">elastin</Term> for
+              spring and <Term slug="glycosaminoglycans">glycosaminoglycans</Term> such as hyaluronic acid for cushioning and
               water.
             </p>
             <h3>What changes with age and sun</h3>
             <ul>
               <li>
-                <strong>Collagen production slows.</strong> Adult skin is commonly estimated to lose around 1% of its
-                dermal collagen a year, and fibroblasts become less active.
+                <strong>Collagen production slows.</strong> Adult skin is commonly estimated to lose around 1% of its dermal
+                collagen a year, and fibroblasts become less active.
               </li>
               <li>
-                <strong>Breakdown speeds up.</strong> UV switches on{" "}
-                <Term slug="mmps">matrix metalloproteinases</Term>, enzymes that degrade collagen. This is the main
-                driver of photoageing, which is why daily SPF remains the most effective anti-ageing step.
+                <strong>Breakdown speeds up.</strong> UV switches on <Term slug="mmps">matrix metalloproteinases</Term>, enzymes
+                that degrade collagen. This is the main driver of photoageing, which is why daily SPF remains the most effective
+                anti-ageing step.
               </li>
               <li>
-                <strong>Expression lines deepen.</strong> Facial muscles fold the skin in the same place thousands of
-                times a day.
+                <strong>Expression lines deepen.</strong> Facial muscles fold the skin in the same place thousands of times a day.
               </li>
               <li>
-                <strong>Pigment becomes uneven.</strong> Melanocytes respond to UV and inflammation through signals
-                such as <Term slug="alpha-msh">α-MSH</Term>, switching on <Term slug="tyrosinase">tyrosinase</Term>.
+                <strong>Pigment becomes uneven.</strong> Melanocytes respond to UV and inflammation through signals such as{" "}
+                <Term slug="alpha-msh">α-MSH</Term>, switching on <Term slug="tyrosinase">tyrosinase</Term>.
               </li>
             </ul>
             <p>Each class of peptide targets one of these processes.</p>
@@ -213,8 +263,8 @@ export default function SciencePage() {
               The four peptide classes
             </h2>
             <p className="max-w-[60ch] text-body lg:col-span-7 lg:col-start-6">
-              Researchers group cosmetic peptides by mechanism. The groups overlap (GHK-Cu is both a carrier and a
-              signal) but they make a useful map. In every drawing the blue beads are the peptide.
+              Researchers group cosmetic peptides by mechanism. The groups overlap (GHK-Cu is both a carrier and a signal) but
+              they make a useful map. In every drawing the blue beads are the peptide.
             </p>
           </div>
           <ul className="-mx-4 mt-14">
@@ -236,6 +286,24 @@ export default function SciencePage() {
                   <div className="lg:col-span-7 lg:col-start-6">
                     <h3 className="text-lead font-medium">{classShortLabel(key)} peptides</h3>
                     <p className="mt-3 max-w-[64ch] text-body">{ex?.detail ?? c.description}</p>
+                    {(() => {
+                      const drawn = ex && bySlug.get(ex.drawn);
+                      return drawn?.sequence ? (
+                        <figure className="mt-6">
+                          <PeptideStrand
+                            sequence={drawn.sequence}
+                            slug={drawn.slug}
+                            name={drawn.name}
+                            size="md"
+                            scale={0.62}
+                            draw="reveal"
+                          />
+                          <figcaption className="mt-2 text-small text-muted">
+                            {drawn.name}, {drawn.sequence}
+                          </figcaption>
+                        </figure>
+                      ) : null;
+                    })()}
                     {ex && (
                       <p className="mt-4 text-body">
                         In the library:{" "}
@@ -255,87 +323,109 @@ export default function SciencePage() {
             })}
           </ul>
         </section>
-
       </div>
 
-      <section
-        id="penetration"
-        aria-labelledby="penetration-title"
-        className="mt-24 scroll-mt-8 bg-field-frost py-20 lg:mt-36 lg:py-28"
-      >
-        <div className="container-bp">
-          <div className="grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-            <h2 id="penetration-title" className="display-type text-head lg:col-span-5" {...reveal(0)}>
+      <div id="penetration" className="mt-24 scroll-mt-8 lg:mt-36">
+        {rows.length > 1 ? (
+          <DaltonScene
+            rows={rows}
+            title="The penetration problem"
+            intro={
+              <p className="max-w-[52ch] text-lead">
+                A peptide only works if it reaches its target, and the rule of thumb is the{" "}
+                <Term slug="dalton" className="underline underline-offset-4">
+                  500 dalton rule
+                </Term>
+                : much past 500 daltons, a molecule struggles to cross intact skin on its own. Here are{" "}
+                {rows.length === 6 ? "six" : rows.length} of ours, weighed.
+              </p>
+            }
+            outro={
+              <p className="max-w-[48ch] text-lead">
+                {over === 4 ? "Four" : over} of the {rows.length === 6 ? "six" : rows.length} are past the line. The palmitoyl
+                tails and acetyl caps in their names are how formulators help them in.
+              </p>
+            }
+          />
+        ) : (
+          <div className="container-bp">
+            <h2 id="penetration-title" className="display-type text-head">
               The penetration problem
             </h2>
-            <Prose className="lg:col-span-6 lg:col-start-7">
-              <p>
-                A peptide can only work if it reaches its target. For years the rule of thumb has been the{" "}
-                <Term slug="dalton">500 dalton rule</Term>: molecules much larger than about 500 daltons struggle to
-                cross intact skin on their own. Most cosmetic peptides sit above that line, and many are water-loving,
-                while the stratum corneum favours oil-loving molecules.
-              </p>
-              <p>Formulators use four tricks to close the gap.</p>
-            </Prose>
           </div>
-          <dl className="mt-14 grid gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                title: "Palmitoylation",
-                text: "Attaching palmitic acid, a 16-carbon fatty acid, makes a peptide more oil-loving so it moves into skin lipids. It is the Palmitoyl in Palmitoyl Pentapeptide-4.",
-                href: "/glossary#palmitoylation",
-              },
-              {
-                title: "Acetylation and amidation",
-                text: "Capping the ends of a chain, the Acetyl in Acetyl Hexapeptide-8, protects it from enzymes in the skin and can help it penetrate.",
-                href: "/glossary#acetylation",
-              },
-              {
-                title: "Delivery systems",
-                text: "Liposomes and other encapsulation systems carry peptides into the upper layers and protect them on the way.",
-                href: "/glossary#liposome",
-              },
-              {
-                title: "Concentration and contact time",
-                text: "Leave-on serums at studied concentrations give peptides a chance. A rinse-off cleanser with a trace of peptide does not.",
-                href: "/compare",
-              },
-            ].map((t, i) => (
-              <div key={t.title} {...reveal(i + 1)}>
-                <dt className="text-lead font-medium">
-                  <Link href={t.href} className="link-quiet">
-                    {t.title}
-                  </Link>
-                </dt>
-                <dd className="mt-2 text-body">{t.text}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
-            <Figure
-              ratio="aspect-[16/9]"
-              className="lg:col-span-5"
-              caption="The vehicle matters: a leave-on serum gives a peptide time to work."
-            >
-              <Image
-                src="/images/editorial/texture.webp"
-                alt="A clear gel and a white cream swatched side by side on a pale ground"
-                fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="object-cover"
-              />
-            </Figure>
-            <p className="max-w-[60ch] text-body lg:col-span-6 lg:col-start-7 lg:pb-8">
-              Even so, only a small fraction of any topical active reaches the dermis. That is not a reason to dismiss
-              peptides, since very small amounts of a signalling molecule can matter, but it is why we publish
-              concentrations and why we are cautious about dramatic claims.
-            </p>
+        )}
+        <div className="bg-field-frost py-16 lg:py-24">
+          <div className="container-bp">
+            <div className="grid gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+              <h3 className="display-type text-head lg:col-span-5" {...reveal(0)}>
+                Four ways in
+              </h3>
+              <Prose className="lg:col-span-6 lg:col-start-7">
+                <p>
+                  Most cosmetic peptides sit above the line, and many are water-loving, while the stratum corneum favours
+                  oil-loving molecules. Collagen, at about 300,000 daltons, would need a bar some 270 times the width of the chart
+                  above. Formulators use four tricks to close the gap.
+                </p>
+              </Prose>
+            </div>
+            <dl className="mt-14 grid gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: "Palmitoylation",
+                  text: "Attaching palmitic acid, a 16-carbon fatty acid, makes a peptide more oil-loving so it moves into skin lipids. It is the Palmitoyl in Palmitoyl Pentapeptide-4.",
+                  href: "/glossary#palmitoylation",
+                },
+                {
+                  title: "Acetylation and amidation",
+                  text: "Capping the ends of a chain, the Acetyl in Acetyl Hexapeptide-8, protects it from enzymes in the skin and can help it penetrate.",
+                  href: "/glossary#acetylation",
+                },
+                {
+                  title: "Delivery systems",
+                  text: "Liposomes and other encapsulation systems carry peptides into the upper layers and protect them on the way.",
+                  href: "/glossary#liposome",
+                },
+                {
+                  title: "Concentration and contact time",
+                  text: "Leave-on serums at studied concentrations give peptides a chance. A rinse-off cleanser with a trace of peptide does not.",
+                  href: "/compare",
+                },
+              ].map((t, i) => (
+                <div key={t.title} {...reveal(i + 1)}>
+                  <dt className="text-lead font-medium">
+                    <Link href={t.href} className="link-quiet">
+                      {t.title}
+                    </Link>
+                  </dt>
+                  <dd className="mt-2 text-body">{t.text}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-16 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+              <Figure
+                ratio="aspect-[16/9]"
+                className="lg:col-span-5"
+                caption="The vehicle matters: a leave-on serum gives a peptide time to work."
+              >
+                <Image
+                  src="/images/editorial/texture.webp"
+                  alt="A clear gel and a white cream swatched side by side on a pale ground"
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  className="object-cover"
+                />
+              </Figure>
+              <p className="max-w-[60ch] text-body lg:col-span-6 lg:col-start-7 lg:pb-8">
+                Even so, only a small fraction of any topical active reaches the dermis. That is not a reason to dismiss peptides,
+                since very small amounts of a signalling molecule can matter, but it is why we publish concentrations and why we
+                are cautious about dramatic claims.
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       <div className="container-bp">
-
         <Chapter
           id="evidence"
           title="How to read the evidence"
@@ -349,29 +439,45 @@ export default function SciencePage() {
         >
           <Prose>
             <p>
-              Peptide marketing loves a number: up to 350% more collagen, wrinkles reduced by up to 30%. Here is how to
-              put those numbers in context.
+              Peptide marketing loves a number: up to 350% more collagen, wrinkles reduced by up to 30%. Here is how to put those
+              numbers in context.
             </p>
           </Prose>
           <Table
             head={["Study type", "What it shows", "Watch out for"]}
             rows={[
-              ["In vitro", "Effects on cells in a dish, such as fibroblasts making more collagen.", "No skin barrier, so it cannot show the peptide reaches its target."],
-              ["Ex vivo", "Effects on donated human skin kept alive in the lab.", "Closer to life, but short-lived and without blood supply or immune system."],
-              ["In vivo, open", "Volunteers apply the product and changes are measured over weeks.", "No placebo group, and moisturising alone improves the look of fine lines."],
-              ["Controlled trial", "Peptide against the same base without it, ideally blinded and randomised.", "The gold standard: check the sample size and who ran it."],
+              [
+                "In vitro",
+                "Effects on cells in a dish, such as fibroblasts making more collagen.",
+                "No skin barrier, so it cannot show the peptide reaches its target.",
+              ],
+              [
+                "Ex vivo",
+                "Effects on donated human skin kept alive in the lab.",
+                "Closer to life, but short-lived and without blood supply or immune system.",
+              ],
+              [
+                "In vivo, open",
+                "Volunteers apply the product and changes are measured over weeks.",
+                "No placebo group, and moisturising alone improves the look of fine lines.",
+              ],
+              [
+                "Controlled trial",
+                "Peptide against the same base without it, ideally blinded and randomised.",
+                "The gold standard: check the sample size and who ran it.",
+              ],
             ]}
           />
           <Prose>
             <h3>Five questions to ask of any claim</h3>
             <ol>
               <li>
-                <strong>Up to, or on average?</strong> Up to 30% usually describes the single best responder. The
-                average is often far lower.
+                <strong>Up to, or on average?</strong> Up to 30% usually describes the single best responder. The average is often
+                far lower.
               </li>
               <li>
-                <strong>Compared with what?</strong> A result against untreated skin includes the effect of simply
-                moisturising. Look for placebo-controlled comparisons.
+                <strong>Compared with what?</strong> A result against untreated skin includes the effect of simply moisturising.
+                Look for placebo-controlled comparisons.
               </li>
               <li>
                 <strong>How many people, for how long?</strong> Ten volunteers over 28 days is a pilot, not proof.
@@ -385,10 +491,10 @@ export default function SciencePage() {
               </li>
             </ol>
             <p>
-              That is why every monograph in the <Link href="/peptides">peptide library</Link> carries an evidence
-              grade from 1 (lab only) to 5 (several independent clinical trials). Most cosmetic peptides sit at 2 or 3,
-              a handful at 4. That does not make them useless; it means realistic expectations: subtle, cumulative
-              change over 8 to 12 weeks, not overnight transformation.
+              That is why every monograph in the <Link href="/peptides">peptide library</Link> carries an evidence grade from 1
+              (lab only) to 5 (several independent clinical trials). Most cosmetic peptides sit at 2 or 3, a handful at 4. That
+              does not make them useless; it means realistic expectations: subtle, cumulative change over 8 to 12 weeks, not
+              overnight transformation.
             </p>
           </Prose>
         </Chapter>
@@ -410,46 +516,73 @@ export default function SciencePage() {
           <Table
             head={["If your concern is", "Look for"]}
             rows={[
-              ["Fine lines, loss of firmness", <Shop key="f" href="/shop?concern=firmness">Signal peptides (the Matrixyl family) and GHK-Cu</Shop>],
-              ["Expression lines on the forehead and around the eyes", <Shop key="e" href="/shop?concern=expression-lines">Neurotransmitter inhibitors: Argireline, SNAP-8, Leuphasyl</Shop>],
-              ["Dullness, uneven tone, dark spots", <Shop key="d" href="/shop?concern=dark-spots">Nonapeptide-1 alongside SPF</Shop>],
-              ["Puffiness and dark circles", <Shop key="u" href="/shop?concern=under-eye">Acetyl Tetrapeptide-5 and eye-specific signal peptides</Shop>],
-              ["Barrier recovery", <Shop key="b" href="/shop?concern=barrier">GHK-Cu and gentle signal peptides</Shop>],
-              ["Thinning-looking hair", <Shop key="h" href="/shop?concern=hair-density">Biotinoyl Tripeptide-1 and copper peptides for the scalp</Shop>],
+              [
+                "Fine lines, loss of firmness",
+                <Shop key="f" href="/shop?concern=firmness">
+                  Signal peptides (the Matrixyl family) and GHK-Cu
+                </Shop>,
+              ],
+              [
+                "Expression lines on the forehead and around the eyes",
+                <Shop key="e" href="/shop?concern=expression-lines">
+                  Neurotransmitter inhibitors: Argireline, SNAP-8, Leuphasyl
+                </Shop>,
+              ],
+              [
+                "Dullness, uneven tone, dark spots",
+                <Shop key="d" href="/shop?concern=dark-spots">
+                  Nonapeptide-1 alongside SPF
+                </Shop>,
+              ],
+              [
+                "Puffiness and dark circles",
+                <Shop key="u" href="/shop?concern=under-eye">
+                  Acetyl Tetrapeptide-5 and eye-specific signal peptides
+                </Shop>,
+              ],
+              [
+                "Barrier recovery",
+                <Shop key="b" href="/shop?concern=barrier">
+                  GHK-Cu and gentle signal peptides
+                </Shop>,
+              ],
+              [
+                "Thinning-looking hair",
+                <Shop key="h" href="/shop?concern=hair-density">
+                  Biotinoyl Tripeptide-1 and copper peptides for the scalp
+                </Shop>,
+              ],
             ]}
           />
           <Prose>
             <h3>Layering basics</h3>
             <ul>
               <li>
-                <strong>Peptides play well with most things.</strong> Niacinamide, hyaluronic acid, ceramides and
-                sunscreen are all easy partners.
+                <strong>Peptides play well with most things.</strong> Niacinamide, hyaluronic acid, ceramides and sunscreen are
+                all easy partners.
               </li>
               <li>
-                <strong>Different mechanisms stack.</strong> A signal peptide plus a neurotransmitter inhibitor
-                targets two causes of lines, which is why multi-peptide formulas exist.
+                <strong>Different mechanisms stack.</strong> A signal peptide plus a neurotransmitter inhibitor targets two causes
+                of lines, which is why multi-peptide formulas exist.
               </li>
               <li>
-                <strong>Keep copper peptides away from strong acids</strong> and L-ascorbic acid in the same step. Low
-                pH can loosen the copper complex, and copper can oxidise vitamin C. Use them at different times of
-                day.
+                <strong>Keep copper peptides away from strong acids</strong> and L-ascorbic acid in the same step. Low pH can
+                loosen the copper complex, and copper can oxidise vitamin C. Use them at different times of day.
               </li>
               <li>
-                <strong>With retinoids,</strong> many people alternate nights or use the peptide in the morning. The
-                aim is to avoid irritation; there is no chemical reason to keep them apart.
+                <strong>With retinoids,</strong> many people alternate nights or use the peptide in the morning. The aim is to
+                avoid irritation; there is no chemical reason to keep them apart.
               </li>
               <li>
-                <strong>Apply thinnest to thickest:</strong> water-light serums first, then creams, then SPF in the
-                morning.
+                <strong>Apply thinnest to thickest:</strong> water-light serums first, then creams, then SPF in the morning.
               </li>
             </ul>
             <p>
-              Want this matched to your skin? The <Link href="/routine-builder">routine builder</Link> does it for
-              you, and <Link href="/learn/how-to-layer-peptides">our layering guide</Link> goes deeper.
+              Want this matched to your skin? The <Link href="/routine-builder">routine builder</Link> does it for you, and{" "}
+              <Link href="/learn/how-to-layer-peptides">our layering guide</Link> goes deeper.
             </p>
           </Prose>
         </Chapter>
-
       </div>
 
       <section
@@ -460,14 +593,16 @@ export default function SciencePage() {
         <div className="container-bp grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-[var(--gutter)]">
           <figure className="lg:col-span-5" {...reveal(1)}>
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-white/10">
-              <LoopVideo
-                src="/video/copper-drop.mp4"
-                poster="/video/copper-drop-poster.webp"
-                label="Drops of blue copper peptide serum falling onto a brushed copper plate"
+              <Image
+                src="/images/editorial/cold-chain.webp"
+                alt="Rows of amber vials of white peptide powder on a refrigerator shelf beside a dial thermometer"
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="drift object-cover"
               />
             </div>
             <figcaption className="mt-3 max-w-[40ch] text-small text-white/80">
-              GHK-Cu serum is blue from its copper. Green or brown means the complex has broken down.
+              Freeze-dried powders keep longest sealed, dry and cold, at 2 to 8 °C.
             </figcaption>
           </figure>
           <div className="lg:col-span-6 lg:col-start-7">
@@ -476,9 +611,18 @@ export default function SciencePage() {
             </h2>
             <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-8 sm:grid-cols-3">
               {[
-                { title: "Keep them cool", text: "Heat speeds degradation. Store serums below 25 °C and pure powders in the fridge." },
-                { title: "Mind the pH", text: "Most peptides are happiest between pH 5 and 7. Very acidic or alkaline formulas can break peptide bonds." },
-                { title: "Keep powders dry", text: "Freeze-dried peptides stay stable for years when dry and sealed. Once dissolved, use them within weeks." },
+                {
+                  title: "Keep them cool",
+                  text: "Heat speeds degradation. Store serums below 25 °C and pure powders in the fridge.",
+                },
+                {
+                  title: "Mind the pH",
+                  text: "Most peptides are happiest between pH 5 and 7. Very acidic or alkaline formulas can break peptide bonds.",
+                },
+                {
+                  title: "Keep powders dry",
+                  text: "Freeze-dried peptides stay stable for years when dry and sealed. Once dissolved, use them within weeks.",
+                },
               ].map((c, i) => (
                 <div key={c.title} {...reveal(i + 1)}>
                   <dt className="text-lead font-medium">{c.title}</dt>
@@ -487,9 +631,9 @@ export default function SciencePage() {
               ))}
             </dl>
             <p className="mt-10 max-w-[60ch] text-body">
-              Peptides can also be broken down by enzymes called proteases, on the skin and in poorly preserved
-              formulas, which is another reason acetylated, amidated or palmitoylated peptides are preferred in
-              skincare. If you formulate with our pure actives, add them in the{" "}
+              Peptides can also be broken down by enzymes called proteases, on the skin and in poorly preserved formulas, which is
+              another reason acetylated, amidated or palmitoylated peptides are preferred in skincare. If you formulate with our
+              pure actives, add them in the{" "}
               <Term slug="cool-down-phase" className="text-white underline underline-offset-4">
                 cool-down phase
               </Term>{" "}
@@ -499,11 +643,29 @@ export default function SciencePage() {
               </Link>
               .
             </p>
-            <p className="mt-6 max-w-[60ch] text-body">
-              <strong className="font-medium">A word on colour.</strong> Copper peptide serums are naturally blue. If a
-              GHK-Cu product turns green or brown, the copper complex may have degraded or oxidised, and it is time to
-              replace it.
-            </p>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 sm:items-end sm:gap-[var(--gutter)]">
+              <figure {...reveal(2)}>
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-white/10">
+                  <Image
+                    src="/images/found/chalcanthite.webp"
+                    alt="A cluster of deep blue copper sulfate crystals on a white ground"
+                    fill
+                    sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 100vw"
+                    className="object-cover"
+                  />
+                </div>
+                <figcaption className="mt-3 text-small text-white/80">
+                  Chalcanthite: copper sulfate crystals, blue from the same copper(II) ion that GHK holds.
+                </figcaption>
+              </figure>
+              <div className="sm:pb-9">
+                <h3 className="text-lead font-medium">A word on colour</h3>
+                <p className="mt-2 max-w-[40ch] text-body">
+                  Copper peptide serums are naturally blue. If a GHK-Cu product turns green or brown, the copper complex may have
+                  degraded or oxidised, and it is time to replace it.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -625,7 +787,12 @@ function Term({ slug, children, className }: { slug: string; children: ReactNode
 /* The skin in cross-section, drawn without words: the caption beside it names the layers. */
 function SkinLayers() {
   return (
-    <svg viewBox="0 0 720 260" role="img" aria-label="Cross-section of skin with peptides on the surface" className="h-auto w-full">
+    <svg
+      viewBox="0 0 720 260"
+      role="img"
+      aria-label="Cross-section of skin with peptides on the surface"
+      className="h-auto w-full"
+    >
       {[120, 300, 520].map((x) => (
         <g key={x}>
           <line x1={x} y1={22} x2={x + 26} y2={22} className="stroke-accent" strokeWidth={2.4} />

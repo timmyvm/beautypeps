@@ -23,7 +23,7 @@ export type CopperFrame = {
 /*
  * Scene: "Blue by copper". The heading and two notes hold the left column while the run of frames (the
  * mineral, a drop, the powder meeting water, the collar, the bottles) travels right to left under the
- * scroll, one frame standing taller than the rest. At rest it is a strip that scrolls sideways by hand.
+ * scroll, one frame standing taller than the rest. At rest it is a plate of frames (a strip on a desktop).
  */
 export function CopperScene({ frames }: { frames: CopperFrame[] }) {
   const ref = useRef<HTMLElement>(null);
@@ -60,7 +60,9 @@ export function CopperScene({ frames }: { frames: CopperFrame[] }) {
               </Link>
             </div>
             <div className="copper-notes space-y-4 text-body">
-              <p data-note="">The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out this colour.</p>
+              <p data-note="">
+                The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out this colour.
+              </p>
               <p data-note="">Use it at night, apart from vitamin C and strong acids, which loosen the copper.</p>
             </div>
           </div>
@@ -72,12 +74,18 @@ export function CopperScene({ frames }: { frames: CopperFrame[] }) {
                   <div
                     data-frame=""
                     className={cn("copper-pic relative overflow-hidden bg-surface", f.lifted && "is-lifted")}
-                    style={{ aspectRatio: f.ratio }}
+                    style={{ ["--ratio" as string]: f.ratio }}
                   >
                     {f.video ? (
                       <LoopVideo src={f.video} poster={f.src} label={f.alt} />
                     ) : (
-                      <Image src={f.src} alt={f.alt} fill sizes={f.lifted ? "(min-width: 1024px) 40vw, 80vw" : "(min-width: 1024px) 26vw, 60vw"} className="object-cover" />
+                      <Image
+                        src={f.src}
+                        alt={f.alt}
+                        fill
+                        sizes={f.lifted ? "(min-width: 1024px) 40vw, 80vw" : "(min-width: 1024px) 26vw, 60vw"}
+                        className="object-cover"
+                      />
                     )}
                   </div>
                 );

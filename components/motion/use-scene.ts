@@ -8,7 +8,7 @@ import { useEffect, type RefObject } from "react";
  * The stage every scroll scene runs on (tasteskill references/scenes.md, rebuilt for React).
  *
  * A scene is a <section className="scene"> holding one <div className="scene-stage">. Without script, with
- * reduced motion, or on a phone set to "rest", it is an ordinary section showing its finished composition
+ * reduced motion, or below the desktop grid (phones and tablets) when set to "rest", it is an ordinary section showing its finished composition
  * (.is-rest). When it runs (.is-live) the section is (hold + 1) screens tall, the stage sticks to the
  * viewport, and a GSAP timeline running 0 → 1 is scrubbed by the native scroll. Nothing captures the wheel.
  */
@@ -28,13 +28,21 @@ function queueRefresh() {
     ScrollTrigger.refresh();
   };
   const fonts = document.fonts?.ready ?? Promise.resolve();
-  const load = document.readyState === "complete" ? Promise.resolve() : new Promise((r) => window.addEventListener("load", r, { once: true }));
+  const load =
+    document.readyState === "complete"
+      ? Promise.resolve()
+      : new Promise((r) => window.addEventListener("load", r, { once: true }));
   Promise.all([fonts, load]).then(() => requestAnimationFrame(done));
 }
 
 export function useScene(
   ref: RefObject<HTMLElement | null>,
-  { hold = 2, phone = "rest", scrub = true, build }: { hold?: number; phone?: "rest" | "same"; scrub?: boolean | number; build: SceneBuild },
+  {
+    hold = 2,
+    phone = "rest",
+    scrub = true,
+    build,
+  }: { hold?: number; phone?: "rest" | "same"; scrub?: boolean | number; build: SceneBuild },
 ) {
   useEffect(() => {
     const root = ref.current;
@@ -51,7 +59,8 @@ export function useScene(
     };
 
     const mm = gsap.matchMedia();
-    mm.add({ motion: "(prefers-reduced-motion: no-preference)", phone: "(max-width: 767px)" }, (c) => {
+    // "phone" here means anything narrower than the desktop grid the scenes are composed on (64rem).
+    mm.add({ motion: "(prefers-reduced-motion: no-preference)", phone: "(max-width: 1023.98px)" }, (c) => {
       const isPhone = !!c.conditions?.phone;
       if (!c.conditions?.motion || (isPhone && phone === "rest")) {
         toRest();

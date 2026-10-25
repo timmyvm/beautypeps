@@ -57,7 +57,9 @@ export function PowderScene({ powderImage }: { powderImage: string }) {
         return `inset(${Math.round(r.top - s.top)}px ${Math.round(s.right - r.right)}px ${Math.round(s.bottom - r.bottom)}px ${Math.round(r.left - s.left)}px)`;
       };
       gsap.set(q("[data-statement]"), { autoAlpha: 0, y: 24 });
-      tl.fromTo(full, { clipPath: slotInset }, { clipPath: "inset(0px 0px 0px 0px)", duration: 0.5, ease: "power2.inOut" }, 0.2)
+      // The words of the three stages step back just before the last picture opens over them.
+      tl.to(q("[data-stage-words]"), { autoAlpha: 0, duration: 0.1, ease: "power1.in" }, 0.1)
+        .fromTo(full, { clipPath: slotInset }, { clipPath: "inset(0px 0px 0px 0px)", duration: 0.5, ease: "power2.inOut" }, 0.2)
         .fromTo(full.querySelector("video, img"), { scale: 1.12 }, { scale: 1, duration: 0.6, ease: "power1.out" }, 0.2)
         .to(q("[data-statement]"), { autoAlpha: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.66);
     },
@@ -69,14 +71,25 @@ export function PowderScene({ powderImage }: { powderImage: string }) {
         <div className="powder-frame container-bp pt-3">
           <div className="relative grid grid-cols-1 gap-7 lg:grid-cols-12 lg:items-end lg:gap-2.5">
             {/* The heading sits in the empty ground above the two smaller tiles */}
-            <h2 id="powder-title" className="display-type text-head lg:absolute lg:top-0 lg:left-0 lg:w-[58%]" {...reveal(0)}>
-              From powder to skin
-            </h2>
+            <div className="lg:absolute lg:top-0 lg:left-0 lg:w-[58%]" {...reveal(0)}>
+              <h2 id="powder-title" data-stage-words="" className="display-type text-head">
+                From powder to skin
+              </h2>
+            </div>
             {STAGES.map((s, i) => (
               <div key={s.name} className={s.span} {...reveal(i + 1)}>
-                <div data-slot={i === 2 ? "" : undefined} className={cn("relative w-full overflow-hidden", s.phoneHeight, s.height, s.field)}>
+                <div
+                  data-slot={i === 2 ? "" : undefined}
+                  className={cn("relative w-full overflow-hidden", s.phoneHeight, s.height, s.field)}
+                >
                   {i === 0 && (
-                    <Image src={powderImage} alt="Amber vial of freeze-dried peptide powder with a steel spatula" fill sizes="25vw" className="object-contain p-[12%]" />
+                    <Image
+                      src={powderImage}
+                      alt="Amber vial of freeze-dried peptide powder with a steel spatula"
+                      fill
+                      sizes="25vw"
+                      className="object-contain p-[12%]"
+                    />
                   )}
                   {i === 1 && (
                     <LoopVideo
@@ -95,8 +108,10 @@ export function PowderScene({ powderImage }: { powderImage: string }) {
                     </div>
                   )}
                 </div>
-                <h3 className="mt-3 text-lead font-medium">{s.name}</h3>
-                <p className="mt-1 max-w-[42ch] text-body">{s.text}</p>
+                <div data-stage-words="">
+                  <h3 className="mt-3 text-lead font-medium">{s.name}</h3>
+                  <p className="mt-1 max-w-[42ch] text-body">{s.text}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -104,10 +119,19 @@ export function PowderScene({ powderImage }: { powderImage: string }) {
 
         {/* Live only: the same picture at full size, seen through a window that opens to the whole screen */}
         <div data-full="" data-live-only="" className="powder-full">
-          <LoopVideo src="/video/applied.mp4" poster="/video/applied-poster.webp" label="Fingertips pressing two drops of blue serum into the back of a hand" />
-          <div data-statement="" className="absolute bottom-[var(--margin)] left-[var(--margin)] max-w-[34rem] bg-ink p-6 text-white md:p-8">
+          <LoopVideo
+            src="/video/applied.mp4"
+            poster="/video/applied-poster.webp"
+            label="Fingertips pressing two drops of blue serum into the back of a hand"
+          />
+          <div
+            data-statement=""
+            className="absolute bottom-[var(--margin)] left-[var(--margin)] max-w-[34rem] bg-ink p-6 text-white md:p-8"
+          >
             <p className="text-lead font-medium">Eight to twelve weeks, morning and night.</p>
-            <p className="mt-2 text-body text-white/85">That is how long the studies behind every grade run before they measure a change.</p>
+            <p className="mt-2 text-body text-white/85">
+              That is how long the studies behind every grade run before they measure a change.
+            </p>
           </div>
         </div>
       </div>

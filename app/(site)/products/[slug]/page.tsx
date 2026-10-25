@@ -85,7 +85,7 @@ async function ProductView({ slug }: { slug: string }) {
     getSettings(),
     getApprovedReviews(product.id),
     getPeptidesBySlugs(product.peptideSlugs),
-    getRelatedProducts({ id: product.id, categoryId: product.categoryId, concerns: product.concerns }),
+    getRelatedProducts({ id: product.id, categoryId: product.categoryId, concerns: product.concerns }, 5),
   ]);
 
   const photos = [product.image, ...product.gallery.filter((g) => g && g !== product.image)];
@@ -106,7 +106,8 @@ async function ProductView({ slug }: { slug: string }) {
   const COLLAR = "/images/editorial/collar-macro.webp";
   const thumbs = [...new Set([product.image, ...(product.slug === "ghk-cu-copper-peptide-serum" ? [COLLAR] : []), ...photos])].slice(0, 3);
   const pair = product.stock > 0 ? related.find((r) => r.stock > 0) : undefined;
-  const others = related.filter((r) => r.id !== pair?.id);
+  // One full row of four after the pair
+  const others = related.filter((r) => r.id !== pair?.id).slice(0, 4);
   const sharedConcerns = pair ? product.concerns.filter((c) => pair.concerns?.includes(c)).slice(0, 2) : [];
   const base = siteUrl();
   const url = `${base}/products/${product.slug}`;
@@ -442,6 +443,12 @@ async function ProductView({ slug }: { slug: string }) {
               <div className="relative aspect-[4/5] overflow-hidden bg-surface">
                 {blueSerum ? (
                   <LoopVideo src="/video/applied.mp4" poster="/video/applied-poster.webp" label="Fingertips pressing two drops of blue serum into the back of a hand" />
+                ) : isPowder && isCopper ? (
+                  <LoopVideo
+                    src="/video/powder-dissolve.mp4"
+                    poster="/video/powder-dissolve-poster.webp"
+                    label="Blue copper peptide powder falling into a beaker of water and dissolving"
+                  />
                 ) : isPowder ? (
                   <Image
                     src="/images/editorial/cold-chain.webp"
@@ -462,7 +469,11 @@ async function ProductView({ slug }: { slug: string }) {
                   />
                 )}
               </div>
-              {isPowder && <figcaption className="mt-3 text-body">Keep it at 2–8 °C, sealed and away from light.</figcaption>}
+              {isPowder && (
+                <figcaption className="mt-3 text-body">
+                  {isCopper ? "It dissolves blue in water. Keep the vial at 2–8 °C, sealed and away from light." : "Keep it at 2–8 °C, sealed and away from light."}
+                </figcaption>
+              )}
               {blueSerum && <figcaption className="mt-3 text-body">Pressed in after cleansing, before moisturiser.</figcaption>}
             </figure>
           </section>

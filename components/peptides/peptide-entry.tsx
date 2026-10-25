@@ -5,6 +5,7 @@ import { PEPTIDE_CLASSES } from "@/lib/constants";
 import type { Peptide } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 import { EvidenceMeter } from "./evidence-meter";
+import { PeptideStrand } from "./peptide-strand";
 
 const SHORT_CLASS: Record<string, string> = {
   signal: "Signal",
@@ -49,8 +50,9 @@ export function SpecimenThumb({
 }
 
 /*
- * One entry in the field guide: the specimen it is found in, the name, INCI and class in words,
- * one line of what it does, and the evidence grade.
+ * One entry in the field guide: the specimen it is found in, the name, INCI and class in words, the
+ * peptide drawn from its sequence, one line of what it does, and the evidence grade. The drawing
+ * carries the monograph's view-transition name, so it grows into the drawing at the head of its page.
  */
 export function PeptideEntry({
   peptide,
@@ -58,7 +60,9 @@ export function PeptideEntry({
   index = 0,
   compact = false,
 }: {
-  peptide: Pick<Peptide, "slug" | "name" | "inciName" | "peptideClass" | "summary" | "evidenceLevel" | "typicalConcentration">;
+  peptide: Pick<Peptide, "slug" | "name" | "inciName" | "peptideClass" | "summary" | "evidenceLevel" | "typicalConcentration"> & {
+    sequence?: string | null;
+  };
   specimen?: Specimen;
   index?: number;
   compact?: boolean;
@@ -78,7 +82,19 @@ export function PeptideEntry({
           <span className="mt-1 block text-body text-ink">
             {peptide.inciName}, a {classShortLabel(peptide.peptideClass).toLowerCase()} peptide
           </span>
-          {!compact && <span className="mt-2 hidden max-w-[60ch] text-body text-ink sm:line-clamp-2">{peptide.summary}</span>}
+          {peptide.sequence && (
+            <PeptideStrand
+              sequence={peptide.sequence}
+              slug={peptide.slug}
+              name={peptide.name}
+              scale={0.34}
+              morph
+              decorative
+              draw="reveal"
+              className="mt-3 w-fit"
+            />
+          )}
+          {!compact && <span className="mt-3 hidden max-w-[60ch] text-body text-ink sm:line-clamp-2">{peptide.summary}</span>}
         </span>
         <span className="col-span-2 flex flex-col gap-1 lg:col-span-1 lg:items-end lg:text-right">
           <EvidenceMeter level={peptide.evidenceLevel} />

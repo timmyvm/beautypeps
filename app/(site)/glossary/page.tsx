@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Figure, PageHeader, reveal } from "@/components/info/page-header";
+import { PeptideStrand } from "@/components/peptides/peptide-strand";
+import { StrandKey } from "@/components/peptides/sequence-strand";
 import { ButtonLink } from "@/components/ui/button";
 import { GLOSSARY } from "@/lib/content/glossary";
 import { cn } from "@/lib/utils";
@@ -40,15 +42,43 @@ const LETTER_PICTURES: Record<string, { src: string; alt: string; caption: strin
   },
 };
 
+/* Terms that describe something the library draws: the drawing, and what it is of. */
+const DRAWN: Record<string, { sequence: string; slug: string; caption: string }> = {
+  peptide: {
+    sequence: "Lys-Thr-Thr-Lys-Ser",
+    slug: "palmitoyl-pentapeptide-4",
+    caption: "KTTKS, the five amino acids at the heart of Matrixyl",
+  },
+  "peptide-bond": { sequence: "Gly-His", slug: "ghk-cu", caption: "Glycine and histidine, joined by one peptide bond" },
+  palmitoylation: {
+    sequence: "Pal-Gly-His-Lys",
+    slug: "palmitoyl-tripeptide-1",
+    caption: "Palmitoyl Tripeptide-1: GHK with a 16-carbon tail",
+  },
+  acetylation: {
+    sequence: "Ac-Glu-Glu-Met-Gln-Arg-Arg-NH₂",
+    slug: "acetyl-hexapeptide-8",
+    caption: "Acetyl Hexapeptide-8, capped on its first end",
+  },
+  amidation: {
+    sequence: "Met-Pro-D-Phe-Arg-D-Trp-Phe-Lys-Pro-Val-NH₂",
+    slug: "nonapeptide-1",
+    caption: "Nonapeptide-1, with an amide on its last end",
+  },
+  chelation: { sequence: "Gly-His-Lys : Cu²⁺", slug: "ghk-cu", caption: "GHK holding one copper ion" },
+};
+
 function letterOf(term: string) {
-  const first = term.normalize("NFKD").replace(/[^A-Za-z]/g, "").charAt(0).toUpperCase();
+  const first = term
+    .normalize("NFKD")
+    .replace(/[^A-Za-z]/g, "")
+    .charAt(0)
+    .toUpperCase();
   return first || "#";
 }
 
 export default function GlossaryPage() {
-  const sorted = [...GLOSSARY].sort(
-    (a, b) => letterOf(a.term).localeCompare(letterOf(b.term)) || a.term.localeCompare(b.term),
-  );
+  const sorted = [...GLOSSARY].sort((a, b) => letterOf(a.term).localeCompare(letterOf(b.term)) || a.term.localeCompare(b.term));
   const groups = new Map<string, typeof GLOSSARY>();
   for (const t of sorted) {
     const l = letterOf(t.term);
@@ -121,6 +151,27 @@ export default function GlossaryPage() {
                     </dt>
                     <dd className="mt-2">
                       <p className="text-body">{t.definition}</p>
+                      {DRAWN[t.id] && (
+                        <figure className="mt-4">
+                          <PeptideStrand
+                            sequence={DRAWN[t.id].sequence}
+                            slug={DRAWN[t.id].slug}
+                            name={DRAWN[t.id].caption}
+                            size="md"
+                            scale={0.6}
+                            draw="reveal"
+                          />
+                          <figcaption className="mt-2 text-small text-muted">{DRAWN[t.id].caption}</figcaption>
+                        </figure>
+                      )}
+                      {t.id === "amino-acid" && (
+                        <div className="mt-4">
+                          <p className="text-small text-muted">
+                            Drawn across the library as beads, coloured by their side chain:
+                          </p>
+                          <StrandKey className="mt-2" />
+                        </div>
+                      )}
                       {t.links && t.links.length > 0 && (
                         <p className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-body">
                           {t.links.map((l) => (

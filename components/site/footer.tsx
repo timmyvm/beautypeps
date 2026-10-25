@@ -38,6 +38,17 @@ export async function Footer() {
             have not been evaluated by the TGA. The Peptide Library summarises published research and is not medical
             advice. © {year} {settings.storeName}
             {settings.abn ? `, ABN ${settings.abn}` : ""}.
+            <span className="mt-3 block text-small">
+              Chalcanthite crystals:{" "}
+              <a href="https://commons.wikimedia.org/wiki/File:Chalcanthite-cured.JPG" className="underline underline-offset-2">
+                “Chalcanthite-cured” by Ra’ike
+              </a>
+              ,{" "}
+              <a href="https://creativecommons.org/licenses/by-sa/3.0" className="underline underline-offset-2">
+                CC BY-SA 3.0
+              </a>
+              , via Wikimedia Commons.
+            </span>
           </p>
         </div>
 

@@ -176,6 +176,43 @@ async function TrackPageContent({ searchParams }: { searchParams: SearchParams }
         </section>
       )}
 
+      {/* What to do the day it arrives, from the storage guide and the shipping policy */}
+      <section aria-labelledby="arrive-heading" className="mt-28 grid grid-cols-1 gap-10 lg:mt-40 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+        <div className="lg:col-span-7">
+          <h2 id="arrive-heading" className="display-type text-head" data-reveal="">
+            The day it arrives
+          </h2>
+          <ol className="mt-10 grid gap-2">
+            {ARRIVAL.map((step, i) => (
+              <li
+                key={step.title}
+                className={`p-6 sm:p-8 ${ARRIVAL_FIELDS[i % ARRIVAL_FIELDS.length]}`}
+                data-reveal=""
+                style={{ ["--reveal-i" as string]: i + 1 }}
+              >
+                <h3 className="text-lead font-medium">{step.title}</h3>
+                <p className="mt-2 max-w-[52ch] text-body">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+          <Link href="/learn/storing-peptide-powders" className="mt-6 inline-block text-body underline underline-offset-4">
+            The full storage guide for pure actives
+          </Link>
+        </div>
+        <figure className="lg:col-span-4 lg:col-start-9 lg:self-end">
+          <div className="shutter relative aspect-[4/5] overflow-hidden bg-surface-2">
+            <Image
+              src="/images/editorial/cold-chain.webp"
+              alt="Rows of amber vials on a fridge shelf beside a dial thermometer"
+              fill
+              sizes="(min-width: 1024px) 33vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-body text-muted">Pure actives, kept at 2–8 °C once they arrive.</figcaption>
+        </figure>
+      </section>
+
       <JournalShelf
         id="wait-heading"
         title="Before you open the first bottle"
@@ -185,3 +222,20 @@ async function TrackPageContent({ searchParams }: { searchParams: SearchParams }
     </div>
   );
 }
+
+const ARRIVAL_FIELDS = ["bg-field-frost", "bg-field-stone", "bg-field-sapphire text-field-sapphire-ink"];
+
+const ARRIVAL = [
+  {
+    title: "Bring it inside",
+    text: "Every formula is packed for normal transit, but like most actives, peptides prefer to stay below 25 °C. In summer, bring the parcel in promptly.",
+  },
+  {
+    title: "Check the seal and the label",
+    text: "For pure actives, check the seal and crimp cap are intact, and that the label matches the certificate of analysis: product, batch number and date.",
+  },
+  {
+    title: "Powders go in the fridge",
+    text: "Move pure peptide powders into the fridge straight away, at 2–8 °C and in the dark. Serums keep closed, out of direct sun and below 25 °C.",
+  },
+];

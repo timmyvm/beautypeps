@@ -53,7 +53,7 @@ export function SequenceScene({ beats }: { beats: SequenceBeat[] }) {
         if (!visibleAtRest) {
           gsap.set(p.tile, { clipPath: "inset(100% 0% 0% 0%)" });
           gsap.set(p.img, { scale: 1.15 });
-          gsap.set(p.figure, { yPercent: 105 });
+          gsap.set(p.figure, { autoAlpha: 0, y: 48 });
           gsap.set([...p.copy, strands], { autoAlpha: 0, y: 32 });
         }
         gsap.set(p.bonds, { strokeDasharray: 1, strokeDashoffset: 1 });
@@ -64,8 +64,12 @@ export function SequenceScene({ beats }: { beats: SequenceBeat[] }) {
         if (!visibleAtRest) {
           tl.to(p.tile, { clipPath: "inset(0% 0% 0% 0%)", duration: step * 0.32, ease: "power2.inOut" }, inAt)
             .to(p.img, { scale: 1, duration: step * 0.45, ease: "power2.out" }, inAt)
-            .to(p.figure, { yPercent: 0, duration: step * 0.28, ease: "power3.out" }, inAt + step * 0.08)
-            .to([...p.copy, strands], { autoAlpha: 1, y: 0, duration: step * 0.22, stagger: step * 0.04, ease: "power2.out" }, inAt + step * 0.14);
+            .to(p.figure, { autoAlpha: 1, y: 0, duration: step * 0.24, ease: "power3.out" }, inAt + step * 0.06)
+            .to(
+              [...p.copy, strands],
+              { autoAlpha: 1, y: 0, duration: step * 0.22, stagger: step * 0.04, ease: "power2.out" },
+              inAt + step * 0.14,
+            );
         }
         tl.to(p.bonds, { strokeDashoffset: 0, duration: step * 0.3, ease: "power1.inOut" }, inAt + step * 0.18).to(
           p.beads,
@@ -73,12 +77,12 @@ export function SequenceScene({ beats }: { beats: SequenceBeat[] }) {
           inAt + step * 0.22,
         );
 
-        // Leave (all but the last)
+        // Leave (all but the last), wholly gone before the next formula's words arrive, so two never overlap
         if (i < items.length - 1) {
-          const outAt = at + step * 0.8;
-          tl.to(p.figure, { yPercent: -105, duration: step * 0.2, ease: "power2.in" }, outAt).to(
-            [...p.copy, strands],
-            { autoAlpha: 0, y: -24, duration: step * 0.16, ease: "power2.in" },
+          const outAt = at + step * 0.72;
+          tl.to(
+            [p.figure, ...p.copy, strands],
+            { autoAlpha: 0, y: -32, duration: step * 0.14, stagger: step * 0.01, ease: "power2.in" },
             outAt,
           );
         }
@@ -108,10 +112,16 @@ export function SequenceScene({ beats }: { beats: SequenceBeat[] }) {
                   className={cn("seq-tile specimen group relative block overflow-hidden", TILE_BG[b.tone])}
                   aria-label={b.product}
                 >
-                  <Image src={b.image} alt={b.product} fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-contain p-[8%]" />
+                  <Image
+                    src={b.image}
+                    alt={b.product}
+                    fill
+                    sizes="(min-width: 1024px) 42vw, 100vw"
+                    className="object-contain p-[8%]"
+                  />
                 </Link>
                 <div className="seq-text">
-                  <p className="overflow-hidden">
+                  <p>
                     <span data-figure="" className="seq-figure block display-type tabular">
                       {b.figure}
                     </span>

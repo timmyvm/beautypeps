@@ -95,29 +95,44 @@ export default async function ContactPage() {
         </section>
       </div>
 
-      <section className="mt-24 md:mt-32" aria-labelledby="studio-heading">
-        <div className="mb-10 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <h2 id="studio-heading" className="display-type text-head lg:col-span-7" data-reveal="">
+      {/* The place: the studio window in Melbourne, then the bench and the packing table */}
+      <section className="mt-24 grid grid-cols-1 gap-10 md:mt-32 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="studio-heading">
+        <figure className="lg:col-span-5">
+          <div className="shutter relative aspect-[4/5] overflow-hidden bg-surface-2">
+            <Image
+              src="/images/editorial/melbourne-sill.webp"
+              alt="Amber vials and a beaker on a bluestone window sill, the Melbourne skyline outside"
+              fill
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <figcaption className="mt-3 text-body text-muted" data-reveal="">
+            The studio window, in Melbourne. Messages are read a few steps from here.
+          </figcaption>
+        </figure>
+        <div className="flex flex-col lg:col-span-6 lg:col-start-7">
+          <h2 id="studio-heading" className="display-type text-head" data-reveal="">
             Where your message lands
           </h2>
-          <p className="text-body lg:col-span-4 lg:col-start-9 lg:self-end" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+          <p className="mt-6 max-w-[44ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
             The same small team that weighs the actives, mixes each batch and packs your parcel reads every message.
           </p>
+          <ul className="mt-12 grid grid-cols-2 gap-3 lg:mt-auto lg:pt-12">
+            {STUDIO.map((photo, i) => (
+              <li key={photo.src}>
+                <figure>
+                  <div className="shutter relative aspect-[4/5] overflow-hidden bg-surface-2">
+                    <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
+                  </div>
+                  <figcaption className="mt-3 text-body text-muted" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
+                    {photo.caption}
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-12">
-          {STUDIO.map((photo, i) => (
-            <li key={photo.src} className={photo.span}>
-              <figure>
-                <div className={`shutter relative overflow-hidden bg-surface-2 ${photo.aspect}`}>
-                  <Image src={photo.src} alt={photo.alt} fill sizes={photo.sizes} className="object-cover" />
-                </div>
-                <figcaption className="mt-3 text-body text-muted" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
-                  {photo.caption}
-                </figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
       </section>
     </div>
   );
@@ -128,25 +143,11 @@ const STUDIO = [
     src: "/images/editorial/lab.webp",
     alt: "The formulation bench in the Beauty Peps studio",
     caption: "The bench where every batch is mixed.",
-    span: "col-span-2 md:col-span-6",
-    aspect: "aspect-[3/2]",
-    sizes: "(min-width: 768px) 50vw, 100vw",
-  },
-  {
-    src: "/images/editorial/actives.webp",
-    alt: "Vials of pure peptide powder lined up beside a scale",
-    caption: "Pure actives, weighed to the milligram.",
-    span: "md:col-span-3",
-    aspect: "aspect-[4/5]",
-    sizes: "(min-width: 768px) 25vw, 50vw",
   },
   {
     src: "/images/editorial/unboxing.webp",
     alt: "A packed parcel of three serums in tissue paper",
     caption: "Packed by hand in Melbourne.",
-    span: "md:col-span-3",
-    aspect: "aspect-[4/5]",
-    sizes: "(min-width: 768px) 25vw, 50vw",
   },
 ];
 

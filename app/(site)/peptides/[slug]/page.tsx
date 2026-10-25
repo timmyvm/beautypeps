@@ -7,9 +7,12 @@ import { Chapter } from "@/components/info/chapter";
 import { JsonLd, siteUrl } from "@/components/info/json-ld";
 import { Figure, PictureLink, reveal } from "@/components/info/page-header";
 import { Markdown } from "@/components/markdown";
+import { LoopVideo } from "@/components/site/loop-video";
 import { ClassDiagram, classDiagramTitle } from "@/components/peptides/class-diagram";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
 import { classLabel, classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
+import { describeSequence, PeptideStrand } from "@/components/peptides/peptide-strand";
+import { StrandKey } from "@/components/peptides/sequence-strand";
 import { ProductCard, SpecimenTile, toneFor } from "@/components/product/product-card";
 import { ButtonLink } from "@/components/ui/button";
 import { concernLabel } from "@/lib/constants";
@@ -101,12 +104,27 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
       />
 
       <header className="container-bp pt-8 lg:pt-10">
-        <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/peptides", label: "Peptide library" }, { label: peptide.name }]} />
+        <Breadcrumbs
+          items={[{ href: "/", label: "Home" }, { href: "/peptides", label: "Peptide library" }, { label: peptide.name }]}
+        />
         <div className="mt-8 grid gap-10 lg:mt-12 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
           <div className="lg:col-span-7 lg:pb-2">
             <h1 className="display-type text-[10.5vw] text-ink sm:text-[clamp(2.75rem,5.9vw,5.75rem)]">{peptide.name}</h1>
             <p className="mt-5 max-w-[40ch] text-lead text-ink">{descriptor}</p>
-            <p className="mt-8 max-w-[56ch] text-body text-ink">{peptide.summary}</p>
+            {/* The specimen drawing: the small strand in the library grows into this one */}
+            {peptide.sequence && (
+              <PeptideStrand
+                sequence={peptide.sequence}
+                slug={peptide.slug}
+                name={peptide.name}
+                size="md"
+                scale={1.1}
+                morph
+                interactive
+                caption={`${describeSequence(peptide.sequence)}. Choose a bead to name it.`}
+                className="mt-10"
+              />
+            )}
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5">
               <EvidenceMeter level={evidence.level} size="lg" />
               {products.length > 0 && (
@@ -136,18 +154,32 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
         </div>
       </header>
 
-      <section aria-labelledby="facts-title" className="mt-20 bg-surface py-16 lg:mt-32 lg:py-24">
-        <div className="container-bp">
-          <h2 id="facts-title" className="display-type text-head" {...reveal(0)}>
-            The facts
-          </h2>
-          <dl className="mt-10 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-8 lg:grid-cols-4" {...reveal(1)}>
+      <section aria-labelledby="facts-title" className="mt-20 bg-surface py-16 lg:mt-28 lg:py-24">
+        <div className="container-bp grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-5">
+            <h2 id="facts-title" className="display-type text-head" {...reveal(0)}>
+              The facts
+            </h2>
+            <p className="mt-6 max-w-[44ch] text-lead text-ink" {...reveal(1)}>
+              {peptide.summary}
+            </p>
+            {peptide.sequence && (
+              <div className="mt-8" {...reveal(2)}>
+                <p className="text-small text-muted">In the drawing</p>
+                <StrandKey className="mt-2" />
+              </div>
+            )}
+          </div>
+          <dl
+            className="grid grid-cols-2 content-start gap-x-[var(--gutter)] gap-y-8 lg:col-span-6 lg:col-start-7 lg:pt-3"
+            {...reveal(1)}
+          >
             {facts
               .filter(([, v]) => v)
               .map(([k, v]) => (
-                <div key={k} className={cn("min-w-0", String(v).length > 28 && "col-span-2 sm:col-span-1")}>
+                <div key={k} className={cn("min-w-0", String(v).length > 28 && "col-span-2")}>
                   <dt className="text-small text-muted">{k}</dt>
-                  <dd className={k === "Sequence" ? "mt-1 text-body break-words" : "mt-1 text-body"}>{v}</dd>
+                  <dd className={k === "Sequence" ? "mt-1 text-lead break-words" : "mt-1 text-lead"}>{v}</dd>
                 </div>
               ))}
           </dl>
@@ -225,13 +257,21 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
             title="How to use it"
             aside={
               <Figure ratio="aspect-[4/5]" className="mt-10 hidden max-w-[420px] lg:block">
-                <Image
-                  src="/images/editorial/ritual.webp"
-                  alt="A woman pressing serum from a glass dropper onto her cheekbone"
-                  fill
-                  sizes="30vw"
-                  className="drift object-cover object-[50%_30%]"
-                />
+                {peptide.slug === "ghk-cu" ? (
+                  <LoopVideo
+                    src="/video/applied.mp4"
+                    poster="/video/applied-poster.webp"
+                    label="Fingertips pressing two drops of blue copper peptide serum into the back of a hand"
+                  />
+                ) : (
+                  <Image
+                    src="/images/editorial/ritual.webp"
+                    alt="A woman pressing serum from a glass dropper onto her cheekbone"
+                    fill
+                    sizes="30vw"
+                    className="drift object-cover object-[50%_30%]"
+                  />
+                )}
               </Figure>
             }
           >
@@ -274,7 +314,12 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
                     {study.year ? `, ${study.year}` : ""}
                   </p>
                   {study.url && (
-                    <a href={study.url} target="_blank" rel="noreferrer noopener" className="mt-1 inline-block underline underline-offset-4">
+                    <a
+                      href={study.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="mt-1 inline-block underline underline-offset-4"
+                    >
                       Read the study<span className="sr-only"> (opens in a new tab)</span>
                     </a>
                   )}
@@ -282,10 +327,10 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
               ))}
             </ol>
             <p className="mt-12 bg-surface p-6 text-body sm:p-8">
-              Educational information, not medical advice. This monograph summarises published cosmetic research on
-              topical {peptide.name}; results in studies are averages and yours will vary. Our products are cosmetics
-              for external use only. Patch test anything new, and talk to your doctor or dermatologist about skin
-              concerns, or if you are pregnant or breastfeeding.
+              Educational information, not medical advice. This monograph summarises published cosmetic research on topical{" "}
+              {peptide.name}; results in studies are averages and yours will vary. Our products are cosmetics for external use
+              only. Patch test anything new, and talk to your doctor or dermatologist about skin concerns, or if you are pregnant
+              or breastfeeding.
             </p>
           </Chapter>
         )}

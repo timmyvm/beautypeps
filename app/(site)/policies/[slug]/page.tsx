@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 
 type Params = Promise<{ slug: string }>;
 
+const CHAPTER = "display-type max-w-[18ch] text-[calc(var(--text-body)*1.75)] leading-[1.1] lg:sticky lg:top-8";
+
 const PICTURES: Record<string, { src: string; alt: string }> = {
   shipping: { src: "/images/editorial/unboxing.webp", alt: "An opened box holding three serums in tissue paper" },
   returns: { src: "/images/editorial/hero.webp", alt: "Three peptide serums on a travertine plinth in soft afternoon light" },
@@ -89,22 +91,27 @@ async function PolicyPageView({ slug }: { slug: string }) {
           <section
             key={part.title ?? i}
             aria-label={part.title ?? policy.title}
-            className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]"
+            className="mt-16 grid gap-5 lg:mt-24 lg:grid-cols-12 lg:gap-[var(--gutter)]"
           >
+            {/* Set like the Journal's chapters: the heading holds its place while its clause is read */}
             {part.title && (
-              <h2 className="text-lead font-medium lg:col-span-4" {...reveal(0)}>
-                {part.title}
-              </h2>
+              <div className="lg:col-span-4">
+                <h2 className={CHAPTER} {...reveal(0)}>
+                  {part.title.replace(" & ", " and ")}
+                </h2>
+              </div>
             )}
             <div className="min-w-0 lg:col-span-7 lg:col-start-6" {...reveal(1)}>
               <Markdown className="[&>:first-child]:mt-0">{part.body}</Markdown>
             </div>
           </section>
         ))}
-        <section aria-label="Questions" className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-          <h2 className="text-lead font-medium lg:col-span-4" {...reveal(0)}>
-            Questions
-          </h2>
+        <section aria-label="Questions" className="mt-16 grid gap-5 lg:mt-24 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <div className="lg:col-span-4">
+            <h2 className={CHAPTER} {...reveal(0)}>
+              Questions
+            </h2>
+          </div>
           <p className="text-body lg:col-span-7 lg:col-start-6">
             Email{" "}
             <a href={`mailto:${settings.supportEmail}`} className="underline underline-offset-4">

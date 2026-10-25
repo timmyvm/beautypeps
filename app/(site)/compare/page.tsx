@@ -5,6 +5,8 @@ import { Figure, PageHeader, PictureLink, reveal } from "@/components/info/page-
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
 import { ButtonLink } from "@/components/ui/button";
 import { classShortLabel, SpecimenThumb } from "@/components/peptides/peptide-entry";
+import { PeptideStrand } from "@/components/peptides/peptide-strand";
+import { StrandKey } from "@/components/peptides/sequence-strand";
 import { concernLabel } from "@/lib/constants";
 import { PAIRINGS, PEPTIDE_USAGE } from "@/lib/content/compare";
 import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
@@ -66,12 +68,16 @@ export default async function ComparePage() {
           </h2>
           <p className="max-w-[48ch] text-body text-muted">Choose a name for the full monograph.</p>
         </div>
+        <div className="mt-8 flex flex-col gap-3 bg-surface px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+          <p className="text-body">Each peptide is drawn from its sequence, one bead for each amino acid.</p>
+          <StrandKey />
+        </div>
 
         {rows.length === 0 ? (
           <p className="mt-10 bg-surface px-6 py-14 text-lead">The chart fills in as monographs are published.</p>
         ) : (
           <>
-            <div className="-mx-4 mt-10 hidden xl:block">
+            <div className="-mx-4 mt-6 hidden xl:block">
               <table className="w-full border-separate border-spacing-0 text-left text-body">
                 <thead>
                   <tr className="[&>th]:sticky [&>th]:top-0 [&>th]:z-10 [&>th]:bg-surface [&>th]:px-4 [&>th]:py-4 [&>th]:font-medium">
@@ -101,6 +107,9 @@ export default async function ComparePage() {
                             <span className="block text-small text-muted">
                               {p.inciName}, {classShortLabel(p.peptideClass).toLowerCase()}
                             </span>
+                            {p.sequence && (
+                              <PeptideStrand sequence={p.sequence} slug={p.slug} name={p.name} scale={0.3} decorative className="mt-2.5" />
+                            )}
                           </span>
                         </Link>
                       </th>
@@ -123,7 +132,7 @@ export default async function ComparePage() {
               </table>
             </div>
 
-            <ol className="-mx-4 mt-10 xl:hidden">
+            <ol className="-mx-4 mt-6 xl:hidden">
               {rows.map((p, i) => (
                 <li
                   key={p.id}
@@ -140,6 +149,9 @@ export default async function ComparePage() {
                       <span className="block text-small text-muted">
                         {p.inciName}, {classShortLabel(p.peptideClass).toLowerCase()}
                       </span>
+                      {p.sequence && (
+                        <PeptideStrand sequence={p.sequence} slug={p.slug} name={p.name} scale={0.3} decorative className="mt-2.5" />
+                      )}
                     </span>
                   </Link>
                   <p className="mt-4 text-body">{p.bestFor}</p>

@@ -7,6 +7,7 @@ import { ClassDiagram } from "@/components/peptides/class-diagram";
 import { EvidenceMeter } from "@/components/peptides/evidence-meter";
 import { LoopVideo } from "@/components/site/loop-video";
 import { classShortLabel, PeptideEntry } from "@/components/peptides/peptide-entry";
+import { StrandKey } from "@/components/peptides/sequence-strand";
 import { CONCERNS, concernLabel, PEPTIDE_CLASSES } from "@/lib/constants";
 import { EVIDENCE_LEVELS } from "@/lib/content/evidence";
 import { getPeptideSpecimens, getPublishedPeptides } from "@/lib/queries/content";
@@ -70,8 +71,8 @@ async function PeptideLibraryPageContent({ searchParams }: { searchParams: Searc
         figure={
           <Figure ratio="aspect-[4/3]">
             <Image
-              src="/images/editorial/actives.webp"
-              alt="A row of amber vials of freeze-dried peptide powder on a travertine bench beside a scale"
+              src="/images/editorial/specimen-drawer.webp"
+              alt="A shallow oak drawer divided into twelve compartments, each holding one bottle, vial or tube of the range with a blank tag"
               fill
               loading="eager"
               fetchPriority="high"
@@ -132,8 +133,13 @@ async function PeptideLibraryPageContent({ searchParams }: { searchParams: Searc
           </ChipRow>
         </div>
 
+        <div className="mt-10 flex flex-col gap-3 bg-surface px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+          <p className="text-body">Every peptide is drawn from its sequence, one bead for each amino acid.</p>
+          <StrandKey />
+        </div>
+
         {peptides.length > 0 ? (
-          <ol className="-mx-3 mt-10 sm:-mx-4">
+          <ol className="-mx-3 mt-4 sm:-mx-4">
             {peptides.map((p, i) => (
               <PeptideEntry key={p.id} peptide={p} specimen={specimens[p.slug]} index={i} />
             ))}
