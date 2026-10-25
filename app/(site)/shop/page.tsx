@@ -266,7 +266,10 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
         )}
       </p>
 
-      <section className="mt-6" aria-label="Formulas">
+      <section className="mt-6" aria-labelledby="results-heading">
+        <h2 id="results-heading" className="sr-only">
+          Formulas
+        </h2>
         <ViewTransition key={resultsKey} name="shop-results" share="auto" enter="auto" default="none">
           {products.length === 0 ? (
             <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" data-reveal="">

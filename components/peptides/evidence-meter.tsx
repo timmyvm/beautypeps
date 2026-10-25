@@ -20,7 +20,7 @@ export function EvidenceMeter({
 }) {
   const e = evidenceLevel(level);
   return (
-    <span className={cn("inline-flex items-center gap-3", className)} aria-label={`Evidence grade ${e.level} of 5: ${e.label}`}>
+    <span role="img" className={cn("inline-flex items-center gap-3", className)} aria-label={`Evidence grade ${e.level} of 5: ${e.label}`}>
       <span className="flex items-center gap-1" aria-hidden>
         {[1, 2, 3, 4, 5].map((i) => (
           <span

@@ -278,7 +278,8 @@ export function SequenceStrand({
                     points={[...Array(6)]
                       .map((_, k) => {
                         const a = (Math.PI / 3) * k;
-                        return `${last.x + R + 18 + 26 + Math.cos(a) * 24},${last.y + Math.sin(a) * 24}`;
+                        // Rounded, so the server's and the browser's trigonometry print the same attribute
+                        return `${(last.x + R + 18 + 26 + Math.cos(a) * 24).toFixed(2)},${(last.y + Math.sin(a) * 24).toFixed(2)}`;
                       })
                       .join(" ")}
                     fill="none"

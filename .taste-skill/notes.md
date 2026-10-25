@@ -140,3 +140,66 @@ App screens (account, admin) dealt their own app style: achromatic-ledger, seed 
 Regression on the final build: 104 routes × 2 widths × (public, customer, admin) all 200 with no
 console errors or phone overflow; end-to-end guest checkout → tracking → admin paid/shipped →
 customer sees tracking → register links guest order: pass.
+
+## Round 3: "upgrade it, design it" (October 2026)
+
+Same dealt direction (the specimen catalogue); this round adds signature moves, scroll scenes, new footage
+and shop mechanics, carried through every page.
+
+### What was added
+- **The sequence drawing** (`components/peptides/sequence-strand.tsx`, `lib/content/sequence.ts`): every
+  peptide drawn from its real sequence, one bead per amino acid, coloured by class (water-shy stone,
+  water-loving frost, positive sapphire, negative ink, the copper ion in the mark's copper). Interactive
+  where it is the subject (choose a bead to name it). It is the field guide's specimen drawing: hero,
+  product pages, the library rows, monographs, /compare, /science, articles, search results, routine result.
+- **Three home scenes** on the stage in `components/motion/use-scene.ts` (GSAP + ScrollTrigger, native
+  scroll, finished composition at rest): "Inside the percentage" (1% / 10% / 8% and what each is made of),
+  "Blue by copper" (a run of frames from the mineral to the bottle), "From powder to skin" (the applied
+  clip opens to the whole screen with the 8–12 weeks statement). /science has a fourth: six real peptides
+  weighed against the 500-dalton line.
+- **Scenes run only at ≥1024px.** Below that (and with reduced motion) each is its finished composition;
+  the copper run becomes a two-column plate on phones and tablets.
+- **Shop mechanics:** slide-over bag (`components/shop/bag.tsx`) opened by every add, with the
+  free-shipping meter and two suggestions; instant search (`components/site/search.tsx`, index at
+  `/search-index`, "/" and ⌘K); "Complete the pair" on product pages; "Often added with it" in the cart,
+  marking the ones that make shipping free; routine builder adds the whole routine.
+- **View transitions:** a catalogue tile morphs into the product page's specimen (`specimen-<slug>`), a
+  library strand into the monograph's drawing (`strand-<slug>`); the shop crossfades on filter changes.
+- **New footage and stills (Higgsfield):** ghk-cu-light, powder-dissolve (blue), applied, white-dissolve
+  (pure white powder, for the non-copper pure actives); stills ghk-cu-plinth, specimen-drawer,
+  melbourne-sill, cold-chain, collar-macro. Found: chalcanthite (CC BY-SA 3.0, Ra'ike, Wikimedia Commons),
+  credited in the footer.
+
+### Inspector, final (FAIL / WARN)
+The stock inspector walks only 11 screens; the home page is ~22 with its scenes, so the home and scene
+pages were measured with a copy whose cap is 30 screens (stricter, not looser).
+
+| Page | FAIL / WARN | WARNs |
+| --- | --- | --- |
+| / | 0 / 1 | card-rows (the catalogue is the archive) |
+| /shop | 0 / 1 | no-footage |
+| /products/ghk-cu-copper-peptide-serum, /products/copper-ritual-kit | 0 / 0 | |
+| /products/matrixyl-pure-powder, /products/ghk-cu-pure-powder | 0 / 0 | |
+| /peptides, /peptides/ghk-cu, /science | 0 / 0 | |
+| /peptides/acetyl-hexapeptide-8 | 0 / 1 | no-footage |
+| /compare | 0 / 2 | no-footage; off-centre at 768 (17 / 43px) |
+| /glossary | 0 / 2 | first-action (a glossary has none); no-footage |
+| /about, /routine-builder | 0 / 0 | |
+| /learn, /track, /policies/shipping | 0 / 1 | no-footage |
+| /learn/what-are-peptides | 0 / 2 | first-action; no-footage |
+| /learn/copper-peptides-ghk-cu-guide | 0 / 1 | first-action |
+| /faq | 0 / 3 | card-rows (the index cards); no-footage; off-centre (right 56px) |
+| /contact | 0 / 3 | no-footage; off-centre (right 48px); first-action at 768/390 |
+| /cart, /login | 0 / 2 | no-footage; still-page (short task pages) |
+| /search, 404 | 0 / 1 | no-footage |
+
+### Lighthouse (production build, mobile emulation)
+home 84 / 100 / 100 / 100 · shop 87 / 98 / 100 / 92 · product 95 / 100 / 100 / 100 · peptides 90 / 96 / 100 / 100 ·
+monograph 96 / 97 / 100 / 100 · science 96 / 100 / 100 / 100 · article 97 / 100 / 100 / 100 (perf / a11y /
+best practice / SEO). After the run: evidence meters got role="img" and the shop results an h2, which fixes
+the a11y misses; the shop's SEO 92 is Lighthouse not seeing Next's streamed metadata (bots get it blocking).
+
+### Still short
+1. Home LCP is ~4s under Lighthouse's mobile throttling (GSAP and three scenes); 84 performance.
+2. /compare and /faq / /contact keep a small right-margin drift at some widths.
+3. Reviews are seeded demo reviews until real ones exist.
