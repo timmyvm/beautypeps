@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
-import { QuantityStepper } from "@/components/product/add-to-cart";
+import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { SpecimenTile, toneFor } from "@/components/product/product-card";
 import { removeFromCart, updateCartQuantity } from "@/lib/actions/cart";
 import { formatMoney } from "@/lib/format";

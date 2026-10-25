@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense, type ComponentProps } from "react";
+import { Suspense, ViewTransition, type ComponentProps } from "react";
 import { JsonLd, siteUrl } from "@/components/info/json-ld";
 import { Markdown } from "@/components/markdown";
+import { SequenceStrand, StrandKey } from "@/components/peptides/sequence-strand";
 import { AddToCart, StickyAddToCart } from "@/components/product/add-to-cart";
+import { CompleteThePair } from "@/components/product/complete-the-pair";
 import { PeptideRows } from "@/components/product/peptide-chip-card";
-import { SpecimenTile, toneFor } from "@/components/product/product-card";
+import { productFact, SpecimenTile, toneFor } from "@/components/product/product-card";
 import { ReviewsSection } from "@/components/product/reviews-section";
 import { WishlistButton } from "@/components/product/wishlist-button";
 import { LoopVideo } from "@/components/site/loop-video";
@@ -30,8 +32,17 @@ import { getSettings } from "@/lib/settings";
 
 type Props = { params: Promise<{ slug: string }> };
 
-// One heading size for this page: the product name and every section heading.
-const HEAD = "display-type text-[clamp(1.75rem,1rem+2.6vw,3.5rem)]";
+// The product name holds its half of the first screen; section headings, two or three words each, set larger.
+const TITLE = "display-type text-[clamp(1.75rem,1rem+2.6vw,3.5rem)]";
+const HEAD = "display-type text-[clamp(2.25rem,1.1rem+3.4vw,4.75rem)]";
+// The lead active's amount, set as the page's one figure.
+const FIGURE = "display-type tabular text-[clamp(4.5rem,1rem+11vw,11.5rem)] leading-[0.92] tracking-[-0.045em]";
+
+/** "8% complex" → ["8%", "complex"]; "1 g" → ["1 g", ""]. */
+function splitAmount(amount: string): [string, string] {
+  const m = amount.match(/^([\d.,]+\s?(?:%|mg|g|mL))\s*(.*)$/);
+  return m ? [m[1], m[2]] : [amount, ""];
+}
 
 /** Every active formula is prerendered at build; one added later is rendered on its first visit and kept. */
 export async function generateStaticParams() {
@@ -85,6 +96,18 @@ async function ProductView({ slug }: { slug: string }) {
   const lead = product.keyActives[0];
   const leadPeptide = peptides[0];
   const isCopper = product.peptideSlugs.includes("ghk-cu");
+  const category = product.category?.slug;
+  const isPowder = category === "pure-actives";
+  // The blue GHK-Cu serum itself is in these, so its pictures are honest here.
+  const blueSerum = product.slug === "ghk-cu-copper-peptide-serum" || product.slug === "copper-ritual-kit";
+  const drawn = peptides.filter((p) => p.sequence);
+  const figurePeptides = product.peptideSlugs.length <= 2 ? drawn : drawn.slice(0, 1);
+  const [figure, figureRest] = lead ? splitAmount(lead.amount) : ["", ""];
+  const COLLAR = "/images/editorial/collar-macro.webp";
+  const thumbs = [...new Set([product.image, ...(product.slug === "ghk-cu-copper-peptide-serum" ? [COLLAR] : []), ...photos])].slice(0, 3);
+  const pair = product.stock > 0 ? related.find((r) => r.stock > 0) : undefined;
+  const others = related.filter((r) => r.id !== pair?.id);
+  const sharedConcerns = pair ? product.concerns.filter((c) => pair.concerns?.includes(c)).slice(0, 2) : [];
   const base = siteUrl();
   const url = `${base}/products/${product.slug}`;
   const abs = (src: string) => (src.startsWith("http") ? src : `${base}${src}`);
@@ -184,19 +207,22 @@ async function ProductView({ slug }: { slug: string }) {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-[var(--gutter)]">
           <div className="lg:col-span-6 lg:row-start-1">
             <div className="shutter-now">
-              <SpecimenTile
-                product={product}
-                tone={toneFor(product.slug)}
-                priority
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="aspect-[4/5] w-full md:aspect-[4/3] lg:aspect-auto lg:h-[min(80vh,860px)]"
-              />
+              {/* The catalogue tile of this formula morphs into this one on the way in */}
+              <ViewTransition name={`specimen-${product.slug}`} share="morph" default="none">
+                <SpecimenTile
+                  product={product}
+                  tone={toneFor(product.slug)}
+                  priority
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="aspect-[4/5] w-full md:aspect-[4/3] lg:aspect-auto lg:h-[min(80vh,860px)]"
+                />
+              </ViewTransition>
             </div>
           </div>
 
           <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pl-[4%]">
             <div className="lg:sticky lg:top-8">
-              <h1 className={HEAD}>{product.name}</h1>
+              <h1 className={TITLE}>{product.name}</h1>
               {product.subtitle && <p className="mt-4 max-w-[40ch] text-lead">{product.subtitle}</p>}
 
               <p className="mt-6 flex flex-wrap items-baseline gap-x-3">
@@ -210,8 +236,11 @@ async function ProductView({ slug }: { slug: string }) {
                 {lead && (
                   <div>
                     <dt className="sr-only">Lead active</dt>
-                    <dd>
-                      <span className="font-medium">{lead.amount}</span> {lead.name}
+                    <dd className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span>
+                        <span className="font-medium">{lead.amount}</span> {lead.name}
+                      </span>
+                      {drawn[0]?.sequence && <SequenceStrand sequence={drawn[0].sequence} size="sm" label={drawn[0].name} />}
                     </dd>
                   </div>
                 )}
@@ -277,17 +306,23 @@ async function ProductView({ slug }: { slug: string }) {
               )}
             </div>
           </div>
-          {photos.length > 0 && (
+          {thumbs.length > 0 && (
             <div className="lg:col-span-6 lg:row-start-2">
               <ul className="grid grid-cols-3 gap-2" aria-label="Photographs">
-                {photos.slice(0, 3).map((src, i) => (
-                  <li key={src + i} className="relative aspect-square overflow-hidden bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
+                {thumbs.map((src, i) => (
+                  <li key={src + i} className="group relative aspect-square overflow-hidden bg-surface" data-reveal="" style={{ ["--reveal-i" as string]: i }}>
                     <Image
                       src={src}
-                      alt={i === 0 ? `${product.name}, photographed on its stone plinth` : `${product.name}: detail`}
+                      alt={
+                        i === 0
+                          ? `${product.name}, photographed on its stone plinth`
+                          : src === COLLAR
+                            ? "The brushed copper collar of the bottle above the blue serum"
+                            : `${product.name}: detail`
+                      }
                       fill
                       sizes="(min-width: 1024px) 16vw, 33vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                     />
                   </li>
                 ))}
@@ -306,14 +341,40 @@ async function ProductView({ slug }: { slug: string }) {
           </div>
         </section>
 
-        {/* What's in it: the actives as a real table, the specifics on a stone field */}
+        {/* What's in it: the lead amount set as one big figure with the peptide drawn beside it; the actives
+            as a real table and the specifics on a stone field */}
         {(product.keyActives.length > 0 || specs.length > 0 || product.ingredients) && (
           <section className="mt-32 lg:mt-48" aria-labelledby="inside-heading">
             <h2 id="inside-heading" className={HEAD} data-reveal="">
               What&apos;s in it
             </h2>
-            <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-[var(--gutter)]">
-              <div className="lg:col-span-7" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+            <div className="mt-12 grid grid-cols-1 gap-14 lg:mt-16 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+              {lead && (
+                <div className="lg:col-span-5" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+                  <p className={FIGURE}>{figure}</p>
+                  <p className="mt-4 max-w-[30ch] text-lead font-medium">
+                    {lead.name}
+                    {figureRest ? `, ${figureRest}` : ""}
+                  </p>
+                  {lead.note && <p className="mt-2 max-w-[44ch] text-body">{lead.note}</p>}
+                  {figurePeptides.length > 0 && (
+                    <div className="mt-10 space-y-8">
+                      {figurePeptides.map((p) => (
+                        <SequenceStrand
+                          key={p.slug}
+                          sequence={p.sequence!}
+                          size="md"
+                          interactive
+                          label={p.name}
+                          caption={`${p.name}, drawn from its sequence. Choose a bead to name it.`}
+                        />
+                      ))}
+                      <StrandKey />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className={lead ? "lg:col-span-6 lg:col-start-7" : "lg:col-span-7"} data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
                 {product.keyActives.length > 0 && (
                   <table className="tabular w-full text-left text-body">
                     <caption className="sr-only">Key actives and their amounts</caption>
@@ -344,6 +405,16 @@ async function ProductView({ slug }: { slug: string }) {
                     </tbody>
                   </table>
                 )}
+                {specs.length > 0 && (
+                  <dl className="mt-10 grid grid-cols-1 gap-x-8 gap-y-5 bg-field-stone p-6 sm:grid-cols-2 md:p-8">
+                    {specs.map(([k, v]) => (
+                      <div key={k}>
+                        <dt className="text-small">{k}</dt>
+                        <dd className="mt-0.5 text-body font-medium">{v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
                 {product.ingredients && (
                   <div className="mt-10">
                     <h3 className="text-lead font-medium">Full ingredients (INCI)</h3>
@@ -354,16 +425,6 @@ async function ProductView({ slug }: { slug: string }) {
                   </div>
                 )}
               </div>
-              {specs.length > 0 && (
-                <dl className="h-fit space-y-5 bg-field-stone p-6 md:p-8 lg:col-span-4 lg:col-start-9" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
-                  {specs.map(([k, v]) => (
-                    <div key={k}>
-                      <dt className="text-small">{k}</dt>
-                      <dd className="mt-0.5 text-body font-medium">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
             </div>
           </section>
         )}
@@ -377,19 +438,33 @@ async function ProductView({ slug }: { slug: string }) {
               </h2>
               <Markdown className="mt-8">{product.howToUse}</Markdown>
             </div>
-            <div className="relative aspect-[4/5] overflow-hidden bg-surface lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
-              {isCopper ? (
-                <LoopVideo src="/video/copper-drop.mp4" poster="/video/copper-drop-poster.webp" label="Drops of blue copper peptide serum on a brushed copper plate" />
-              ) : (
-              <Image
-                src={photos[1] ?? "/images/editorial/ritual.webp"}
-                alt={photos[1] ? `${product.name}: texture and detail` : "Serum pressed onto the cheekbone from a glass dropper"}
-                fill
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                className="drift object-cover"
-              />
-              )}
-            </div>
+            <figure className="lg:col-span-5 lg:col-start-8" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
+              <div className="relative aspect-[4/5] overflow-hidden bg-surface">
+                {blueSerum ? (
+                  <LoopVideo src="/video/applied.mp4" poster="/video/applied-poster.webp" label="Fingertips pressing two drops of blue serum into the back of a hand" />
+                ) : isPowder ? (
+                  <Image
+                    src="/images/editorial/cold-chain.webp"
+                    alt="Rows of sealed amber vials of white peptide powder on a refrigerator shelf, a dial thermometer beside them"
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="drift object-cover"
+                  />
+                ) : isCopper ? (
+                  <LoopVideo src="/video/copper-drop.mp4" poster="/video/copper-drop-poster.webp" label="Drops of blue copper peptide serum on a brushed copper plate" />
+                ) : (
+                  <Image
+                    src={photos[1] ?? "/images/editorial/ritual.webp"}
+                    alt={photos[1] ? `${product.name}: texture and detail` : "Serum pressed onto the cheekbone from a glass dropper"}
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="drift object-cover"
+                  />
+                )}
+              </div>
+              {isPowder && <figcaption className="mt-3 text-body">Keep it at 2–8 °C, sealed and away from light.</figcaption>}
+              {blueSerum && <figcaption className="mt-3 text-body">Pressed in after cleansing, before moisturiser.</figcaption>}
+            </figure>
           </section>
         )}
 
@@ -403,7 +478,9 @@ async function ProductView({ slug }: { slug: string }) {
                 The whole peptide library
               </Link>
             </div>
-            <PeptideRows peptides={peptides} />
+            {/* A single peptide is already drawn large under "What's in it"; two or more are drawn here, row by row. */}
+            <PeptideRows peptides={peptides.length > 1 ? peptides : peptides.map((p) => ({ ...p, sequence: null }))} />
+            {peptides.length > 1 && drawn.length > 0 && <StrandKey className="mt-6" />}
           </section>
         )}
 
@@ -449,12 +526,28 @@ async function ProductView({ slug }: { slug: string }) {
           </Suspense>
         </div>
 
-        {related.length > 0 && (
+        {pair && (
+          <CompleteThePair
+            first={{ id: product.id, slug: product.slug, name: product.name, image: product.image, price: product.price, fact: productFact(product) }}
+            second={{ id: pair.id, slug: pair.slug, name: pair.name, image: pair.image, price: pair.price, fact: productFact(pair) }}
+            reason={[
+              sharedConcerns.length > 0
+                ? `Both work on ${sharedConcerns.map((c) => concernLabel(c).toLowerCase()).join(" and ")}.`
+                : "Often bought together.",
+              isPowder ? "" : "Apply the thinner texture first and let it settle before the next.",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            headingClass={HEAD}
+          />
+        )}
+
+        {others.length > 0 && (
           <section className="mt-32 lg:mt-48" aria-labelledby="related-heading">
             <h2 id="related-heading" className={`${HEAD} mb-10`} data-reveal="">
-              Pairs well with
+              {pair ? "Also pairs well" : "Pairs well with"}
             </h2>
-            <SpecimenGrid products={related} doubles={false} />
+            <SpecimenGrid products={others} doubles={false} />
           </section>
         )}
       </div>

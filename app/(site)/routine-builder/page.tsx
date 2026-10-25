@@ -56,6 +56,7 @@ export default async function RoutineBuilderPage() {
     featured: p.featured,
   }));
   const peptideNames = Object.fromEntries(peptides.map((p) => [p.slug, p.name]));
+  const sequences = Object.fromEntries(peptides.filter((p) => p.sequence).map((p) => [p.slug, p.sequence as string]));
 
   return (
     <>
@@ -65,7 +66,7 @@ export default async function RoutineBuilderPage() {
         lead="Tell us what you want to work on and we'll match you with the right peptides, morning and night, with the reasoning behind every step."
       />
       <section aria-label="Routine builder" className="container-bp mt-16 lg:mt-24">
-        <RoutineBuilder products={builderProducts} peptideNames={peptideNames} />
+        <RoutineBuilder products={builderProducts} peptideNames={peptideNames} sequences={sequences} />
       </section>
 
       <section aria-labelledby="how-title" className="container-bp mt-28 lg:mt-44">

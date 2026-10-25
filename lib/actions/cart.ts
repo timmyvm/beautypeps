@@ -6,9 +6,67 @@ import { getCart, MAX_QTY_PER_LINE, readCartCookie, writeCartCookie } from "@/li
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { validateDiscountCode } from "@/lib/pricing";
+import { getFeaturedProducts } from "@/lib/queries/catalog";
+import { getSettings } from "@/lib/settings";
 import type { FormState } from "@/lib/utils";
 
 export type CartActionResult = { ok: boolean; message: string; count: number };
+
+export type BagSnapshot = {
+  lines: {
+    id: string;
+    slug: string;
+    name: string;
+    image: string;
+    size: string | null;
+    price: number;
+    quantity: number;
+    max: number;
+    lineTotal: number;
+    limited: boolean;
+  }[];
+  itemCount: number;
+  subtotal: number;
+  freeShippingThreshold: number;
+  standardShipping: number;
+  /** Two formulas worth adding: featured, in stock, not already in the bag. */
+  suggestions: { id: string; slug: string; name: string; image: string; price: number; fact: string }[];
+};
+
+/** Everything the slide-over bag shows, read fresh (live prices and stock). */
+export async function getBagSnapshot(): Promise<BagSnapshot> {
+  const [cart, settings, featured] = await Promise.all([getCart(), getSettings(), getFeaturedProducts(8)]);
+  const inBag = new Set(cart.lines.map((l) => l.product.id));
+  return {
+    lines: cart.lines.map((l) => ({
+      id: l.product.id,
+      slug: l.product.slug,
+      name: l.product.name,
+      image: l.product.image,
+      size: l.product.size,
+      price: l.product.price,
+      quantity: l.quantity,
+      max: Math.min(l.product.stock, MAX_QTY_PER_LINE),
+      lineTotal: l.lineTotal,
+      limited: l.limited,
+    })),
+    itemCount: cart.itemCount,
+    subtotal: cart.subtotal,
+    freeShippingThreshold: settings.freeShippingThreshold,
+    standardShipping: settings.standardShipping,
+    suggestions: featured
+      .filter((p) => !inBag.has(p.id) && p.stock > 0)
+      .slice(0, 2)
+      .map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        image: p.image,
+        price: p.price,
+        fact: p.keyActives?.[0] ? `${p.keyActives[0].amount} ${p.keyActives[0].name}` : (p.subtitle ?? ""),
+      })),
+  };
+}
 
 const countOf = (items: { q: number }[]) => items.reduce((s, i) => s + i.q, 0);
 

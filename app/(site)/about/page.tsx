@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Figure, PageHeader, reveal } from "@/components/info/page-header";
 import { productFact, SpecimenTile, toneFor } from "@/components/product/product-card";
+import { LoopVideo } from "@/components/site/loop-video";
 import { ButtonLink } from "@/components/ui/button";
 import { getActiveProducts } from "@/lib/queries/content";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,29 @@ export const metadata: Metadata = pageMetadata({
     "Beauty Peps is a Melbourne peptide skincare brand built by formulators. We publish our concentrations, make small batches and put education first.",
   path: "/about",
 });
+
+/* How a formula is made, in the order it happens. Every line here is something the site states elsewhere. */
+const KEPT = [
+  {
+    title: "Kept cold",
+    text: "Peptides arrive freeze-dried and keep best sealed, dry and dark at 2 to 8 °C. Pure actives leave us that way, with the same storage advice in their directions.",
+  },
+  {
+    title: "Checked",
+    text: "Every peptide raw material is checked against its certificate of analysis before it is used.",
+  },
+];
+
+const MADE = [
+  {
+    title: "Weighed",
+    text: "Each peptide is weighed to the percentage printed on the label, so the number on the front is the number in the bottle.",
+  },
+  {
+    title: "Dissolved",
+    text: "It goes into a water and glycerin base below 40 °C, because heat breaks peptides down. GHK-Cu turns the base blue as it goes in.",
+  },
+];
 
 const VALUES = [
   {
@@ -28,15 +52,10 @@ const VALUES = [
     title: "Honest about evidence",
     text: "We grade the research behind every peptide in our free library, including where the data is thin.",
   },
-  {
-    title: "Small batches",
-    text: "We make in small runs so what reaches you is fresh, with a batch number on every bottle.",
-  },
 ];
 
 const STANDARDS = [
   { title: "Concentrations on every label", text: "Key active percentages are published on each product page." },
-  { title: "Batch identity checks", text: "Every peptide raw material is checked against its certificate of analysis before use." },
   { title: "Fragrance-free where possible", text: "Our serums contain no added fragrance or essential oils." },
   { title: "Cruelty-free", text: "We never test on animals, and neither do our ingredient suppliers for our products." },
   { title: "Recyclable glass", text: "Glass bottles and jars, minimal plastic, and recyclable paper packaging." },
@@ -53,13 +72,13 @@ export default async function AboutPage() {
     <>
       <PageHeader
         crumbs={[{ href: "/", label: "Home" }, { label: "About" }]}
-        title="The numbers on the label"
+        title="Weighed in Melbourne"
         lead="Beauty Peps began in a small Melbourne lab with one frustration: bottles shouting peptides on the front, with a trace of them at the end of the ingredient list."
         figure={
-          <Figure ratio="aspect-[4/3]">
+          <Figure ratio="aspect-[4/5]" className="shutter-now">
             <Image
-              src="/images/editorial/lab.webp"
-              alt="Serums and glassware on the bench of the Beauty Peps formulation lab"
+              src="/images/editorial/melbourne-sill.webp"
+              alt="Three amber vials of peptide powder and a glass beaker on a bluestone window sill, a balance behind them and the Melbourne skyline outside"
               fill
               loading="eager"
               fetchPriority="high"
@@ -78,6 +97,85 @@ export default async function AboutPage() {
         </ButtonLink>
       </PageHeader>
 
+      {/* The making, in the order it happens: cold store, the bench, the drawer. */}
+      <section aria-labelledby="making-title" className="container-bp mt-28 lg:mt-44">
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]">
+          <h2 id="making-title" className="display-type text-head lg:col-span-6" {...reveal(0)}>
+            From powder to bottle
+          </h2>
+          <p className="max-w-[44ch] text-lead lg:col-span-5 lg:col-start-8" {...reveal(1)}>
+            Every formula is made the same way, in small runs, by the team that wrote the library.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <Figure ratio="aspect-[4/5]" className="lg:col-span-5">
+            <Image
+              src="/images/editorial/cold-chain.webp"
+              alt="Rows of amber vials of white peptide powder on a refrigerator shelf, a dial thermometer beside them reading about 4 °C"
+              fill
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </Figure>
+          <dl className="flex flex-col justify-end gap-10 lg:col-span-5 lg:col-start-7 lg:pb-4">
+            {KEPT.map((s, i) => (
+              <div key={s.title} {...reveal(i)}>
+                <dt className="text-lead font-medium">{s.title}</dt>
+                <dd className="mt-2 max-w-[44ch] text-body">{s.text}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="mt-20 grid gap-10 lg:mt-32 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+          <dl className="order-2 flex flex-col justify-end gap-10 lg:order-1 lg:col-span-5 lg:pb-4">
+            {MADE.map((s, i) => (
+              <div key={s.title} {...reveal(i)}>
+                <dt className="text-lead font-medium">{s.title}</dt>
+                <dd className="mt-2 max-w-[44ch] text-body">{s.text}</dd>
+              </div>
+            ))}
+          </dl>
+          <Figure
+            ratio="aspect-[5/4]"
+            className="order-1 lg:order-2 lg:col-span-6 lg:col-start-7"
+            caption="GHK-Cu powder meeting water. The blue is the copper the peptide holds, not a dye."
+          >
+            <LoopVideo
+              src="/video/powder-dissolve.mp4"
+              poster="/video/powder-dissolve-poster.webp"
+              label="Blue GHK-Cu powder falling from a spatula into a beaker of water and blooming into blue clouds"
+            />
+          </Figure>
+        </div>
+
+        <div className="mt-20 lg:mt-32">
+          <Figure ratio="aspect-[4/3] sm:aspect-[3/2]">
+            <Image
+              src="/images/editorial/specimen-drawer.webp"
+              alt="An oak specimen drawer divided into twelve compartments, each holding a Beauty Peps bottle, vial, tube or tin beside a blank tag"
+              fill
+              sizes="(min-width: 1024px) 92vw, 100vw"
+              className="object-cover"
+            />
+          </Figure>
+          <div className="mt-8 grid gap-6 lg:grid-cols-12 lg:gap-[var(--gutter)]">
+            <h3 className="text-lead font-medium lg:col-span-4" {...reveal(0)}>
+              Numbered
+            </h3>
+            <div className="lg:col-span-6 lg:col-start-7" {...reveal(1)}>
+              <p className="max-w-[52ch] text-body">
+                Small runs keep what reaches you fresh, and every bottle carries its batch number.
+              </p>
+              <Link href="/shop" className="mt-4 inline-block text-body underline underline-offset-4">
+                See the range
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section aria-labelledby="values-title" className="container-bp mt-28 lg:mt-44">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-[var(--gutter)]">
           <div className="order-2 grid grid-cols-2 gap-2 lg:order-1 lg:col-span-5">
@@ -91,13 +189,13 @@ export default async function AboutPage() {
           </div>
           <div className="order-1 lg:order-2 lg:col-span-6 lg:col-start-7">
             <h2 id="values-title" className="display-type text-head" {...reveal(0)}>
-              Four things we hold to
+              Three things we hold to
             </h2>
-            <dl className="mt-10 grid gap-x-[var(--gutter)] gap-y-10 sm:grid-cols-2">
+            <dl className="mt-10 space-y-10">
               {VALUES.map((v, i) => (
-                <div key={v.title} {...reveal(i + 1)}>
+                <div key={v.title} className="grid gap-2 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-[var(--gutter)]" {...reveal(i + 1)}>
                   <dt className="text-lead font-medium">{v.title}</dt>
-                  <dd className="mt-2 text-body">{v.text}</dd>
+                  <dd className="text-body">{v.text}</dd>
                 </div>
               ))}
             </dl>

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { Price } from "@/components/ui/misc";
 import type { KeyActive, Product } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
@@ -60,16 +61,19 @@ export function SpecimenTile({
   tone,
   priority,
   sizes = "(min-width: 1024px) 25vw, 50vw",
+  morph,
   className,
 }: {
   product: Pick<ProductCardData, "slug" | "name" | "image">;
   tone: TileTone;
   priority?: boolean;
   sizes?: string;
+  /** Morph this tile into the product page's own when it is opened. Only one tile per product on a page. */
+  morph?: boolean;
   className?: string;
 }) {
   const cutout = specimenSrc(product.image);
-  return (
+  const tile = (
     <div className={cn("specimen relative overflow-hidden", TILE_BG[tone], className)}>
       {/* `priority` marks a likely largest paint: fetched first and never lazy (next/image's own prop is deprecated). */}
       <Image
@@ -82,6 +86,13 @@ export function SpecimenTile({
         className={cutout ? "object-contain" : "object-cover"}
       />
     </div>
+  );
+  return morph ? (
+    <ViewTransition name={`specimen-${product.slug}`} share="morph" default="none">
+      {tile}
+    </ViewTransition>
+  ) : (
+    tile
   );
 }
 
@@ -103,7 +114,7 @@ export function ProductCard({
   const note = soldOut ? "Sold out" : product.badge;
   return (
     <Link href={`/products/${product.slug}`} className={cn("group flex flex-col", className)}>
-      <SpecimenTile product={product} tone={tone ?? toneFor(product.slug, index)} priority={priority} className="aspect-[4/5]" />
+      <SpecimenTile product={product} tone={tone ?? toneFor(product.slug, index)} priority={priority} morph className="aspect-[4/5]" />
       <div className="mt-3 flex flex-col gap-x-4 lg:flex-row lg:items-baseline lg:justify-between">
         <h3 className="text-body leading-snug font-medium text-ink group-hover:underline group-hover:underline-offset-4">
           {product.name}

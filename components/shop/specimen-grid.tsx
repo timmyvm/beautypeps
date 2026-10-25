@@ -38,6 +38,7 @@ export function SpecimenGrid({
                 product={p}
                 tone={toneFor(p.slug, i)}
                 priority={i < priority}
+                morph
                 sizes={big ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"}
                 className={cn("w-full", big ? "aspect-[4/5] md:aspect-auto md:flex-1" : "aspect-[4/5]")}
               />

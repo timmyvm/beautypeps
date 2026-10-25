@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
+import { SequenceStrand } from "@/components/peptides/sequence-strand";
 import { SpecimenThumb } from "@/components/peptides/peptide-entry";
 import { SpecimenTile, toneFor } from "@/components/product/product-card";
+import { useBag } from "@/components/shop/bag";
 import { Button } from "@/components/ui/button";
 import { addManyToCart } from "@/lib/actions/cart";
 import { concernLabel } from "@/lib/constants";
@@ -27,9 +29,12 @@ const STEPS = ["Concerns", "Skin type", "Experience", "Routine"] as const;
 export function RoutineBuilder({
   products,
   peptideNames,
+  sequences = {},
 }: {
   products: BuilderProduct[];
   peptideNames: Record<string, string>;
+  /** Peptide slug to its written sequence, so the routine can draw what is in it. */
+  sequences?: Record<string, string>;
 }) {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ concerns: [], skinType: null, experience: null, preference: null });
@@ -61,7 +66,14 @@ export function RoutineBuilder({
   if (done) {
     return (
       <div ref={topRef} className="scroll-mt-8">
-        <Results products={products} answers={answers} peptideNames={peptideNames} onRestart={restart} onBack={() => setStep(3)} />
+        <Results
+          products={products}
+          answers={answers}
+          peptideNames={peptideNames}
+          sequences={sequences}
+          onRestart={restart}
+          onBack={() => setStep(3)}
+        />
       </div>
     );
   }
@@ -241,12 +253,14 @@ function Results({
   products,
   answers,
   peptideNames,
+  sequences,
   onRestart,
   onBack,
 }: {
   products: BuilderProduct[];
   answers: Answers;
   peptideNames: Record<string, string>;
+  sequences: Record<string, string>;
   onRestart: () => void;
   onBack: () => void;
 }) {
@@ -254,12 +268,15 @@ function Results({
   const total = rec.products.reduce((s, p) => s + p.price, 0);
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const bag = useBag();
   const skin = SKIN_TYPE_OPTIONS.find((s) => s.value === answers.skinType)?.label.toLowerCase();
 
+  // The whole routine goes in at once, then the bag slides over so the visitor sees it land.
   const addAll = () =>
     startTransition(async () => {
       const res = await addManyToCart(rec.products.map((p) => p.id));
       setResult(res);
+      if (res.ok || res.count > 0) bag.open(rec.products[rec.products.length - 1]?.id);
     });
 
   return (
@@ -306,17 +323,18 @@ function Results({
                       </p>
                     )}
                     {p.peptideSlugs.length > 0 && (
-                      <p className="mt-1 text-body text-muted">
-                        With{" "}
-                        {p.peptideSlugs.map((s, j) => (
-                          <span key={s}>
-                            {j > 0 && (j === p.peptideSlugs.length - 1 ? " and " : ", ")}
-                            <Link href={`/peptides/${s}`} className="text-ink underline underline-offset-4">
-                              {peptideNames[s] ?? s}
+                      <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-4" aria-label={`Peptides in ${p.name}`}>
+                        {p.peptideSlugs.map((s) => (
+                          <li key={s}>
+                            <Link href={`/peptides/${s}`} className="group flex flex-col gap-2">
+                              {sequences[s] && (
+                                <SequenceStrand sequence={sequences[s]} size="sm" label={peptideNames[s] ?? s} />
+                              )}
+                              <span className="text-body underline underline-offset-4 group-hover:text-accent">{peptideNames[s] ?? s}</span>
                             </Link>
-                          </span>
+                          </li>
                         ))}
-                      </p>
+                      </ul>
                     )}
                   </li>
                 ))}
@@ -356,16 +374,26 @@ function Results({
               <span className="tabular text-lead font-medium">{formatMoney(total)}</span>
             </p>
             <Button onClick={addAll} disabled={pending} size="lg" className="mt-6 w-full">
-              {pending ? "Adding…" : "Add routine to bag"}
+              {pending ? "Adding…" : "Add the whole routine to your bag"}
             </Button>
-            {result && (
-              <p className="mt-3 text-body" role="status">
-                {result.message}{" "}
-                <Link href="/cart" className="underline underline-offset-4">
-                  View bag
-                </Link>
-              </p>
-            )}
+            <p className="mt-3 min-h-[1.5em] text-body" role="status">
+              {result && (
+                <>
+                  {result.message}{" "}
+                  <Link
+                    href="/cart"
+                    onClick={(e) => {
+                      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                      e.preventDefault();
+                      bag.open();
+                    }}
+                    className="underline underline-offset-4"
+                  >
+                    View bag
+                  </Link>
+                </>
+              )}
+            </p>
             {rec.kit && (
               <p className="mt-6 text-body text-white/80">
                 Prefer a set? The{" "}

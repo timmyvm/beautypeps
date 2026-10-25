@@ -91,6 +91,7 @@ export function CatalogueGuide({
                 <SpecimenTile
                   product={p}
                   tone={toneFor(p.slug, i)}
+                  morph
                   sizes={big ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 50vw"}
                   className={cn("w-full", big ? "aspect-[4/5] md:flex-1 md:aspect-auto" : "aspect-[4/5]")}
                 />

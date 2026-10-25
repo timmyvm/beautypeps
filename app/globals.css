@@ -447,6 +447,97 @@ html.js .scene.is-live > .scene-stage {
   z-index: 5;
 }
 
+/* The slide-over bag: a panel from the right over a flat scrim. It floats, so it alone may cast a shadow. */
+.bag-dialog {
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(28rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+.bag-dialog::backdrop {
+  background: rgb(17 17 17 / 0.45);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out);
+}
+.bag-dialog[data-open]::backdrop {
+  opacity: 1;
+}
+.bag-panel {
+  box-shadow: -24px 0 60px rgb(17 17 17 / 0.12);
+  transform: translateX(100%);
+  transition: transform 340ms var(--ease-expo);
+}
+.bag-dialog[data-open] .bag-panel {
+  transform: none;
+}
+@starting-style {
+  .bag-dialog[data-open] .bag-panel {
+    transform: translateX(100%);
+  }
+  .bag-dialog[data-open]::backdrop {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bag-panel,
+  .bag-dialog::backdrop {
+    transition: none;
+  }
+}
+
+/* Instant search: a sheet that drops from the top edge over the same scrim. */
+.search-dialog {
+  inset: 0 0 auto 0;
+  margin: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: auto;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+.search-dialog::backdrop {
+  background: rgb(17 17 17 / 0.45);
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+}
+.search-dialog[data-open]::backdrop {
+  opacity: 1;
+}
+.search-panel {
+  max-height: min(88dvh, 60rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 24px 60px rgb(17 17 17 / 0.12);
+  transform: translateY(-100%);
+  transition: transform 300ms var(--ease-expo);
+}
+.search-dialog[data-open] .search-panel {
+  transform: none;
+}
+@starting-style {
+  .search-dialog[data-open] .search-panel {
+    transform: translateY(-100%);
+  }
+  .search-dialog[data-open]::backdrop {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .search-panel,
+  .search-dialog::backdrop {
+    transition: none;
+  }
+}
+
 /* Sequence drawings: a chosen bead is ringed; the rest step back. */
 .strand-part:focus-visible circle {
   stroke: var(--color-ink);
@@ -624,5 +715,26 @@ html.js .scene.is-live > .scene-stage {
   .index-cards .index-card {
     --tab-w: 120px;
     --tab-step: min(48px, calc((100cqw - var(--tab-w) - 3rem) / 5));
+  }
+}
+
+/* A catalogue tile becomes the product page's specimen: one object moving, not two swapping. */
+::view-transition-group(.morph) {
+  animation-duration: 460ms;
+  animation-timing-function: var(--ease-expo);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  30% {
+    filter: blur(2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

@@ -209,6 +209,7 @@ export async function getPeptidesBySlugs(slugs: string[]) {
       peptideClass: peptides.peptideClass,
       summary: peptides.summary,
       evidenceLevel: peptides.evidenceLevel,
+      sequence: peptides.sequence,
     })
     .from(peptides)
     .where(and(inArray(peptides.slug, slugs), eq(peptides.published, true)));

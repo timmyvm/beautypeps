@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
-import { FilterChip, SpecimenGrid } from "@/components/shop/specimen-grid";
-import { ParamSelect, SortSelect } from "@/components/shop/sort-select";
+import { Suspense, ViewTransition } from "react";
+import { SpecimenGrid } from "@/components/shop/specimen-grid";
+import { FilterLink, ParamSelect, SortSelect } from "@/components/shop/sort-select";
 import { buttonClasses } from "@/components/ui/button";
 import { CONCERNS, concernLabel } from "@/lib/constants";
 import { getCategories, getFeaturedProducts, listProducts, PRODUCT_SORTS, type ProductSort } from "@/lib/queries/catalog";
-import { getPublishedPeptides } from "@/lib/queries/content";
+import { getActiveProducts, getPublishedPeptides } from "@/lib/queries/content";
+import { cn } from "@/lib/utils";
 import { SITE_CARD } from "@/lib/seo";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -79,10 +80,11 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
   const sortParam = str(sp.sort);
   const sort: ProductSort = PRODUCT_SORTS.some((s) => s.value === sortParam) ? (sortParam as ProductSort) : "featured";
 
-  const [categories, products, peptides] = await Promise.all([
+  const [categories, products, peptides, catalogue] = await Promise.all([
     getCategories(),
     listProducts({ category: categorySlug, concern, q, sort, inStock }),
     getPublishedPeptides(),
+    getActiveProducts(),
   ]);
   const category = categories.find((c) => c.slug === categorySlug);
   const fallback = products.length === 0 ? await getFeaturedProducts(4) : [];
@@ -109,9 +111,26 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
     (concern
       ? `Formulas chosen for ${concernLabel(concern).toLowerCase()}. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is.`
       : "Every formula we make, shown plainly. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is, graded 1 to 5.");
-  const count = `${products.length} ${products.length === 1 ? "formula" : "formulas"}`;
+
+  // Each concern chip says how many formulas it would show within the current category and stock view.
+  const pool = catalogue.filter((p) => (!categorySlug || p.categorySlug === categorySlug) && (!inStock || p.stock > 0));
+  const concernCounts = CONCERNS.map((c) => ({ ...c, count: pool.filter((p) => p.concerns.includes(c.slug)).length })).filter(
+    (c) => c.count > 0 || c.slug === concern,
+  );
+  const categoryCounts = new Map(categories.map((c) => [c.slug, catalogue.filter((p) => p.categorySlug === c.slug).length]));
+
+  const scope = [
+    concern && `for ${concernLabel(concern).toLowerCase()}`,
+    category && `in ${category.name.toLowerCase()}`,
+    inStock && "in stock",
+    q && `matching “${q}”`,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const count = `${products.length} ${products.length === 1 ? "formula" : "formulas"}${scope ? ` ${scope}` : ""}`;
   const categoryOptions = [{ value: "", label: "Everything" }, ...categories.map((c) => ({ value: c.slug, label: c.name }))];
-  const concernOptions = [{ value: "", label: "Any concern" }, ...CONCERNS.map((c) => ({ value: c.slug, label: c.label }))];
+  // Same filters, different view: the grid crossfades instead of cutting.
+  const resultsKey = [categorySlug, concern, q, sort, inStock].join("|");
 
   return (
     <div className="container-bp pt-10 md:pt-16">
@@ -125,22 +144,39 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
         </p>
       </header>
 
-      {/* Phones: the count and one control; every filter folds into it */}
-      <details className="group mt-10 bg-surface md:hidden" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+      {/* The field guide's first question: what are you treating? Concerns are the way in, on every screen. */}
+      <nav aria-labelledby="concern-question" className="mt-12 md:mt-20" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
+        <p id="concern-question" className="text-lead font-medium">
+          What are you treating?
+        </p>
+        <ul className="scrollbar-none -mx-[var(--margin)] mt-5 flex gap-2 overflow-x-auto px-[var(--margin)] md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+          <li>
+            <FilterLink href={href({ concern: undefined })} active={!concern} count={pool.length}>
+              Everything
+            </FilterLink>
+          </li>
+          {concernCounts.map((c) => (
+            <li key={c.slug}>
+              <FilterLink href={href({ concern: c.slug === concern ? undefined : c.slug })} active={c.slug === concern} count={c.count}>
+                {c.label}
+              </FilterLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Phones: the rest of the filters fold into one control */}
+      <details className="group mt-6 bg-surface md:hidden" data-reveal="" style={{ ["--reveal-i" as string]: 3 }}>
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-4 py-2 text-body [&::-webkit-details-marker]:hidden">
-          <span aria-live="polite">
-            {count}
-            {q ? ` matching “${q}”` : ""}
-          </span>
+          <span>{category ? category.name : "Every category"}</span>
           <span className="underline underline-offset-4">
-            <span className="group-open:hidden">Filter and sort</span>
+            <span className="group-open:hidden">Category, sort, search</span>
             <span className="hidden group-open:inline">Close</span>
           </span>
         </summary>
         <div className="space-y-4 px-4 pt-2 pb-5">
           <Suspense>
             <ParamSelect name="category" label="Category" options={categoryOptions} value={categorySlug ?? ""} stacked />
-            <ParamSelect name="concern" label="Concern" options={concernOptions} value={concern ?? ""} stacked />
             <SortSelect options={PRODUCT_SORTS} value={sort} stacked />
           </Suspense>
           <form action="/shop" role="search">
@@ -157,66 +193,47 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
               className="h-11 w-full bg-white px-4 text-body text-ink placeholder:text-taupe focus:outline-2 focus:outline-accent"
             />
           </form>
-          <p className="flex flex-wrap gap-x-6 gap-y-2 text-body">
-            <Link href={href({ instock: inStock ? undefined : "1" })} aria-pressed={inStock} className="underline underline-offset-4">
-              {inStock ? "Show sold-out formulas too" : "In stock only"}
-            </Link>
-            {q && (
-              <Link href={href({ q: undefined })} className="underline underline-offset-4">
-                Clear search
-              </Link>
-            )}
-          </p>
+          <Link href={href({ instock: inStock ? undefined : "1" })} scroll={false} aria-pressed={inStock} className="inline-block text-body underline underline-offset-4">
+            {inStock ? "Show sold-out formulas too" : "In stock only"}
+          </Link>
         </div>
       </details>
 
-      {/* Tablet and up: categories as filled chips, everything else in one toolbar */}
-      <nav
-        aria-label="Categories"
-        className="mt-12 hidden flex-wrap gap-2 md:flex"
-        data-reveal=""
-        style={{ ["--reveal-i" as string]: 2 }}
-      >
-        <FilterChip href={href({ category: undefined })} active={!categorySlug}>
-          Everything
-        </FilterChip>
-        {categories.map((c) => (
-          <FilterChip key={c.id} href={href({ category: c.slug })} active={c.slug === categorySlug}>
-            {c.name}
-          </FilterChip>
-        ))}
-      </nav>
-
+      {/* Tablet and up: the categories as quiet links, then stock, search and sort, on one line */}
       <div
-        className="mt-3 hidden flex-wrap items-center justify-between gap-x-6 gap-y-3 bg-surface px-4 py-3 md:flex"
+        className="mt-6 hidden flex-wrap items-center justify-between gap-x-8 gap-y-3 bg-surface px-5 py-3 md:flex"
         data-reveal=""
         style={{ ["--reveal-i" as string]: 3 }}
       >
-        <p className="text-body" aria-live="polite">
-          {count}
-          {q ? (
-            <>
-              {" "}
-              matching “{q}”.{" "}
-              <Link href={href({ q: undefined })} className="underline underline-offset-4">
-                Clear search
+        <nav aria-label="Categories" className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body">
+          {[{ slug: undefined, name: "Every category" }, ...categories].map((c) => {
+            const active = c.slug === categorySlug;
+            return (
+              <Link
+                key={c.slug ?? "all"}
+                href={href({ category: c.slug })}
+                scroll={false}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "inline-flex h-11 items-center gap-2 underline-offset-[6px] transition-colors",
+                  active ? "font-medium underline decoration-2" : "text-ink hover:underline",
+                )}
+              >
+                {c.name}
+                {c.slug && <span className="tabular text-muted">{categoryCounts.get(c.slug)}</span>}
               </Link>
-            </>
-          ) : (
-            "."
-          )}
-        </p>
+            );
+          })}
+        </nav>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
             href={href({ instock: inStock ? undefined : "1" })}
+            scroll={false}
             aria-pressed={inStock}
-            className="text-body underline underline-offset-4"
+            className="text-body underline underline-offset-4 hover:text-accent"
           >
             {inStock ? "Show sold-out formulas too" : "In stock only"}
           </Link>
-          <Suspense>
-            <ParamSelect name="concern" label="Concern" options={concernOptions} value={concern ?? ""} />
-          </Suspense>
           <form action="/shop" role="search" className="flex">
             {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
             {concern && <input type="hidden" name="concern" value={concern} />}
@@ -237,22 +254,38 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
         </div>
       </div>
 
-      <section className="mt-8 md:mt-10" aria-label="Formulas">
-        {products.length === 0 ? (
-          <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" data-reveal="">
-            <div>
-              <h2 className="display-type text-head">Nothing matches yet</h2>
-              <p className="mt-4 max-w-[48ch] text-body">
-                No formula fits every filter you&apos;ve chosen. Remove one, or start again from the whole catalogue.
-              </p>
-            </div>
-            <Link href="/shop" className={buttonClasses({ size: "lg" })}>
-              See all formulas
+      <p className="mt-10 text-body md:mt-12" aria-live="polite">
+        {count}.
+        {q && (
+          <>
+            {" "}
+            <Link href={href({ q: undefined })} scroll={false} className="underline underline-offset-4">
+              Clear search
             </Link>
-          </div>
-        ) : (
-          <SpecimenGrid products={products} grades={grades} priority={4} />
+          </>
         )}
+      </p>
+
+      <section className="mt-6" aria-label="Formulas">
+        <ViewTransition key={resultsKey} name="shop-results" share="auto" enter="auto" default="none">
+          {products.length === 0 ? (
+            <div className="grid gap-6 bg-surface p-8 md:grid-cols-[1fr_auto] md:items-end md:p-12" data-reveal="">
+              <div>
+                <h2 className="display-type text-head">Nothing matches yet</h2>
+                <p className="mt-4 max-w-[48ch] text-body">
+                  No formula fits every filter you&apos;ve chosen. Remove one, or start again from the whole catalogue.
+                </p>
+              </div>
+              <Link href="/shop" className={buttonClasses({ size: "lg" })}>
+                See all formulas
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <SpecimenGrid products={products} grades={grades} priority={4} />
+            </div>
+          )}
+        </ViewTransition>
       </section>
 
       {fallback.length > 0 && (

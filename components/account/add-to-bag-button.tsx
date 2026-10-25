@@ -2,12 +2,14 @@
 
 import { Check, Loader2, ShoppingBag } from "lucide-react";
 import { useState, useTransition } from "react";
+import { useBag } from "@/components/shop/bag";
 import { addToCart } from "@/lib/actions/cart";
 import { cn } from "@/lib/utils";
 
 export function AddToBagButton({ productId, soldOut, className }: { productId: string; soldOut?: boolean; className?: string }) {
   const [pending, start] = useTransition();
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const bag = useBag();
 
   return (
     <div className={className}>
@@ -18,6 +20,7 @@ export function AddToBagButton({ productId, soldOut, className }: { productId: s
           start(async () => {
             const res = await addToCart(productId, 1);
             setResult(res);
+            if (res.ok) bag.open(productId);
           })
         }
         className={cn(

@@ -3,11 +3,13 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getCartCount } from "@/lib/cart";
 import { getSettings } from "@/lib/settings";
+import { BagLink } from "@/components/shop/bag";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { MAIN_NAV } from "./nav-links";
+import { SearchButton } from "./search";
 
-/** A plain bar on the page ground: wordmark, four links, one action (the bag). */
+/** A plain bar on the page ground: wordmark, four links, search, one action (the bag). */
 export async function Header() {
   const settings = await getSettings();
 
@@ -26,10 +28,13 @@ export async function Header() {
               </Link>
             ))}
           </nav>
-          {/* The bar is part of every page's static shell; the visitor's own bag and sign-in stream in. */}
-          <Suspense fallback={<HeaderActions />}>
-            <VisitorActions />
-          </Suspense>
+          <div className="ml-auto flex items-center gap-6">
+            <SearchButton className="link-quiet text-small font-medium text-ink" />
+            {/* The bar is part of every page's static shell; the visitor's own bag and sign-in stream in. */}
+            <Suspense fallback={<HeaderActions />}>
+              <VisitorActions />
+            </Suspense>
+          </div>
         </div>
       </header>
     </>
@@ -44,17 +49,11 @@ async function VisitorActions() {
 function HeaderActions({ user = null, cartCount = 0 }: { user?: { isAdmin: boolean } | null; cartCount?: number }) {
   const accountHref = user ? (user.isAdmin ? "/admin" : "/account") : "/login";
   return (
-    <div className="ml-auto flex items-center gap-6">
+    <div className="flex items-center gap-6">
       <Link href={accountHref} className="link-quiet hidden text-small font-medium text-ink sm:inline">
         {user ? "Account" : "Sign in"}
       </Link>
-      <Link
-        href="/cart"
-        className="press inline-flex h-10 items-center bg-ink px-4 text-small font-medium text-white tabular hover:bg-black"
-        aria-label={`Bag, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
-      >
-        Bag{cartCount > 0 ? ` (${cartCount})` : ""}
-      </Link>
+      <BagLink count={cartCount} className="press inline-flex h-10 items-center bg-ink px-4 text-small font-medium text-white tabular hover:bg-black" />
       <MobileMenu signedIn={!!user} isAdmin={!!user?.isAdmin} />
     </div>
   );
