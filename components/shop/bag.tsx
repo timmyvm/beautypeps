@@ -113,7 +113,7 @@ function BagPanel({
         </div>
       ) : !bag || bag.lines.length === 0 ? (
         <div className="flex flex-1 flex-col justify-between px-6 pb-6">
-          <p className="max-w-[30ch] text-lead">Your bag is empty. Every formula is in the catalogue, graded.</p>
+          <p className="max-w-[30ch] text-lead">Your bag is empty. Every vial is in the catalogue, graded.</p>
           <Link href="/shop" onClick={onClose} className={buttonClasses({ size: "lg", className: "w-full" })}>
             See all formulas
           </Link>
@@ -145,7 +145,7 @@ function BagPanel({
             </ul>
             {bag.suggestions.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-body font-medium">Often added with it</h3>
+                <h3 className="text-body font-medium">More from the shelf</h3>
                 <ul className="mt-3 grid grid-cols-2 gap-2">
                   {bag.suggestions.map((s) => (
                     <Suggestion key={s.id} item={s} onAdded={onChange} onNavigate={onClose} />

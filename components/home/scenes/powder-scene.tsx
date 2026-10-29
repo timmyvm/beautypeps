@@ -12,7 +12,7 @@ const reveal = (i: number) => ({ "data-reveal": "", style: { ["--reveal-i" as st
 const STAGES = [
   {
     name: "Weighed",
-    text: "Each peptide arrives freeze-dried and is weighed to the percentage printed on the label.",
+    text: "Each vial holds the milligrams printed on its label, freeze-dried and sealed.",
     span: "lg:col-span-3",
     height: "lg:h-[30vh]",
     phoneHeight: "h-[34vw]",
@@ -20,7 +20,7 @@ const STAGES = [
   },
   {
     name: "Dissolved",
-    text: "It goes into a water and glycerin base below 40 °C, and GHK-Cu turns it blue as it goes in.",
+    text: "Into a water-based serum below 40 °C. GHK-Cu turns it blue as it goes in.",
     span: "lg:col-span-4",
     height: "lg:h-[44vh]",
     phoneHeight: "h-[46vw]",

@@ -5,14 +5,9 @@ const reveal = (i: number) => ({ "data-reveal": "", style: { ["--reveal-i" as st
 
 // Three house specimens on their tiles, named like catalogue entries.
 const SPECIMENS: { slug: string; name: string; fact: string; tone: TileTone }[] = [
-  {
-    slug: "ghk-cu-copper-peptide-serum",
-    name: "GHK-Cu Copper Peptide Serum",
-    fact: "1% GHK-Cu",
-    tone: "stone",
-  },
-  { slug: "matrixyl-3000-serum", name: "Matrixyl 3000", fact: "8% complex", tone: "sapphire" },
-  { slug: "eye-peptide-gel", name: "Eye Peptide Gel", fact: "5% Eyeseryl", tone: "frost" },
+  { slug: "ghk-cu-50mg", name: "GHK-Cu 50 mg", fact: "Copper tripeptide-1", tone: "stone" },
+  { slug: "snap-8-10mg", name: "SNAP-8 10 mg", fact: "Acetyl octapeptide-3", tone: "sapphire" },
+  { slug: "glutathione-600mg", name: "Glutathione 600 mg", fact: "L-glutathione", tone: "frost" },
 ];
 
 /**

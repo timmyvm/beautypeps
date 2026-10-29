@@ -6,9 +6,10 @@ import { getCart, MAX_QTY_PER_LINE, readCartCookie, writeCartCookie } from "@/li
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import { validateDiscountCode } from "@/lib/pricing";
-import { getFeaturedProducts } from "@/lib/queries/catalog";
+import { getSuggestedProducts } from "@/lib/queries/catalog";
 import { getSettings } from "@/lib/settings";
 import type { FormState } from "@/lib/utils";
+import { syncAplStock } from "@/lib/stock-sync";
 
 export type CartActionResult = { ok: boolean; message: string; count: number };
 
@@ -35,7 +36,7 @@ export type BagSnapshot = {
 
 /** Everything the slide-over bag shows, read fresh (live prices and stock). */
 export async function getBagSnapshot(): Promise<BagSnapshot> {
-  const [cart, settings, featured] = await Promise.all([getCart(), getSettings(), getFeaturedProducts(8)]);
+  const [cart, settings, featured] = await Promise.all([getCart(), getSettings(), getSuggestedProducts(8)]);
   const inBag = new Set(cart.lines.map((l) => l.product.id));
   return {
     lines: cart.lines.map((l) => ({
@@ -73,10 +74,17 @@ const countOf = (items: { q: number }[]) => items.reduce((s, i) => s + i.q, 0);
 /** Add one product (or more units of it). Callable directly from client components. */
 export async function addToCart(productId: string, quantity = 1): Promise<CartActionResult> {
   const qty = Math.max(1, Math.min(MAX_QTY_PER_LINE, Math.floor(quantity)));
-  const product = await db.query.products.findFirst({
-    where: and(eq(products.id, productId), eq(products.status, "active")),
-    columns: { id: true, name: true, stock: true },
-  });
+  const find = () =>
+    db.query.products.findFirst({
+      where: and(eq(products.id, productId), eq(products.status, "active")),
+      columns: { id: true, name: true, stock: true, aplVariantId: true },
+    });
+  let product = await find();
+  // Shared with AuPeptideLabs: read the shelf first, so the bag never takes what the other shop just sold.
+  if (product?.aplVariantId) {
+    await syncAplStock();
+    product = await find();
+  }
   const cart = await readCartCookie();
   if (!product) return { ok: false, message: "That product is no longer available.", count: countOf(cart.items) };
   if (product.stock <= 0) return { ok: false, message: `${product.name} is sold out.`, count: countOf(cart.items) };
@@ -97,6 +105,7 @@ export async function addManyToCart(productIds: string[]): Promise<CartActionRes
   const cart = await readCartCookie();
   if (ids.length === 0) return { ok: false, message: "Nothing to add.", count: countOf(cart.items) };
 
+  await syncAplStock();
   const rows = await db
     .select({ id: products.id, stock: products.stock })
     .from(products)

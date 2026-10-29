@@ -87,7 +87,7 @@ async function SearchPageContent({ searchParams }: { searchParams: SearchParams 
             </p>
           </div>
           <Link href="/shop" className={buttonClasses({ size: "lg" })}>
-            Browse every formula
+            Browse every vial
           </Link>
         </section>
       )}

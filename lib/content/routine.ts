@@ -48,8 +48,8 @@ export const EXPERIENCE_OPTIONS: { value: Experience; label: string; hint: strin
 ];
 
 export const PREFERENCE_OPTIONS: { value: Preference; label: string; hint: string }[] = [
-  { value: "minimal", label: "Keep it minimal", hint: "One hero serum, plus what you already use" },
-  { value: "complete", label: "Complete routine", hint: "Targeted serums, treatments and a night cream" },
+  { value: "minimal", label: "Keep it minimal", hint: "One peptide serum, plus what you already use" },
+  { value: "complete", label: "Complete routine", hint: "Two peptide serums, morning and night" },
 ];
 
 export type RoutineStep = {
@@ -80,7 +80,8 @@ function scoreProduct(p: BuilderProduct, a: Answers) {
 }
 
 export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
-  const inStock = all.filter((p) => p.stock > 0 && p.categorySlug !== "pure-actives");
+  // Research peptides are never part of a skincare routine; pure actives become the serum you make.
+  const inStock = all.filter((p) => p.stock > 0 && p.categorySlug !== "research-peptides");
   const kits = inStock.filter((p) => p.categorySlug === "kits");
   const pool = inStock.filter((p) => p.categorySlug !== "kits");
 
@@ -98,7 +99,11 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
 
   const special = new Set([eye, lip, scalp, cream].filter(Boolean).map((p) => p!.id));
   const serums = pool
-    .filter((p) => !special.has(p.id) && (p.categorySlug === "serums" || (!p.categorySlug && !isCream(p))))
+    .filter(
+      (p) =>
+        !special.has(p.id) &&
+        (p.categorySlug === "serums" || p.categorySlug === "pure-actives" || (!p.categorySlug && !isCream(p))),
+    )
     .map((p) => ({ p, s: scoreProduct(p, a) }))
     .sort((x, y) => y.s - x.s);
 
@@ -130,7 +135,16 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
   }
 
   const am: RoutineStep[] = [{ step: "Cleanse", generic: "A gentle, low-foam cleanser, or just water in the morning." }];
-  if (amSerum) am.push({ step: "Peptide serum", product: amSerum, note: "2–3 drops on damp skin; press in." });
+  const madeFrom = (p: BuilderProduct) => p.categorySlug === "pure-actives";
+  if (amSerum) {
+    am.push({
+      step: "Peptide serum",
+      product: amSerum,
+      note: madeFrom(amSerum)
+        ? "The serum you make from this vial: 2–3 drops on damp skin. Its page has the arithmetic."
+        : "2–3 drops on damp skin; press in.",
+    });
+  }
   if (eye) am.push({ step: "Eye", product: eye, note: "Tap a rice-grain amount around the orbital bone." });
   am.push({
     step: "Moisturise",
@@ -188,7 +202,7 @@ export function recommend(all: BuilderProduct[], a: Answers): Recommendation {
 
 /** The formulas that answer the concerns chosen so far, for the live preview beside the questions. */
 export function previewMatches(all: BuilderProduct[], a: Answers, limit = 4): BuilderProduct[] {
-  const pool = all.filter((p) => p.stock > 0 && p.categorySlug !== "pure-actives" && p.categorySlug !== "kits");
+  const pool = all.filter((p) => p.stock > 0 && p.categorySlug !== "research-peptides" && p.categorySlug !== "kits");
   if (a.concerns.length === 0) return pool.filter((p) => p.featured).concat(pool.filter((p) => !p.featured)).slice(0, limit);
   return pool
     .map((p) => ({ p, s: scoreProduct(p, a) }))

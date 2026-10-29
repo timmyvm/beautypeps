@@ -195,6 +195,7 @@ export async function getUserReviews(userId: string) {
       productName: products.name,
       productSlug: products.slug,
       productImage: products.image,
+      productStatus: products.status,
     })
     .from(reviews)
     .innerJoin(products, eq(products.id, reviews.productId))

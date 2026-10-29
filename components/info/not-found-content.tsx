@@ -5,7 +5,7 @@ import { getActiveProducts } from "@/lib/queries/content";
 import { PictureLink, reveal } from "./page-header";
 
 const LINKS = [
-  { href: "/shop", label: "Shop all formulas" },
+  { href: "/shop", label: "Shop all peptides" },
   { href: "/peptides", label: "Peptide library" },
   { href: "/learn", label: "Journal" },
   { href: "/faq", label: "FAQ" },
@@ -13,7 +13,7 @@ const LINKS = [
   { href: "/contact", label: "Contact us" },
 ];
 
-/** The 404 body shared by the root and storefront not-found pages: a search, the main doors, four formulas. */
+/** The 404 body shared by the root and storefront not-found pages: a search, the main doors, four vials. */
 export async function NotFoundContent() {
   const products = await getActiveProducts();
   const picks = [...products.filter((p) => p.featured && p.stock > 0), ...products.filter((p) => !p.featured && p.stock > 0)].slice(0, 4);
@@ -62,7 +62,7 @@ export async function NotFoundContent() {
             Or start with these
           </h2>
           <p className="mt-6 max-w-[52ch] text-body" {...reveal(1)}>
-            Four formulas people come back for, each with its lead peptide and its percentage printed on the label.
+            Four vials from the shelf, each with its peptide and its milligrams printed on the label.
           </p>
           <div className="mt-12 grid grid-cols-2 gap-x-[var(--gutter)] gap-y-10 lg:grid-cols-4">
             {picks.map((p, i) => (
@@ -89,7 +89,7 @@ export async function NotFoundContent() {
             src="/images/editorial/actives.webp"
             alt="A row of amber vials of freeze-dried peptide powder on a travertine bench"
             title="The peptide library"
-            text="Every peptide we formulate with, graded for how sure the science is."
+            text="Every cosmetic peptide in the library, graded for how sure the science is."
             index={1}
           />
           <PictureLink
@@ -105,7 +105,7 @@ export async function NotFoundContent() {
             src="/images/articles/beginner-peptide-routine.webp"
             alt="Three serums and a vase on a travertine tray in a bathroom"
             title="Build a routine"
-            text="Four questions about your skin, and the formulas that answer them."
+            text="Four questions about your skin, and the peptides that answer them."
             index={3}
           />
         </div>

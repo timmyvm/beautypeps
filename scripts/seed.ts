@@ -11,6 +11,7 @@ import bcrypt from "bcryptjs";
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "../lib/db/schema";
+import { aplCategories, aplProducts } from "../lib/seed-data/apl-catalogue";
 import { seedArticles } from "../lib/seed-data/articles";
 import { seedCategories } from "../lib/seed-data/categories";
 import { buildDemoData, DEMO_CUSTOMER, DEMO_DISCOUNT_CODES } from "../lib/seed-data/demo";
@@ -90,11 +91,17 @@ async function main() {
   console.log(`  • admin: ${admin.email}`);
 
   // 3. Catalogue
-  const insertedCategories = await db.insert(categories).values(seedCategories).returning();
+  // The live catalogue is AuPeptideLabs' shelf (apl-catalogue.ts); the launch formulas stay as drafts.
+  const allCategories = [
+    ...aplCategories,
+    ...seedCategories.filter((c) => !aplCategories.some((a) => a.slug === c.slug)),
+  ];
+  const insertedCategories = await db.insert(categories).values(allCategories).returning();
   console.log(`  • categories: ${insertedCategories.length}`);
   const categoryId = new Map(insertedCategories.map((c) => [c.slug, c.id]));
 
-  const productRows = seedProducts.map(({ categorySlug, ...p }) => {
+  const catalogue = [...aplProducts, ...seedProducts.map((p) => ({ ...p, status: "draft" as const, featured: false }))];
+  const productRows = catalogue.map(({ categorySlug, ...p }) => {
     const id = categoryId.get(categorySlug);
     if (!id) throw new Error(`Unknown category "${categorySlug}" for product ${p.slug}`);
     return { ...p, categoryId: id };
@@ -114,7 +121,8 @@ async function main() {
   // 5. Demo data
   if (withDemo) {
     const demo = buildDemoData({
-      products: insertedProducts.map((p) => ({
+      // Demo orders use the draft formulas only, so they never hold stock on the shared APL shelf.
+      products: insertedProducts.filter((p) => !p.aplVariantId).map((p) => ({
         id: p.id,
         slug: p.slug,
         name: p.name,

@@ -11,7 +11,7 @@ type Grade = { name: string; grade: number };
 
 /*
  * The catalogue, as a field guide. The live thing: choose what you're treating and the guide narrows to
- * the formulas that address it, each naming its lead peptide, its concentration and that peptide's grade.
+ * the vials whose peptide is studied for it, each naming its peptide, its milligrams and that peptide's grade.
  * Without script the concern chips are plain links to the filtered shop.
  */
 export function CatalogueGuide({
@@ -29,6 +29,8 @@ export function CatalogueGuide({
     [concern, products],
   );
   const label = concerns.find((c) => c.slug === concern)?.label;
+  // Only concerns something on the shelf is studied for: a chip never leads to an empty guide.
+  const offered = useMemo(() => concerns.filter((c) => products.some((p) => p.concerns?.includes(c.slug))), [concerns, products]);
 
   return (
     <div>
@@ -36,11 +38,11 @@ export function CatalogueGuide({
         <p className="text-body text-ink" aria-live="polite">
           {concern ? (
             <>
-              {visible.length} {visible.length === 1 ? "formula" : "formulas"} for{" "}
+              {visible.length} {visible.length === 1 ? "vial" : "vials"} for{" "}
               <span className="font-medium">{label?.toLowerCase()}</span>.
             </>
           ) : (
-            "What are you treating? The guide narrows to the formulas that address it."
+            "What are you treating? The guide narrows to the vials whose peptide is studied for it."
           )}
         </p>
       </div>
@@ -59,7 +61,7 @@ export function CatalogueGuide({
             Everything
           </button>
         </li>
-        {concerns.map((c) => (
+        {offered.map((c) => (
           <li key={c.slug}>
             <a
               href={`/shop?concern=${c.slug}`}

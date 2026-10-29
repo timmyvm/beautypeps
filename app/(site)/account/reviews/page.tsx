@@ -37,23 +37,36 @@ export default async function MyReviewsPage() {
         <ul className="space-y-4">
           {reviews.map((r) => {
             const status = REVIEW_STATUSES[r.status];
+            const onShelf = r.productStatus === "active";
+            const image = <Image src={r.productImage} alt={r.productName} fill sizes="64px" className="object-cover" />;
             return (
               <li key={r.id} className="bg-surface p-5 sm:p-6">
                 <div className="flex gap-4">
-                  <Link
-                    href={`/products/${r.productSlug}`}
-                    className="relative size-16 shrink-0 overflow-hidden bg-white"
-                  >
-                    <Image src={r.productImage} alt={r.productName} fill sizes="64px" className="object-cover" />
-                  </Link>
+                  {/* A product taken off the shelf has no page to link to; the review still shows. */}
+                  {onShelf ? (
+                    <Link
+                      href={`/products/${r.productSlug}`}
+                      className="relative size-16 shrink-0 overflow-hidden bg-white"
+                    >
+                      {image}
+                    </Link>
+                  ) : (
+                    <div className="relative size-16 shrink-0 overflow-hidden bg-white">{image}</div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <Link
-                        href={`/products/${r.productSlug}`}
-                        className="text-[15px] font-medium text-ink hover:underline"
-                      >
-                        {r.productName}
-                      </Link>
+                      {onShelf ? (
+                        <Link
+                          href={`/products/${r.productSlug}`}
+                          className="text-[15px] font-medium text-ink hover:underline"
+                        >
+                          {r.productName}
+                        </Link>
+                      ) : (
+                        <p className="text-[15px] font-medium text-ink">
+                          {r.productName} <span className="font-normal text-muted">· no longer sold</span>
+                        </p>
+                      )}
                       <Badge tone={status.tone}>{status.label}</Badge>
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-[13px] text-muted">

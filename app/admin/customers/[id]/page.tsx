@@ -114,7 +114,7 @@ export default async function AdminCustomerPage({ params }: Props) {
                     <p className="mt-1 line-clamp-2 text-sm text-muted">{r.body}</p>
                     <p className="mt-1 text-[13px] text-muted">
                       {r.product ? (
-                        <Link href={`/products/${r.product.slug}`} className="hover:underline">
+                        <Link href={`/admin/products/${r.product.id}`} className="hover:underline">
                           {r.product.name}
                         </Link>
                       ) : (

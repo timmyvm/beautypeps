@@ -107,7 +107,7 @@ export default async function AccountOverviewPage({
             <div className="mt-4">
               <p className="text-[15px] text-muted">You haven&apos;t placed an order yet.</p>
               <ButtonLink href="/shop" size="sm" className="mt-4">
-                Shop serums
+                Shop peptides
               </ButtonLink>
             </div>
           ) : (

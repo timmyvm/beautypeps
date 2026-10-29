@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 const RULES = [
   {
     title: "Your concerns lead",
-    text: "Every formula is scored by how many of your concerns it treats. The closest match becomes your serum, and an eye, lip or scalp concern adds the treatment made for it.",
+    text: "Every vial on the shelf is scored by how many of your concerns its peptide is studied for. The closest matches become your routine, with the arithmetic for making each into a serum.",
   },
   {
     title: "Your skin adjusts it",

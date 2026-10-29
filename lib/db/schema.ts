@@ -117,6 +117,8 @@ export const products = sqliteTable(
     price: integer("price").notNull(), // cents
     compareAtPrice: integer("compare_at_price"), // cents
     stock: integer("stock").notNull().default(0),
+    // When set, stock is the AuPeptideLabs variant's (one shelf, two shops): see lib/apl.ts
+    aplVariantId: text("apl_variant_id").unique(),
     lowStockThreshold: integer("low_stock_threshold").notNull().default(10),
     size: text("size"), // "30 mL", "1 g"
     image: text("image").notNull(),

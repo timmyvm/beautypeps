@@ -28,15 +28,16 @@ export async function Footer() {
         <div className="col-span-2 flex flex-col justify-between gap-8 bg-field-stone p-6 md:col-span-6 md:min-h-[300px] lg:col-span-4" {...tile(0)}>
           <div>
             <p className="max-w-[26ch] text-lead font-medium">
-              Cosmetic peptides, dosed in full and graded honestly. Made in Melbourne.
+              Peptides by the vial, labelled to the milligram and graded honestly. Sent from Melbourne.
             </p>
             <p className="mt-6 mb-3 text-body">The Peptide Letter: new research, twice a month.</p>
             <NewsletterForm />
           </div>
           <p className="text-body">
-            Cosmetics for external use only. Not intended to diagnose, treat, cure or prevent any disease; statements
-            have not been evaluated by the TGA. The Peptide Library summarises published research and is not medical
-            advice. © {year} {settings.storeName}
+            Pure actives are cosmetic ingredients for external use only; research peptides are sold for laboratory research
+            only and are not for human use. Nothing here is intended to diagnose, treat, cure or prevent any disease, and
+            statements have not been evaluated by the TGA. The Peptide Library summarises published research and is not
+            medical advice. © {year} {settings.storeName}
             {settings.abn ? `, ABN ${settings.abn}` : ""}.
             <span className="mt-3 block text-small">
               Chalcanthite crystals:{" "}

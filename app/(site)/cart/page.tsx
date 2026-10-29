@@ -10,7 +10,7 @@ import { getCart, MAX_QTY_PER_LINE } from "@/lib/cart";
 import { formatMoney } from "@/lib/format";
 import { resolveCartDiscount } from "@/lib/orders";
 import { computeTotals } from "@/lib/pricing";
-import { getFeaturedProducts } from "@/lib/queries/catalog";
+import { getSuggestedProducts } from "@/lib/queries/catalog";
 import { getSettings } from "@/lib/settings";
 
 // Per-visitor (session, bag or order cookie): renders at request time.
@@ -22,7 +22,7 @@ export default async function CartPage() {
   const [cart, settings] = await Promise.all([getCart(), getSettings()]);
 
   if (cart.lines.length === 0) {
-    const bestsellers = await getFeaturedProducts(4);
+    const starters = await getSuggestedProducts(4);
     return (
       <div className="container-bp pt-10 md:pt-16">
         <section className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-end lg:gap-[var(--gutter)]" aria-labelledby="bag-heading">
@@ -31,11 +31,11 @@ export default async function CartPage() {
           </h1>
           <div className="lg:col-span-5 lg:col-start-8">
             <p className="max-w-[44ch] text-lead" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
-              Start with a bestseller, or let the routine builder match peptides to what you want to change.
+              Start with one of the vials below, or let the routine builder match peptides to what you want to change.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" data-reveal="" style={{ ["--reveal-i" as string]: 2 }}>
               <Link href="/shop" className={buttonClasses({ size: "lg" })}>
-                See every formula
+                See every vial
               </Link>
               <Link href="/routine-builder" className="text-body underline underline-offset-4">
                 Build my routine
@@ -43,12 +43,12 @@ export default async function CartPage() {
             </div>
           </div>
         </section>
-        {bestsellers.length > 0 && (
-          <section className="mt-28 md:mt-40" aria-labelledby="best-heading">
-            <h2 id="best-heading" className="display-type mb-10 text-head" data-reveal="">
-              Bestsellers
+        {starters.length > 0 && (
+          <section className="mt-28 md:mt-40" aria-labelledby="start-heading">
+            <h2 id="start-heading" className="display-type mb-10 text-head" data-reveal="">
+              Start here
             </h2>
-            <SpecimenGrid products={bestsellers} doubles={false} priority={2} />
+            <SpecimenGrid products={starters} doubles={false} priority={2} />
           </section>
         )}
       </div>
@@ -57,7 +57,7 @@ export default async function CartPage() {
 
   const [{ discount, code, invalidReason }, featured] = await Promise.all([
     resolveCartDiscount(cart.discountCode, cart.subtotal),
-    getFeaturedProducts(9),
+    getSuggestedProducts(9),
   ]);
   const inBag = new Set(cart.lines.map((l) => l.product.id));
   const suggestions = featured

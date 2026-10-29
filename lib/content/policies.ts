@@ -110,7 +110,7 @@ These terms apply to purchases from ${s.storeName}${s.abn ? ` (ABN ${s.abn})` : 
 
 ## Our products
 
-All Beauty Peps products, including serums, treatments and pure actives, are **cosmetics for external, topical use only**. They are not medicines, are not intended to diagnose, treat, cure or prevent any disease, and are not for injection or ingestion. Information in our Peptide Library and Journal is educational and is not medical advice.
+Pure actives are **cosmetic ingredients for external, topical use only**. Research peptides are **sold for laboratory research only** and are not for human or animal use. No Beauty Peps product is a medicine, none is intended to diagnose, treat, cure or prevent any disease, and none is for injection or ingestion. Information in our Peptide Library and Journal is educational and is not medical advice.
 
 Pure actives are cosmetic raw materials intended for use by formulators in properly preserved topical products. You're responsible for using them safely and in line with applicable regulations.
 

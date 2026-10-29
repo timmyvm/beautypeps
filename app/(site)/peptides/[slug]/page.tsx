@@ -129,7 +129,7 @@ async function PeptideMonographPageView({ slug }: { slug: string }) {
               <EvidenceMeter level={evidence.level} size="lg" />
               {products.length > 0 && (
                 <ButtonLink href="#find-it-in">
-                  In {products.length === 1 ? "one of our formulas" : `${products.length} of our formulas`}
+                  In {products.length === 1 ? "one product" : `${products.length} products`} on the shelf
                 </ButtonLink>
               )}
             </div>

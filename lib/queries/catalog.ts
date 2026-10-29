@@ -147,6 +147,16 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductCardData[]>
   return all.slice(0, limit);
 }
 
+/** What the bag and cart offer next: featured and in stock, never a research peptide. */
+export async function getSuggestedProducts(limit = 8): Promise<ProductCardData[]> {
+  const [all, research] = await Promise.all([
+    listProducts({ sort: "featured", inStock: true }),
+    listProducts({ category: "research-peptides" }),
+  ]);
+  const skip = new Set(research.map((p) => p.id));
+  return all.filter((p) => !skip.has(p.id)).slice(0, limit);
+}
+
 export async function getProductBySlug(slug: string) {
   "use cache";
   cacheLife("days");

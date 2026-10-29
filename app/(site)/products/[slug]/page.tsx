@@ -98,6 +98,7 @@ async function ProductView({ slug }: { slug: string }) {
   const isCopper = product.peptideSlugs.includes("ghk-cu");
   const category = product.category?.slug;
   const isPowder = category === "pure-actives";
+  const isResearch = category === "research-peptides";
   // The blue GHK-Cu serum itself is in these, so its pictures are honest here.
   const blueSerum = product.slug === "ghk-cu-copper-peptide-serum" || product.slug === "copper-ritual-kit";
   const drawn = peptides.filter((p) => p.sequence);
@@ -105,9 +106,21 @@ async function ProductView({ slug }: { slug: string }) {
   const [figure, figureRest] = lead ? splitAmount(lead.amount) : ["", ""];
   const COLLAR = "/images/editorial/collar-macro.webp";
   const thumbs = [...new Set([product.image, ...(product.slug === "ghk-cu-copper-peptide-serum" ? [COLLAR] : []), ...photos])].slice(0, 3);
-  const pair = product.stock > 0 ? related.find((r) => r.stock > 0) : undefined;
-  // One full row of four after the pair
-  const others = related.filter((r) => r.id !== pair?.id).slice(0, 4);
+  // A pair is a different peptide studied for the same thing; research peptides are never upsold.
+  const firstWord = (n: string) => n.split(" ")[0].toLowerCase();
+  const pair =
+    product.stock > 0 && category !== "research-peptides"
+      ? related.find(
+          (r) =>
+            r.stock > 0 &&
+            firstWord(r.name) !== firstWord(product.name) &&
+            (r.concerns ?? []).some((c) => product.concerns.includes(c)),
+        )
+      : undefined;
+  // One full row of four after the pair; research peptides only ever point to other research peptides
+  const others = related
+    .filter((r) => r.id !== pair?.id && (!isResearch || (r as { categoryId?: string | null }).categoryId === product.categoryId))
+    .slice(0, 4);
   const sharedConcerns = pair ? product.concerns.filter((c) => pair.concerns?.includes(c)).slice(0, 2) : [];
   const base = siteUrl();
   const url = `${base}/products/${product.slug}`;
@@ -193,7 +206,7 @@ async function ProductView({ slug }: { slug: string }) {
 
   const stock =
     product.stock <= 0
-      ? { text: "Sold out for now. We restock small batches every few weeks.", cls: "text-danger" }
+      ? { text: "Sold out for now. Stock is counted live, so it shows here the moment it is back.", cls: "text-danger" }
       : lowStock
         ? { text: `Only ${product.stock} left in this batch.`, cls: "text-amber" }
         : { text: "In stock and ready to ship from Melbourne.", cls: "text-sage" };
@@ -335,7 +348,7 @@ async function ProductView({ slug }: { slug: string }) {
         {/* The formula: heading in the left third, the text in the right two thirds */}
         <section className="mt-32 grid grid-cols-1 gap-8 lg:mt-48 lg:grid-cols-12 lg:gap-[var(--gutter)]" aria-labelledby="formula-heading">
           <h2 id="formula-heading" className={`${HEAD} lg:sticky lg:top-28 lg:col-span-4 lg:self-start`} data-reveal="">
-            The formula
+            {isResearch ? "The vial" : isPowder ? "The ingredient" : "The formula"}
           </h2>
           <div className="lg:col-span-7 lg:col-start-6" data-reveal="" style={{ ["--reveal-i" as string]: 1 }}>
             <Markdown>{product.description}</Markdown>
@@ -515,6 +528,8 @@ async function ProductView({ slug }: { slug: string }) {
           </section>
         )}
 
+        {/* Research peptides take no reviews: nobody should be describing using them on themselves. */}
+        {!isResearch && (
         <div className="mt-32 lg:mt-48">
           {/* The reviews are in the static page; whether this visitor can write one streams in. */}
           <Suspense
@@ -535,15 +550,14 @@ async function ProductView({ slug }: { slug: string }) {
             />
           </Suspense>
         </div>
+        )}
 
         {pair && (
           <CompleteThePair
             first={{ id: product.id, slug: product.slug, name: product.name, image: product.image, price: product.price, fact: productFact(product) }}
             second={{ id: pair.id, slug: pair.slug, name: pair.name, image: pair.image, price: pair.price, fact: productFact(pair) }}
             reason={[
-              sharedConcerns.length > 0
-                ? `Both work on ${sharedConcerns.map((c) => concernLabel(c).toLowerCase()).join(" and ")}.`
-                : "Often bought together.",
+              `Both are studied for ${sharedConcerns.map((c) => concernLabel(c).toLowerCase()).join(" and ")}.`,
               isPowder ? "" : "Apply the thinner texture first and let it settle before the next.",
             ]
               .filter(Boolean)
@@ -555,7 +569,7 @@ async function ProductView({ slug }: { slug: string }) {
         {others.length > 0 && (
           <section className="mt-32 lg:mt-48" aria-labelledby="related-heading">
             <h2 id="related-heading" className={`${HEAD} mb-10`} data-reveal="">
-              {pair ? "Also pairs well" : "Pairs well with"}
+              {isResearch ? "More research peptides" : pair ? "Also pairs well" : "Pairs well with"}
             </h2>
             <SpecimenGrid products={others} doubles={false} />
           </section>

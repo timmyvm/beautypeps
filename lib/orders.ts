@@ -17,6 +17,7 @@ import {
 import { orderConfirmationEmail, sendEmail } from "@/lib/email";
 import { computeTotals, validateDiscountCode } from "@/lib/pricing";
 import { getSettings } from "@/lib/settings";
+import { syncAplStock } from "@/lib/stock-sync";
 
 /** Set after checkout so a guest can view their confirmation page. */
 export const LAST_ORDER_COOKIE = "bp_last_order";
@@ -51,6 +52,8 @@ async function nextOrderNumber(tx: Pick<typeof db, "select">) {
  * from the database — nothing from the client is trusted except the form fields.
  */
 export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
+  // Products shared with AuPeptideLabs: a fresh read of its shelf before anything is reserved.
+  await syncAplStock({ force: true });
   const [cart, settings] = await Promise.all([getCart(), getSettings()]);
   if (cart.lines.length === 0) return { ok: false, error: "Your bag is empty." };
   const limited = cart.lines.find((l) => l.limited);

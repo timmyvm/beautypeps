@@ -32,20 +32,20 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
           a: "No. Botulinum toxin is a prescription injectable that blocks nerve signals strongly and reliably. Argireline and similar peptides are applied topically and work on a related pathway far more gently; the effect is modest and depends on how much reaches the muscle. Read our [Argireline explainer](/learn/argireline-neuropeptides-explained).",
         },
         {
-          q: "Why do you publish concentrations?",
+          q: "Why do you print milligrams?",
           tab: "Labels",
-          a: "Because 'contains peptides' tells you very little. Many products include a trace amount for the label. We list key active percentages on every product page so you can compare them with the concentrations used in published studies: see the [comparison chart](/compare).",
+          a: "Because 'contains peptides' tells you very little. Every vial is labelled with how many milligrams of peptide it holds, and each product page does the arithmetic for a serum at the concentrations used in published studies, so you can compare: see the [comparison chart](/compare).",
         },
         {
-          q: "Why is your GHK-Cu serum blue?",
+          q: "Why is GHK-Cu blue?",
           tab: "Colour",
-          a: "Copper(II) peptide complexes are naturally blue. The colour is a good sign: if a copper peptide product turns green or brown, the complex may have degraded.",
+          a: "Copper(II) peptide complexes are naturally blue, as powder and in a serum. The colour is a good sign: if a copper peptide serum turns green or brown, the complex may have degraded.",
         },
       ],
     },
     {
       id: "using-products",
-      title: "Using our products",
+      title: "Using peptides",
       items: [
         {
           q: "Can I use peptides with retinol?",
@@ -63,9 +63,9 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
           a: "Hydration and smoothness can feel better within days. Changes in the look of fine lines and firmness typically take 6–12 weeks of twice-daily use, which matches the timeframes in most studies. Take a photo in consistent lighting on day one so you can compare fairly.",
         },
         {
-          q: "Are your products suitable for sensitive skin?",
+          q: "Are peptides suitable for sensitive skin?",
           tab: "Sensitive skin",
-          a: "Our serums are fragrance-free and peptides are generally well tolerated. Still, everyone's skin is different: patch test any new product on your inner arm for a few days, and introduce one new product at a time.",
+          a: "Peptides are generally well tolerated, but a serum is only as gentle as its base: leave out fragrance and essential oils if your skin is reactive. Patch test anything new on your inner arm for a few days, and introduce one new product at a time.",
         },
         {
           q: "Can I use them while pregnant or breastfeeding?",
@@ -73,9 +73,9 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
           a: "Cosmetic peptides are not known to be a concern, but there's little specific research in pregnancy. Please check with your GP, obstetrician or dermatologist before starting new actives.",
         },
         {
-          q: "How should I store my serums?",
+          q: "How should I store a serum I've made?",
           tab: "Storage",
-          a: "Keep them closed, out of direct sunlight and below 25°C. A bathroom cabinet is fine; a sunny windowsill or hot car is not. Use within 6 months of opening (check the open-jar symbol on the box).",
+          a: "Closed, cold and dark: the fridge is the best place for a peptide serum you've made yourself. Use it within the shelf life you've tested your formula for, and make small batches if you haven't.",
         },
         {
           q: "Will these products replace sunscreen?",
@@ -91,7 +91,7 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
         {
           q: "Who are the pure actives for?",
           tab: "Who for",
-          a: "Cosmetic chemists, DIY formulators and brands making small batches. They're lyophilised cosmetic-grade powders intended to be dissolved into a properly preserved topical formula, not to be applied neat.",
+          a: "Anyone making their own topical serum, from DIY formulators to small brands. They're freeze-dried powders in sealed vials, to be dissolved into a properly preserved formula, not applied neat.",
         },
         {
           q: "How do I add peptide powder to a formula?",
@@ -106,7 +106,12 @@ export function getFaqGroups(s: StoreSettings): FaqGroup[] {
         {
           q: "Are pure actives for injection or ingestion?",
           tab: "Safety",
-          a: "No. All Beauty Peps products, including pure actives, are cosmetic ingredients for external, topical use only.",
+          a: "No. Pure actives from Beauty Peps are cosmetic ingredients for external, topical use only.",
+        },
+        {
+          q: "What are research peptides?",
+          tab: "Research",
+          a: "Peptides and blends such as GLOW, KLOW and KPV, sold for laboratory research only. They are not cosmetics or medicines, they are not for human use, and we give no directions for using them.",
         },
       ],
     },

@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Beauty Peps",
     short_name: "Beauty Peps",
-    description: "Small-batch cosmetic peptide serums made in Melbourne, with an evidence grade for every peptide.",
+    description: "Beauty peptides by the vial, sent from Melbourne, with an evidence grade for every peptide.",
     start_url: "/",
     display: "browser",
     background_color: "#ffffff",

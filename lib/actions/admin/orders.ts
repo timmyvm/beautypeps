@@ -12,6 +12,7 @@ import { orderEvents, orderItems, orders, products } from "@/lib/db/schema";
 import { orderConfirmationEmail, orderStatusEmail, sendEmail } from "@/lib/email";
 import { getSettings } from "@/lib/settings";
 import { allowedTransitions } from "@/lib/queries/admin-ops";
+import { returnOrderToApl, takeOrderFromApl } from "@/lib/stock-sync";
 import { fieldErrors, type FormState } from "@/lib/utils";
 
 const transitionSchema = z.object({
@@ -133,12 +134,21 @@ export async function updateOrderStatusAction(_prev: FormState, formData: FormDa
 
   let restocked = false;
   if ((to === "cancelled" || to === "refunded") && restock) restocked = await restockOrder(orderId, admin.email);
+  // One shelf with AuPeptideLabs: payment takes the units off it; a restocked cancel or refund puts them back.
+  const shelf =
+    to === "paid"
+      ? await takeOrderFromApl(orderId, admin.email)
+      : (to === "cancelled" || to === "refunded") && restock
+        ? await returnOrderToApl(orderId, admin.email)
+        : null;
   if (notify) await emailCustomer(orderId, admin.email);
 
   revalidatePath("/admin", "layout");
   return {
-    ok: true,
-    message: `Order marked “${ORDER_STATUSES[to].label}”${restocked ? ", items restocked" : ""}${notify ? ", customer emailed" : ""}.`,
+    ok: shelf ? shelf.ok : true,
+    message:
+      `Order marked “${ORDER_STATUSES[to].label}”${restocked ? ", items restocked" : ""}${notify ? ", customer emailed" : ""}.` +
+      (shelf?.message ? ` ${shelf.message}` : ""),
   };
 }
 

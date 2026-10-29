@@ -61,9 +61,9 @@ export function CopperScene({ frames }: { frames: CopperFrame[] }) {
             </div>
             <div className="copper-notes space-y-4 text-body">
               <p data-note="">
-                The blue is the copper ion held by the peptide, not a dye. Anything we make with GHK-Cu comes out this colour.
+                The blue is the copper ion held by the peptide, not a dye. The powder is this colour, and so is anything made with it.
               </p>
-              <p data-note="">Use it at night, apart from vitamin C and strong acids, which loosen the copper.</p>
+              <p data-note="">In a serum, keep it apart from vitamin C and strong acids, which loosen the copper.</p>
             </div>
           </div>
 

@@ -248,7 +248,8 @@ export function CheckoutForm({ user, addresses, lines, totals, discountCode, dis
               <Link href="/policies/terms" target="_blank" className="underline underline-offset-2">
                 Terms of Sale
               </Link>{" "}
-              and understand these are cosmetic products for external use only.
+              and understand that pure actives are for external use only and research peptides are for laboratory research
+              only.
             </span>
           </label>
           {e.terms && <p className="mt-1.5 text-small text-danger">{e.terms}</p>}

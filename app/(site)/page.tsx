@@ -16,12 +16,12 @@ import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: "Beauty Peps: peptide serums, graded",
+    title: "Beauty Peps: beauty peptides, graded",
     description:
-      "Small-batch Melbourne serums from 13 cosmetic peptides, with the concentration on every label and an evidence grade for every peptide. GHK-Cu, Matrixyl, Argireline, SNAP-8 and more.",
+      "GHK-Cu, SNAP-8 and glutathione by the vial, sent from Melbourne, with an open library grading the evidence for 13 cosmetic peptides.",
     path: "/",
   }),
-  title: { absolute: "Beauty Peps — Peptide serums, graded" },
+  title: { absolute: "Beauty Peps — Beauty peptides, graded" },
 };
 
 export default async function HomePage() {
@@ -53,90 +53,80 @@ export default async function HomePage() {
     {
       src: "/video/copper-drop-poster.webp",
       video: "/video/copper-drop.mp4",
-      alt: "Drops of blue copper peptide serum on a brushed copper plate",
+      alt: "Drops of blue copper peptide solution on a brushed copper plate",
       name: "A drop of it",
       fact: "Blue from the copper ion",
       ratio: 3 / 2,
       href: "/learn/copper-peptides-ghk-cu-guide",
     },
     {
-      src: "/images/editorial/ghk-cu-plinth.webp",
-      alt: "GHK-Cu copper peptide serum, sapphire blue, on a travertine plinth",
-      name: "GHK-Cu serum",
-      fact: `1% · ${price("ghk-cu-copper-peptide-serum")}`,
-      ratio: 1,
-      href: "/products/ghk-cu-copper-peptide-serum",
+      src: "/images/products/ghk-cu-50mg.webp",
+      alt: "A vial of GHK-Cu, blue freeze-dried powder, on a travertine plinth beside a spatula of powder",
+      name: "GHK-Cu 50 mg",
+      fact: `Freeze-dried · ${price("ghk-cu-50mg")}`,
+      ratio: 4 / 5,
+      href: "/products/ghk-cu-50mg",
       lifted: true,
     },
     {
-      src: "/images/editorial/collar-macro.webp",
-      alt: "The brushed copper collar of the serum bottle above the blue liquid",
-      name: "The collar",
-      fact: "Brushed copper",
-      ratio: 4 / 5,
-      href: "/products/ghk-cu-copper-peptide-serum",
+      src: "/video/powder-dissolve-poster.webp",
+      video: "/video/powder-dissolve.mp4",
+      alt: "Blue GHK-Cu powder falling into a beaker of water and blooming into blue clouds",
+      name: "Into water",
+      fact: "It dissolves blue",
+      ratio: 5 / 4,
+      href: "/peptides/ghk-cu",
     },
     {
-      src: "/images/products/ghk-cu-pure-powder.webp",
-      alt: "Amber vial of freeze-dried blue GHK-Cu powder",
-      name: "GHK-Cu powder",
-      fact: `1 g · ${price("ghk-cu-pure-powder")}`,
+      src: "/images/products/ghk-cu-100mg.webp",
+      alt: "A vial of GHK-Cu, 100 mg of blue freeze-dried powder",
+      name: "GHK-Cu 100 mg",
+      fact: `Freeze-dried · ${price("ghk-cu-100mg")}`,
       ratio: 4 / 5,
-      href: "/products/ghk-cu-pure-powder",
+      href: "/products/ghk-cu-100mg",
     },
     {
-      src: "/images/products/scalp-peptide-serum.webp",
-      alt: "Pale blue scalp serum with copper and biotinoyl tripeptide-1",
-      name: "Scalp serum",
-      fact: `60 mL · ${price("scalp-peptide-serum")}`,
+      src: "/images/editorial/cold-chain.webp",
+      alt: "Sealed amber vials of peptide powder on a refrigerator shelf beside a dial thermometer",
+      name: "Kept cold",
+      fact: "2–8 °C, sealed",
       ratio: 4 / 5,
-      href: "/products/scalp-peptide-serum",
-    },
-    {
-      src: "/images/products/copper-ritual-kit.webp",
-      alt: "The Copper Ritual Kit: GHK-Cu serum, night cream and eye gel in a gift box",
-      name: "Copper Ritual Kit",
-      fact: price("copper-ritual-kit"),
-      ratio: 4 / 5,
-      href: "/products/copper-ritual-kit",
+      href: "/learn/storing-peptide-powders",
     },
   ];
 
-  const beats: SequenceBeat[] = [
+  const beats = ([
     {
-      slug: "ghk-cu-copper-peptide-serum",
-      image: imageOf("ghk-cu-copper-peptide-serum"),
-      product: "GHK-Cu Copper Peptide Serum",
-      figure: "1%",
+      slug: "ghk-cu-50mg",
+      image: imageOf("ghk-cu-50mg"),
+      product: "GHK-Cu 50 mg",
+      figure: "50 mg",
       of: "Copper tripeptide-1",
       line: "Three amino acids holding one copper ion. Glycine, histidine and lysine are also the three circles of our mark.",
       strands: [{ label: "GHK-Cu", sequence: seqOf("ghk-cu") }],
       tone: "stone",
     },
     {
-      slug: "argireline-10-serum",
-      image: imageOf("argireline-10-serum"),
-      product: "Argireline 10% Expression Line Serum",
-      figure: "10%",
-      of: "Argireline solution",
-      line: "Six amino acids, capped at both ends so the enzymes in skin leave the chain alone for longer.",
-      strands: [{ label: "Acetyl hexapeptide-8", sequence: seqOf("acetyl-hexapeptide-8") }],
+      slug: "snap-8-10mg",
+      image: imageOf("snap-8-10mg"),
+      product: "SNAP-8 10 mg",
+      figure: "10 mg",
+      of: "Acetyl octapeptide-3",
+      line: "Eight amino acids, capped at both ends: Argireline with two more on the end of the chain.",
+      strands: [{ label: "Acetyl octapeptide-3", sequence: seqOf("acetyl-octapeptide-3") }],
       tone: "frost",
     },
     {
-      slug: "matrixyl-3000-serum",
-      image: imageOf("matrixyl-3000-serum"),
-      product: "Matrixyl 3000 Collagen Peptide Serum",
-      figure: "8%",
-      of: "Matrixyl 3000 complex",
-      line: "Two short chains, each on a 16-carbon fatty tail that helps it through the skin's oily outer layer.",
-      strands: [
-        { label: "Palmitoyl tripeptide-1", sequence: seqOf("palmitoyl-tripeptide-1") },
-        { label: "Palmitoyl tetrapeptide-7", sequence: seqOf("palmitoyl-tetrapeptide-7") },
-      ],
+      slug: "glutathione-600mg",
+      image: imageOf("glutathione-600mg"),
+      product: "Glutathione 600 mg",
+      figure: "600 mg",
+      of: "L-glutathione",
+      line: "Three amino acids, the first joined through its side chain: the antioxidant every cell in the body makes.",
+      strands: [{ label: "Glutathione (γ-Glu-Cys-Gly)", sequence: "Glu-Cys-Gly" }],
       tone: "sapphire",
     },
-  ];
+  ] satisfies SequenceBeat[]).filter((b) => bySlug(b.slug));
   const grades = Object.fromEntries(peptides.map((p) => [p.slug, { name: p.name, grade: p.evidenceLevel }]));
 
   // The shop as an organisation (who sells, where, how to reach it, returns) and the site itself (its name in results).
@@ -190,7 +180,7 @@ export default async function HomePage() {
 
       <section className="container-bp mt-24 pt-3 lg:mt-40" aria-labelledby="catalogue-title">
         <h2 id="catalogue-title" className="display-type mb-4 text-head" data-reveal="">
-          All {products.length} formulas
+          All {products.length} vials
         </h2>
         <CatalogueGuide
           products={products}
@@ -202,9 +192,9 @@ export default async function HomePage() {
       <div className="mt-40 lg:mt-60">
         <CopperScene frames={copperFrames} />
       </div>
-      <LibraryList peptides={peptides} vial={bySlug("ghk-cu-pure-powder")} />
+      <LibraryList peptides={peptides} vial={bySlug("ghk-cu-50mg")} />
       <div className="mt-40 lg:mt-60">
-        <PowderScene powderImage={imageOf("matrixyl-pure-powder")} />
+        <PowderScene powderImage={imageOf("glutathione-600mg")} />
       </div>
       <ReviewSlips reviews={reviews} />
       <FaqCards settings={settings} />

@@ -203,3 +203,37 @@ the a11y misses; the shop's SEO 92 is Lighthouse not seeing Next's streamed meta
 1. Home LCP is ~4s under Lighthouse's mobile throttling (GSAP and three scenes); 84 performance.
 2. /compare and /faq / /contact keep a small right-margin drift at some widths.
 3. Reviews are seeded demo reviews until real ones exist.
+
+## Round 4: the real shelf (AuPeptideLabs stock)
+
+**Brief.** "Take stock from Supabase AuPeptideLabs stock." Chosen: sell GHK-Cu 50/100 mg, SNAP-8 10 mg,
+Glutathione 600/1500 mg, plus GLOW 70 mg, KLOW 80 mg and KPV 10 mg; hide the 18 demo formulas until they are
+real; one live, shared shelf with APL.
+
+**Shared shelf.** BP stock for a linked product = APL variant stock − units held by BP orders that are not
+cancelled/refunded and not yet taken. Paid → take off APL (`apl_take` event); cancel/refund with restock →
+return (`apl_return`). APL down at payment → a note, units stay held, the daily cron retries. APL's ledger key
+is `<order number>/<order id>` so a restarted order sequence can never be read as "already taken". APL side:
+scoped `beautypeps_*` tables and three SECURITY DEFINER functions behind a token (sha256 stored); BP never
+holds APL's service key.
+
+**Catalogue and copy.** Two categories (Pure actives, Research peptides). Research items carry a "Research
+only" badge, no concerns, no reviews, no cosmetic pairings, and are never offered as bag or cart upsells.
+Home hero "Peptides, graded"; about page rewritten around the shelf; FAQ, footer, terms and emails say what
+each kind of vial is for. Unfounded social claims removed: "Often bought together", "Often added with it",
+"Bestsellers" (no sales data yet) → plain "More from the shelf" / "Start here".
+
+**Imagery.** Eight vial renders (Higgsfield gpt_image_2_5), cut out and trimmed; one GHK-Cu dissolve clip.
+These are renders with plain labels: swap for real APL vial photographs when they exist.
+
+**Inspector.** home 0/2 (card-rows; off-centre 32 vs 48px at 1440) · ghk-cu-50mg 0/0 · glow-70mg 0/2 ·
+glutathione 0/0 · shop 0/1 · about 0/0 · routine-builder 0/0.
+
+**Tests (production build, APL mock on :3999).** Shared-stock flow 17/17 (twice in a row, same order number);
+APL offline then retry 8/8; full order e2e; bag, search, morph and cart-add; crawl clean apart from the
+deliberate 404 and the sitemap's XML viewer; no hydration errors on key pages.
+
+### Still short
+1. Prices are copied from APL at launch and are not synced; SNAP-8 at $269 looks like an APL placeholder.
+2. GLOW and KLOW compositions to confirm against APL's labels.
+3. Selling research peptides on a beauty site is a positioning and legal call for the owner.

@@ -20,6 +20,7 @@ import {
   SLUG_RE,
   str,
 } from "@/lib/queries/admin-catalog";
+import { syncAplStock } from "@/lib/stock-sync";
 import { IMAGE_SRC_HINT, isAllowedImageSrc, resolveImageField, UploadError } from "@/lib/uploads";
 import { fieldErrors, slugify, type FormState } from "@/lib/utils";
 
@@ -43,6 +44,11 @@ const productSchema = z
     price: z.number({ error: "Enter a price." }).int().positive("Price must be more than $0."),
     compareAtPrice: z.number().int().positive().nullable(),
     stock: z.number({ error: "Stock must be a whole number." }).int("Stock must be a whole number.").min(0, "Stock can't be negative."),
+    aplVariantId: z
+      .string()
+      .regex(/^[a-z0-9][a-z0-9-]*$/, "Use the AuPeptideLabs variant id, e.g. ghk-cu-50mg.")
+      .max(80)
+      .nullable(),
     lowStockThreshold: z
       .number({ error: "Threshold must be a whole number." })
       .int("Threshold must be a whole number.")
@@ -129,6 +135,7 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
     price: price === null ? Number.NaN : price,
     compareAtPrice: money(formData, "compareAtPrice"),
     stock: int(formData, "stock", 0),
+    aplVariantId: optStr(formData, "aplVariantId"),
     lowStockThreshold: int(formData, "lowStockThreshold", 10),
     size: optStr(formData, "size"),
     image,
@@ -158,7 +165,7 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
   const data = parsed.data;
 
   // Uniqueness (slug, sku)
-  const [slugClash, skuClash] = await Promise.all([
+  const [slugClash, skuClash, aplClash] = await Promise.all([
     db.query.products.findFirst({
       where: id ? and(eq(products.slug, data.slug), ne(products.id, id)) : eq(products.slug, data.slug),
       columns: { id: true, name: true },
@@ -167,11 +174,20 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
       where: id ? and(eq(products.sku, data.sku), ne(products.id, id)) : eq(products.sku, data.sku),
       columns: { id: true, name: true },
     }),
+    data.aplVariantId
+      ? db.query.products.findFirst({
+          where: id
+            ? and(eq(products.aplVariantId, data.aplVariantId), ne(products.id, id))
+            : eq(products.aplVariantId, data.aplVariantId),
+          columns: { id: true, name: true },
+        })
+      : undefined,
   ]);
-  if (slugClash || skuClash) {
+  if (slugClash || skuClash || aplClash) {
     const errors: Record<string, string> = {};
     if (slugClash) errors.slug = `“${slugClash.name}” already uses this URL slug.`;
     if (skuClash) errors.sku = `“${skuClash.name}” already uses this SKU.`;
+    if (aplClash) errors.aplVariantId = `“${aplClash.name}” already sells this AuPeptideLabs variant.`;
     return { ok: false, message: "Please fix the highlighted fields.", errors };
   }
 
@@ -183,8 +199,9 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
 
   if (!id) {
     const [created] = await db.insert(products).values(values).returning({ id: products.id });
+    if (values.aplVariantId) await syncAplStock({ force: true });
     revalidatePath("/admin/products");
-  updateTag(TAGS.catalog);
+    updateTag(TAGS.catalog);
     redirect(`/admin/products/${created.id}?saved=created`);
   }
 
@@ -193,6 +210,7 @@ export async function saveProductAction(_prev: FormState, formData: FormData): P
   const { stock, ...update } = values;
   const result = await db.update(products).set(update).where(eq(products.id, id)).returning({ id: products.id });
   if (result.length === 0) return { ok: false, message: "This product no longer exists." };
+  if (update.aplVariantId) await syncAplStock({ force: true });
 
   revalidatePath("/admin/products");
   updateTag(TAGS.catalog);
@@ -211,15 +229,30 @@ export async function adjustStockAction(
   if (!Number.isInteger(value)) return { ok: false, message: "Enter a whole number." };
   const product = await db.query.products.findFirst({
     where: eq(products.id, productId),
-    columns: { stock: true },
+    columns: { stock: true, aplVariantId: true },
   });
   if (!product) return { ok: false, message: "Product not found." };
+  if (product.aplVariantId) {
+    return { ok: false, message: "This product sells from AuPeptideLabs stock: change the count in APL's admin, then sync." };
+  }
   const next = mode === "set" ? value : product.stock + value;
   if (next < 0) return { ok: false, message: "Stock can't go below zero." };
   await db.update(products).set({ stock: next }).where(eq(products.id, productId));
   revalidatePath("/admin/products");
   updateTag(TAGS.catalog);
   return { ok: true, message: `Stock is now ${next}.`, stock: next };
+}
+
+/** Read AuPeptideLabs' shelf now and update every linked product. */
+export async function syncAplStockAction(): Promise<{ ok: boolean; message: string }> {
+  await requireAdmin();
+  const r = await syncAplStock({ force: true });
+  revalidatePath("/admin/products");
+  if (!r.ok) return { ok: false, message: r.error ?? "Could not reach AuPeptideLabs." };
+  return {
+    ok: true,
+    message: r.changed > 0 ? `Synced: ${r.changed} of ${r.linked} linked products changed.` : `In step: all ${r.linked} linked products match.`,
+  };
 }
 
 export async function duplicateProductAction(productId: string) {
@@ -246,7 +279,7 @@ export async function duplicateProductAction(productId: string) {
   const { id, createdAt, updatedAt, ...rest } = source;
   const [created] = await db
     .insert(products)
-    .values({ ...rest, name: `${source.name} (copy)`, slug, sku, status: "draft", featured: false, stock: 0 })
+    .values({ ...rest, name: `${source.name} (copy)`, slug, sku, status: "draft", featured: false, stock: 0, aplVariantId: null })
     .returning({ id: products.id });
   revalidatePath("/admin/products");
   updateTag(TAGS.catalog);

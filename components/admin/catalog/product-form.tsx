@@ -5,7 +5,7 @@ import { startTransition, useActionState, useState, useTransition } from "react"
 import { Panel, SheetGrid } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/form";
-import { adjustStockAction, saveProductAction } from "@/lib/actions/admin/products";
+import { adjustStockAction, saveProductAction, syncAplStockAction } from "@/lib/actions/admin/products";
 import { CONCERNS, SKIN_TYPES } from "@/lib/constants";
 import type { Product } from "@/lib/db/schema";
 import { formatMoney, parseMoney } from "@/lib/format";
@@ -15,6 +15,8 @@ import { MarkdownEditor } from "./markdown-editor";
 import { CheckboxGroup, CountedField, RepeatableRows, SaveBar, Toggle } from "./form-bits";
 
 type Option = { id: string; name: string };
+/** A variant AuPeptideLabs shares with Beauty Peps, with what is on its shelf now. */
+export type AplOption = { id: string; label: string; stock: number };
 type PeptideOption = { slug: string; name: string; inciName: string };
 
 const centsToInput = (c: number | null | undefined) => (c === null || c === undefined ? "" : (c / 100).toFixed(2));
@@ -23,10 +25,13 @@ export function ProductForm({
   product,
   categories,
   peptides,
+  aplOptions = null,
 }: {
   product: Product | null;
   categories: Option[];
   peptides: PeptideOption[];
+  /** Null when APL's shelf could not be read: the link is then typed in by hand. */
+  aplOptions?: AplOption[] | null;
 }) {
   const [state, formAction, pending] = useActionState<FormState, FormData>(saveProductAction, {});
   const e = state.errors ?? {};
@@ -218,7 +223,7 @@ export function ProductForm({
                     ))}
                   </Select>
                 </Field>
-                <Toggle name="featured" label="Featured" description="Show in bestsellers on the home page." defaultChecked={product?.featured} />
+                <Toggle name="featured" label="Featured" description="Listed first in the shop and suggested from the bag." defaultChecked={product?.featured} />
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="Badge" htmlFor="badge" error={e.badge}>
                     <Input id="badge" name="badge" defaultValue={product?.badge ?? ""} placeholder="Bestseller" />
@@ -248,7 +253,28 @@ export function ProductForm({
 
             <Panel title="Inventory">
               <div className="space-y-4">
-                {product ? (
+                <Field
+                  label="AuPeptideLabs variant"
+                  htmlFor="aplVariantId"
+                  error={e.aplVariantId}
+                  hint="Linked products sell from APL's shelf: stock is read from APL, and a paid order takes its units off it."
+                >
+                  {aplOptions ? (
+                    <Select id="aplVariantId" name="aplVariantId" defaultValue={product?.aplVariantId ?? ""}>
+                      <option value="">Not linked: stock kept here</option>
+                      {aplOptions.map((o) => (
+                        <option key={o.id} value={o.id}>
+                          {o.label} · {o.stock} on APL&apos;s shelf
+                        </option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input id="aplVariantId" name="aplVariantId" defaultValue={product?.aplVariantId ?? ""} placeholder="e.g. ghk-cu-50mg" />
+                  )}
+                </Field>
+                {product?.aplVariantId ? (
+                  <LinkedStock stock={product.stock} threshold={product.lowStockThreshold} />
+                ) : product ? (
                   <StockAdjuster productId={product.id} initialStock={product.stock} threshold={product.lowStockThreshold} />
                 ) : (
                   <Field label="Stock on hand" htmlFor="stock" error={e.stock}>
@@ -329,6 +355,39 @@ function MoneyInput({
         className="pl-8"
         aria-invalid={invalid}
       />
+    </div>
+  );
+}
+
+/** Stock of a product that sells from AuPeptideLabs' shelf: read-only here, with a manual re-read. */
+function LinkedStock({ stock, threshold }: { stock: number; threshold: number }) {
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [pending, startSync] = useTransition();
+  const tone = stock <= 0 ? "text-danger" : stock <= threshold ? "text-amber" : "text-ink";
+  return (
+    <div>
+      <p className="text-[13px] font-medium text-muted">Available here</p>
+      <div className="mt-1 flex items-center gap-3">
+        <span className={cn("text-2xl font-semibold tabular-nums", tone)}>{stock}</span>
+        <span className="text-[13px] text-muted">APL&apos;s shelf, less units held by unpaid orders here</span>
+      </div>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="mt-3 bg-surface-2 hover:bg-stone"
+        disabled={pending}
+        onClick={() =>
+          startSync(async () => {
+            const res = await syncAplStockAction();
+            setMessage({ ok: res.ok, text: res.message });
+          })
+        }
+      >
+        {pending ? "Reading APL…" : "Sync with AuPeptideLabs"}
+      </Button>
+      {message && <p className={cn("mt-2 text-[13px]", message.ok ? "text-sage" : "text-danger")}>{message.text}</p>}
+      <p className="mt-2 text-[13px] text-muted">Change the count in APL&apos;s admin; it shows here on the next sync.</p>
     </div>
   );
 }

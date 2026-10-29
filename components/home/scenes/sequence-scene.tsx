@@ -21,8 +21,8 @@ export type SequenceBeat = {
 };
 
 /*
- * Scene: "Inside the percentage". Each label prints a concentration; the scene shows what that figure is
- * made of. Three formulas in turn: the specimen wipes into its tile, the figure rises, and the peptide is
+ * Scene: "Inside the vial". Each label prints milligrams; the scene shows what that figure is
+ * made of. Three vials in turn: the specimen wipes into its tile, the figure rises, and the peptide is
  * drawn from its own sequence, bead by bead, as the visitor scrolls. At rest (no script, reduced motion,
  * a phone) the three are simply listed.
  */
@@ -96,10 +96,10 @@ export function SequenceScene({ beats }: { beats: SequenceBeat[] }) {
         <div className="seq-frame container-bp">
           <div className="seq-head">
             <h2 id="inside-title" className="display-type text-head">
-              Inside the percentage
+              Inside the vial
             </h2>
             <p className="mt-4 max-w-[38ch] text-lead">
-              Every label prints how much of each peptide is in the bottle. This is what that figure is made of.
+              Every label prints how many milligrams of peptide are in the vial. This is what those milligrams are made of.
             </p>
           </div>
 

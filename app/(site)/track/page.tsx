@@ -221,7 +221,7 @@ async function TrackPageContent({ searchParams }: { searchParams: SearchParams }
 const ARRIVAL = [
   {
     title: "Bring it inside",
-    text: "Every formula is packed for normal transit, but like most actives, peptides prefer to stay below 25 °C. In summer, bring the parcel in promptly.",
+    text: "Every order is packed for normal transit, but freeze-dried peptides prefer to stay below 25 °C. In summer, bring the parcel in promptly.",
   },
   {
     title: "Check the seal and the label",

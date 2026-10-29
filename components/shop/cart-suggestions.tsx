@@ -18,7 +18,7 @@ export function CartSuggestions({ items, remaining }: { items: Suggestion[]; rem
   return (
     <section className="mt-16" aria-labelledby="also-heading">
       <h2 id="also-heading" className="text-lead font-medium" data-reveal="">
-        Often added with it
+        More from the shelf
       </h2>
       <ul className="mt-5 grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3">
         {items.map((item, i) => (

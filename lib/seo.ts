@@ -11,7 +11,7 @@ export const SITE_CARD = {
   width: 1200,
   height: 630,
   type: "image/jpeg",
-  alt: "The GHK-Cu copper peptide serum on a travertine tile, beside the words Peptide serums, graded",
+  alt: "A vial of GHK-Cu, blue copper peptide powder, beside the words Beauty peptides, graded",
 };
 
 /**

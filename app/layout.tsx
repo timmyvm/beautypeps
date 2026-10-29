@@ -20,11 +20,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Beauty Peps — Peptide serums, graded",
+    default: "Beauty Peps — Beauty peptides, graded",
     template: "%s · Beauty Peps",
   },
   description:
-    "Small-batch cosmetic peptide serums made in Melbourne — GHK-Cu, Matrixyl, Argireline, SNAP-8 and more — with the concentration on every label and an evidence grade for every peptide.",
+    "GHK-Cu, SNAP-8 and glutathione by the vial, sent from Melbourne, with an open library grading the evidence for 13 cosmetic peptides.",
   applicationName: "Beauty Peps",
   // Preview pictures come from the opengraph-image routes (a site card here, one per product, peptide and article).
   openGraph: { type: "website", siteName: "Beauty Peps", locale: "en_AU" },

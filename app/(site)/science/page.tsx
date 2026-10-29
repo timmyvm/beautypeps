@@ -127,7 +127,7 @@ export default async function SciencePage() {
       >
         <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
           <ButtonLink href="/peptides">Open the peptide library</ButtonLink>
-          <p className="text-body text-muted">A fifteen-minute read by our formulation team</p>
+          <p className="text-body text-muted">A fifteen-minute read</p>
         </div>
       </PageHeader>
 

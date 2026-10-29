@@ -110,7 +110,7 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
     category?.description ??
     (concern
       ? `Formulas chosen for ${concernLabel(concern).toLowerCase()}. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is.`
-      : "Every formula we make, shown plainly. Under each one: the peptide doing the work, its concentration, and how strong the evidence for it is, graded 1 to 5.");
+      : "Every vial on the shelf, shown plainly. Under each one: the peptide inside, how many milligrams, and how strong the evidence for it is, graded 1 to 5.");
 
   // Each concern chip says how many formulas it would show within the current category and stock view.
   const pool = catalogue.filter((p) => (!categorySlug || p.categorySlug === categorySlug) && (!inStock || p.stock > 0));
@@ -118,6 +118,8 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
     (c) => c.count > 0 || c.slug === concern,
   );
   const categoryCounts = new Map(categories.map((c) => [c.slug, catalogue.filter((p) => p.categorySlug === c.slug).length]));
+  // Categories with nothing on sale stay out of the way (the current one always shows).
+  const shownCategories = categories.filter((c) => (categoryCounts.get(c.slug) ?? 0) > 0 || c.slug === categorySlug);
 
   const scope = [
     concern && `for ${concernLabel(concern).toLowerCase()}`,
@@ -128,7 +130,7 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
     .filter(Boolean)
     .join(", ");
   const count = `${products.length} ${products.length === 1 ? "formula" : "formulas"}${scope ? ` ${scope}` : ""}`;
-  const categoryOptions = [{ value: "", label: "Everything" }, ...categories.map((c) => ({ value: c.slug, label: c.name }))];
+  const categoryOptions = [{ value: "", label: "Everything" }, ...shownCategories.map((c) => ({ value: c.slug, label: c.name }))];
   // Same filters, different view: the grid crossfades instead of cutting.
   const resultsKey = [categorySlug, concern, q, sort, inStock].join("|");
 
@@ -206,7 +208,7 @@ async function ShopContent({ searchParams }: { searchParams: SearchParams }) {
         style={{ ["--reveal-i" as string]: 3 }}
       >
         <nav aria-label="Categories" className="flex flex-wrap items-center gap-x-6 gap-y-2 text-body">
-          {[{ slug: undefined, name: "Every category" }, ...categories].map((c) => {
+          {[{ slug: undefined, name: "Every category" }, ...shownCategories].map((c) => {
             const active = c.slug === categorySlug;
             return (
               <Link

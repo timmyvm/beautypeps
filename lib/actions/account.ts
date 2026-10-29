@@ -22,6 +22,7 @@ import {
 import { orderStatusEmail, sendEmail } from "@/lib/email";
 import { getSettings } from "@/lib/settings";
 import { fieldErrors, type FormState } from "@/lib/utils";
+import { syncAplStock } from "@/lib/stock-sync";
 
 export type AccountFormState = FormState & { values?: Record<string, string> };
 
@@ -54,6 +55,7 @@ export async function cancelOrderAction(_prev: FormState, formData: FormData): P
       .where(eq(products.id, item.productId));
   }
   revalidateTag(TAGS.catalog, "max");
+  await syncAplStock({ force: true });
 
   await db.insert(orderEvents).values({
     orderId: order.id,

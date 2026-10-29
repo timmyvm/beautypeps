@@ -6,11 +6,9 @@ export const MAIN_NAV = [
 ];
 
 export const SHOP_LINKS = [
-  { href: "/shop", label: "All formulas" },
-  { href: "/shop?category=serums", label: "Peptide serums" },
-  { href: "/shop?category=treatments", label: "Targeted treatments" },
+  { href: "/shop", label: "All peptides" },
   { href: "/shop?category=pure-actives", label: "Pure actives" },
-  { href: "/shop?category=kits", label: "Kits and sets" },
+  { href: "/shop?category=research-peptides", label: "Research peptides" },
 ];
 
 export const LEARN_LINKS = [

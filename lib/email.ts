@@ -54,7 +54,7 @@ function layout(title: string, body: string) {
 <tr><td style="font-family:Georgia,serif;font-size:24px;letter-spacing:.02em;padding-bottom:4px">beauty peps</td></tr>
 <tr><td style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8f5528;padding-bottom:24px">${escape(title)}</td></tr>
 <tr><td style="font-size:15px;line-height:1.6">${body}</td></tr>
-<tr><td style="padding-top:32px;font-size:12px;color:#6b5a4e;border-top:1px solid #e1d5c6">Beauty Peps · Cosmetic peptides, formulated in Australia<br><a href="${siteUrl()}" style="color:#8f5528">${siteUrl().replace(/^https?:\/\//, "")}</a></td></tr>
+<tr><td style="padding-top:32px;font-size:12px;color:#6b5a4e;border-top:1px solid #e1d5c6">Beauty Peps · Peptides by the vial, sent from Melbourne<br><a href="${siteUrl()}" style="color:#8f5528">${siteUrl().replace(/^https?:\/\//, "")}</a></td></tr>
 </table></td></tr></table></body></html>`;
 }
 

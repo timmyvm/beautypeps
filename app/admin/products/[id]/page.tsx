@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ConfirmButton } from "@/components/admin/catalog/confirm-button";
 import { Notice } from "@/components/admin/catalog/notice";
 import { ProductForm } from "@/components/admin/catalog/product-form";
+import { getAplOptions } from "@/lib/queries/apl-options";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";
@@ -27,11 +28,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EditProductPage({ params, searchParams }: Props) {
   const [{ id }, { saved }] = await Promise.all([params, searchParams]);
-  const [product, categories, peptides, orderCount] = await Promise.all([
+  const [product, categories, peptides, orderCount, aplOptions] = await Promise.all([
     getAdminProduct(id),
     listCategoryOptions(),
     listPeptideOptions(),
     productOrderCount(id),
+    getAplOptions(),
   ]);
   if (!product) notFound();
 
@@ -87,7 +89,7 @@ export default async function EditProductPage({ params, searchParams }: Props) {
       />
       <Notice value={saved} />
       {/* Remount when status changes outside the form (e.g. Archive button) so the select stays in sync. */}
-      <ProductForm key={product.status} product={product} categories={categories} peptides={peptides} />
+      <ProductForm key={product.status} product={product} categories={categories} peptides={peptides} aplOptions={aplOptions} />
     </>
   );
 }

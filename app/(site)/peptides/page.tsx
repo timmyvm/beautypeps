@@ -17,7 +17,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Peptide Library: every cosmetic peptide, evidence-graded",
   description:
-    "An open, evidence-graded reference to every cosmetic peptide we formulate with: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more. Mechanisms, research, concentrations and how to use them.",
+    "An open, evidence-graded reference to the cosmetic peptides: GHK-Cu, Matrixyl, Argireline, SNAP-8 and more. Mechanisms, research, concentrations and how to use them.",
   path: "/peptides",
 });
 
@@ -66,7 +66,7 @@ async function PeptideLibraryPageContent({ searchParams }: { searchParams: Searc
       <PageHeader
         crumbs={[{ href: "/", label: "Home" }, { label: "Peptide library" }]}
         title="The peptide library"
-        lead={`A field guide to the ${all.length} peptides we formulate with: what each one does, how sure the science is, and where to find it.`}
+        lead={`A field guide to ${all.length} cosmetic peptides: what each one does, how sure the science is, and where to find it.`}
         figureClassName="hidden lg:block"
         figure={
           <Figure ratio="aspect-[4/3]">
